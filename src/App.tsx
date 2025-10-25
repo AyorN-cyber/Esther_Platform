@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Lock, LogOut, Plus, MessageSquare, Eye, Music, Instagram, Youtube, Mail, CheckCircle, Clock, AlertCircle } from 'lucide-react';
+import { Lock, LogOut, Plus, MessageSquare, Eye, Music, Instagram, Youtube, Mail, CheckCircle, Clock, AlertCircle, EyeOff } from 'lucide-react';
 
 interface Video {
   id: number;
@@ -218,6 +218,7 @@ const EstherPlatform = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent) => {
       e.preventDefault();
@@ -257,14 +258,23 @@ const EstherPlatform = () => {
 
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">Password</label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-white"
-                placeholder="Enter password"
-                required
-              />
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full px-4 py-3 pr-12 bg-gray-900 border border-gray-700 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-white"
+                  placeholder="Enter password"
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-300 transition"
+                >
+                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
+              </div>
             </div>
 
             {error && (
@@ -280,12 +290,6 @@ const EstherPlatform = () => {
               Sign In
             </button>
           </form>
-
-          <div className="mt-6 p-4 bg-gray-900 border border-gray-700 rounded-lg text-sm">
-            <p className="font-semibold text-purple-400 mb-2">Demo Credentials:</p>
-            <p className="text-gray-400">Admin: admin / admin2024</p>
-            <p className="text-gray-400">Artist: esther / esther2024</p>
-          </div>
         </div>
       </div>
     );
@@ -297,6 +301,11 @@ const EstherPlatform = () => {
     const [commentingId, setCommentingId] = useState<number | null>(null);
     const [editingTitleId, setEditingTitleId] = useState<number | null>(null);
     const [editTitleText, setEditTitleText] = useState('');
+    const [localVideos, setLocalVideos] = useState<Video[]>(videos);
+
+    useEffect(() => {
+      setLocalVideos(videos);
+    }, [videos]);
 
     const stats = {
       total: videos.length,
@@ -308,7 +317,14 @@ const EstherPlatform = () => {
 
     const progress = stats.total > 0 ? ((stats.complete / stats.total) * 100).toFixed(0) : '0';
 
-    const updateVideo = async (id: number, field: string, value: string) => {
+    const updateVideoLocally = (id: number, field: string, value: string) => {
+      const updated = localVideos.map(v =>
+        v.id === id ? { ...v, [field]: value } : v
+      );
+      setLocalVideos(updated);
+    };
+
+    const saveVideoChanges = async (id: number, field: string, value: string) => {
       const updated = videos.map(v =>
         v.id === id ? { ...v, [field]: value } : v
       );
@@ -359,7 +375,7 @@ const EstherPlatform = () => {
     };
 
     const requestReview = async (videoId: number) => {
-      await updateVideo(videoId, 'status', 'under-review');
+      await saveVideoChanges(videoId, 'status', 'under-review');
     };
 
     const getStatusColor = (status: string) => {
@@ -391,20 +407,20 @@ const EstherPlatform = () => {
               <h1 className="text-xl md:text-2xl font-bold text-white">OfficialEstherReign</h1>
               <p className="text-sm text-gray-400">Welcome, {user?.name}</p>
             </div>
-            <div className="flex gap-3 items-center w-full sm:w-auto">
+            <div className="flex gap-2 sm:gap-3 items-center w-full sm:w-auto">
               <button
                 onClick={() => setCurrentView('public')}
-                className="text-purple-400 hover:text-purple-300 transition flex items-center gap-2 text-sm"
+                className="text-purple-400 hover:text-purple-300 transition flex items-center gap-2 text-sm py-2 px-3 sm:px-0"
               >
                 <Eye size={18} />
                 <span className="hidden sm:inline">View Public</span>
               </button>
               <button
                 onClick={handleLogout}
-                className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition flex items-center gap-2 text-sm"
+                className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition flex items-center gap-2 text-sm touch-manipulation"
               >
                 <LogOut size={18} />
-                Logout
+                <span>Logout</span>
               </button>
             </div>
           </div>
@@ -452,16 +468,16 @@ const EstherPlatform = () => {
           <div className="mb-6">
             <button
               onClick={() => setShowAddModal(true)}
-              className="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition flex items-center gap-2 font-semibold w-full sm:w-auto justify-center"
+              className="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 active:bg-purple-800 transition flex items-center gap-2 font-semibold w-full sm:w-auto justify-center touch-manipulation shadow-lg"
             >
               <Plus size={20} />
               Add New Video
             </button>
           </div>
 
-          <div className="grid gap-4 md:gap-6 lg:grid-cols-2">
-            {videos.map(video => (
-              <div key={video.id} className="bg-gray-800 border border-gray-700 rounded-xl shadow-lg hover:shadow-purple-500/20 transition p-4 md:p-6">
+          <div className="grid gap-4 md:gap-6 xl:grid-cols-2">
+            {localVideos.map(video => (
+              <div key={video.id} className="bg-gray-800 border border-gray-700 rounded-xl shadow-lg hover:shadow-purple-500/20 transition p-4 md:p-5">
                 <div className="flex justify-between items-start mb-4 gap-2">
                   <div className="flex-1 min-w-0">
                     <div className="text-xs text-purple-400 font-semibold mb-1">Video #{video.id}</div>
@@ -476,7 +492,7 @@ const EstherPlatform = () => {
                         />
                         <button
                           onClick={() => {
-                            updateVideo(video.id, 'title', editTitleText);
+                            saveVideoChanges(video.id, 'title', editTitleText);
                             setEditingTitleId(null);
                           }}
                           className="bg-purple-600 text-white px-3 py-1 rounded text-xs hover:bg-purple-700 transition"
@@ -515,7 +531,7 @@ const EstherPlatform = () => {
                       <label className="text-xs text-gray-400 block mb-1">Status</label>
                       <select
                         value={video.status}
-                        onChange={(e) => updateVideo(video.id, 'status', e.target.value)}
+                        onChange={(e) => saveVideoChanges(video.id, 'status', e.target.value)}
                         className="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-sm text-white focus:ring-2 focus:ring-purple-500"
                       >
                         <option value="not-started">Not Started</option>
@@ -530,7 +546,8 @@ const EstherPlatform = () => {
                       <input
                         type="text"
                         value={video.template}
-                        onChange={(e) => updateVideo(video.id, 'template', e.target.value)}
+                        onChange={(e) => updateVideoLocally(video.id, 'template', e.target.value)}
+                        onBlur={(e) => saveVideoChanges(video.id, 'template', e.target.value)}
                         placeholder="e.g., Animated Lyrics + Emojis"
                         className="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-sm text-white focus:ring-2 focus:ring-purple-500"
                       />
@@ -541,7 +558,8 @@ const EstherPlatform = () => {
                       <input
                         type="url"
                         value={video.driveLink}
-                        onChange={(e) => updateVideo(video.id, 'driveLink', e.target.value)}
+                        onChange={(e) => updateVideoLocally(video.id, 'driveLink', e.target.value)}
+                        onBlur={(e) => saveVideoChanges(video.id, 'driveLink', e.target.value)}
                         placeholder="https://drive.google.com/..."
                         className="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-sm text-white focus:ring-2 focus:ring-purple-500"
                       />
@@ -551,7 +569,8 @@ const EstherPlatform = () => {
                       <label className="text-xs text-gray-400 block mb-1">Edit Notes</label>
                       <textarea
                         value={video.notes}
-                        onChange={(e) => updateVideo(video.id, 'notes', e.target.value)}
+                        onChange={(e) => updateVideoLocally(video.id, 'notes', e.target.value)}
+                        onBlur={(e) => saveVideoChanges(video.id, 'notes', e.target.value)}
                         placeholder="Creative ideas, special effects..."
                         rows={2}
                         className="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-sm text-white focus:ring-2 focus:ring-purple-500 resize-none"
@@ -579,7 +598,7 @@ const EstherPlatform = () => {
                         href={video.driveLink}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-block bg-purple-900/50 text-purple-300 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-purple-900 transition"
+                        className="inline-block bg-purple-900/50 text-purple-300 px-4 py-2.5 rounded-lg text-sm font-semibold hover:bg-purple-900 active:bg-purple-800 transition touch-manipulation"
                       >
                         View Video →
                       </a>
@@ -587,7 +606,7 @@ const EstherPlatform = () => {
                     {video.status === 'in-progress' && (
                       <button
                         onClick={() => requestReview(video.id)}
-                        className="w-full bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-700 transition"
+                        className="w-full bg-blue-600 text-white px-4 py-2.5 rounded-lg text-sm font-semibold hover:bg-blue-700 active:bg-blue-800 transition touch-manipulation"
                       >
                         Request Review
                       </button>
@@ -603,7 +622,7 @@ const EstherPlatform = () => {
                     </span>
                   </div>
 
-                  <div className="max-h-48 overflow-y-auto space-y-2 mb-3">
+                  <div className="max-h-48 overflow-y-auto space-y-2 mb-3 scrollbar-thin">
                     {(video.comments || []).map(comment => (
                       <div key={comment.id} className="bg-gray-900 rounded-lg p-3">
                         <div className="flex justify-between items-start mb-1 gap-2">
@@ -629,7 +648,7 @@ const EstherPlatform = () => {
                       <div className="flex gap-2">
                         <button
                           onClick={() => addComment(video.id)}
-                          className="bg-purple-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-purple-700 transition"
+                          className="flex-1 sm:flex-none bg-purple-600 text-white px-4 py-2.5 rounded-lg text-sm hover:bg-purple-700 active:bg-purple-800 transition touch-manipulation font-semibold"
                         >
                           Post
                         </button>
@@ -638,7 +657,7 @@ const EstherPlatform = () => {
                             setCommentingId(null);
                             setCommentText('');
                           }}
-                          className="bg-gray-700 text-gray-300 px-4 py-2 rounded-lg text-sm hover:bg-gray-600 transition"
+                          className="flex-1 sm:flex-none bg-gray-700 text-gray-300 px-4 py-2.5 rounded-lg text-sm hover:bg-gray-600 active:bg-gray-500 transition touch-manipulation"
                         >
                           Cancel
                         </button>
@@ -647,7 +666,7 @@ const EstherPlatform = () => {
                   ) : (
                     <button
                       onClick={() => setCommentingId(video.id)}
-                      className="text-purple-400 text-sm font-semibold hover:text-purple-300 transition"
+                      className="text-purple-400 text-sm font-semibold hover:text-purple-300 active:text-purple-200 transition py-2 touch-manipulation"
                     >
                       + Add Comment
                     </button>
@@ -659,8 +678,8 @@ const EstherPlatform = () => {
         </div>
 
         {showAddModal && (
-          <div className="fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
-            <div className="bg-gray-800 border border-gray-700 rounded-xl shadow-2xl p-6 md:p-8 max-w-md w-full">
+          <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 overflow-y-auto">
+            <div className="bg-gray-800 border border-gray-700 rounded-xl shadow-2xl p-5 sm:p-6 md:p-8 max-w-md w-full my-8">
               <h3 className="text-xl md:text-2xl font-bold text-white mb-6">Add New Video</h3>
 
               <div className="space-y-4">
@@ -686,10 +705,10 @@ const EstherPlatform = () => {
                   />
                 </div>
 
-                <div className="flex gap-3 pt-4">
+                <div className="flex flex-col sm:flex-row gap-3 pt-4">
                   <button
                     onClick={addVideo}
-                    className="flex-1 bg-purple-600 text-white py-3 rounded-lg font-semibold hover:bg-purple-700 transition"
+                    className="flex-1 bg-purple-600 text-white py-3 rounded-lg font-semibold hover:bg-purple-700 active:bg-purple-800 transition touch-manipulation"
                   >
                     Add Video
                   </button>
@@ -698,7 +717,7 @@ const EstherPlatform = () => {
                       setShowAddModal(false);
                       setNewVideo({ title: '', notes: '' });
                     }}
-                    className="flex-1 bg-gray-700 text-gray-300 py-3 rounded-lg font-semibold hover:bg-gray-600 transition"
+                    className="flex-1 bg-gray-700 text-gray-300 py-3 rounded-lg font-semibold hover:bg-gray-600 active:bg-gray-500 transition touch-manipulation"
                   >
                     Cancel
                   </button>
