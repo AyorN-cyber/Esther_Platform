@@ -1,9 +1,5 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { Lock, LogOut, Plus, MessageSquare, Eye, Music, Instagram, Youtube, Mail, CheckCircle, Clock, AlertCircle, EyeOff, Save, Upload, Facebook, Twitter, Globe, Bell, Smile } from 'lucide-react';
-import { FaTiktok } from 'react-icons/fa';
-import EmojiPicker from 'emoji-picker-react';
-import { ImageUpload } from './components/ImageUpload';
-import { createNotification, getUnreadNotifications, markAllNotificationsAsRead } from './services/notifications';
+import React, { useState, useEffect } from 'react';
+import { Lock, LogOut, Plus, MessageSquare, Eye, Music, Instagram, Youtube, Mail, CheckCircle, Clock, AlertCircle, EyeOff, Save, Upload, Facebook, Twitter, Globe } from 'lucide-react';
 import { supabase, extractGoogleDriveThumbnail } from './lib/supabase';
 import type { Video, Comment, User, SiteSettings } from './types';
 
@@ -17,26 +13,10 @@ const EstherPlatform = () => {
   const [loading, setLoading] = useState(true);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const [notifications, setNotifications] = useState<any[]>([]);
-  const [showNotifications, setShowNotifications] = useState(false);
 
   useEffect(() => {
     loadData();
   }, []);
-
-  useEffect(() => {
-    if (user) {
-      loadNotifications();
-      const interval = setInterval(loadNotifications, 30000);
-      return () => clearInterval(interval);
-    }
-  }, [user]);
-
-  const loadNotifications = useCallback(async () => {
-    if (!user) return;
-    const unread = await getUnreadNotifications(user.role);
-    setNotifications(unread);
-  }, [user]);
 
   const loadData = async () => {
     try {
@@ -149,7 +129,7 @@ const EstherPlatform = () => {
             <div className="flex gap-6 justify-center animate-slide-up delay-400">
               {settings?.social_tiktok && (
                 <a href={settings.social_tiktok} target="_blank" rel="noopener noreferrer" className="text-purple-400 hover:text-purple-300 hover:scale-110 transition-all duration-300">
-                  <FaTiktok size={32} />
+                  <Music size={32} />
                 </a>
               )}
               {settings?.social_facebook && (
@@ -197,7 +177,7 @@ const EstherPlatform = () => {
               </div>
               <div className="order-1 md:order-2 animate-slide-right">
                 <img
-                  src={settings?.about_image || '/IMG-20250915-WA0023.jpg'}
+                  src="/IMG-20250915-WA0023.jpg"
                   alt="Esther Reign performing"
                   className="w-full rounded-2xl shadow-2xl shadow-purple-500/20 hover:scale-105 transition-transform duration-500"
                 />
@@ -827,7 +807,6 @@ const EstherPlatform = () => {
     function SettingsModal() {
       const [localSettings, setLocalSettings] = useState<SiteSettings>(settings || {
         profile_image: '/Estherreign.jpg',
-        about_image: '/IMG-20250915-WA0023.jpg',
         about_text: '',
         social_tiktok: '',
         social_facebook: '',
@@ -852,14 +831,6 @@ const EstherPlatform = () => {
 
           if (error) throw error;
 
-          await createNotification(
-            'artist',
-            'Settings Updated',
-            'Profile and site settings have been updated by admin.',
-            'update',
-            0
-          );
-
           setSettings(localSettings);
           setShowSettingsModal(false);
           await loadData();
@@ -876,17 +847,17 @@ const EstherPlatform = () => {
             <h3 className="text-xl md:text-2xl font-bold text-white mb-6">Site Settings</h3>
 
             <div className="space-y-4">
-              <ImageUpload
-                currentImage={localSettings.profile_image}
-                onImageChange={(base64) => setLocalSettings({...localSettings, profile_image: base64})}
-                label="Profile Picture (Hero Section)"
-              />
-
-              <ImageUpload
-                currentImage={localSettings.about_image}
-                onImageChange={(base64) => setLocalSettings({...localSettings, about_image: base64})}
-                label="About Section Image"
-              />
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">Profile Image URL</label>
+                <input
+                  type="text"
+                  value={localSettings.profile_image}
+                  onChange={(e) => setLocalSettings({...localSettings, profile_image: e.target.value})}
+                  placeholder="/Estherreign.jpg"
+                  className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg focus:ring-2 focus:ring-purple-500 text-white transition-all"
+                />
+                <p className="text-xs text-gray-500 mt-1">Upload image to /public folder and enter path here</p>
+              </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">About Text</label>
