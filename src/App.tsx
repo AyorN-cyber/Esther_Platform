@@ -1,6 +1,6 @@
 import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { Menu, X, Instagram, Youtube, Mail, Phone, Play, ChevronRight, Sparkles } from 'lucide-react';
-import { FaTiktok } from 'react-icons/fa';
+import { FaTiktok, FaFacebook } from 'react-icons/fa';
 import { Loader } from './components/Loader';
 import { WebGLBackground } from './components/WebGLBackground';
 import type { Video } from './types';
@@ -317,18 +317,22 @@ const EstherPlatform = () => {
               </div>
 
               {/* Social Links */}
-              <div className="flex gap-4 pt-6 justify-center lg:justify-start animate-slide-in-left stagger-delay-5">
-                <a href="https://instagram.com/estherreign" target="_blank" rel="noopener noreferrer"
+              <div className="flex gap-4 pt-6 pb-8 md:pb-0 justify-center lg:justify-start animate-slide-in-left stagger-delay-5">
+                <a href={settings?.social_links?.instagram || "https://instagram.com/estherreign"} target="_blank" rel="noopener noreferrer"
                   className="w-12 h-12 bg-white/5 backdrop-blur-sm border border-white/10 rounded-full flex items-center justify-center hover:bg-purple-600 hover:border-purple-600 transition-all hover:scale-110">
                   <Instagram size={20} />
                 </a>
-                <a href="https://youtube.com/@estherreign" target="_blank" rel="noopener noreferrer"
+                <a href={settings?.social_links?.youtube || "https://youtube.com/@estherreign"} target="_blank" rel="noopener noreferrer"
                   className="w-12 h-12 bg-white/5 backdrop-blur-sm border border-white/10 rounded-full flex items-center justify-center hover:bg-purple-600 hover:border-purple-600 transition-all hover:scale-110">
                   <Youtube size={20} />
                 </a>
-                <a href="https://tiktok.com/@estherreign" target="_blank" rel="noopener noreferrer"
+                <a href={settings?.social_links?.tiktok || "https://tiktok.com/@estherreign"} target="_blank" rel="noopener noreferrer"
                   className="w-12 h-12 bg-white/5 backdrop-blur-sm border border-white/10 rounded-full flex items-center justify-center hover:bg-purple-600 hover:border-purple-600 transition-all hover:scale-110">
                   <FaTiktok size={20} />
+                </a>
+                <a href={settings?.social_links?.facebook || "https://facebook.com/estherreign"} target="_blank" rel="noopener noreferrer"
+                  className="w-12 h-12 bg-white/5 backdrop-blur-sm border border-white/10 rounded-full flex items-center justify-center hover:bg-purple-600 hover:border-purple-600 transition-all hover:scale-110">
+                  <FaFacebook size={20} />
                 </a>
               </div>
             </div>
@@ -349,12 +353,9 @@ const EstherPlatform = () => {
           </div>
         </div>
 
-        {/* Scroll Indicator - Sparkle Animation */}
+        {/* Scroll Indicator */}
         <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-          <div className="relative">
-            <Sparkles size={32} className="text-purple-400 animate-pulse" />
-            <div className="absolute inset-0 blur-xl bg-purple-500/30 animate-pulse"></div>
-          </div>
+          <ChevronRight size={32} className="text-purple-400 rotate-90" />
         </div>
       </section>
 
@@ -566,6 +567,10 @@ const EstherPlatform = () => {
               <a href={settings?.social_links?.tiktok || "https://tiktok.com/@estherreign"} target="_blank" rel="noopener noreferrer"
                 className="w-14 h-14 bg-white/5 backdrop-blur-sm border border-white/10 rounded-full flex items-center justify-center hover:bg-gradient-to-br hover:from-purple-600 hover:to-pink-600 hover:border-transparent transition-all hover:scale-110">
                 <FaTiktok size={24} />
+              </a>
+              <a href={settings?.social_links?.facebook || "https://facebook.com/estherreign"} target="_blank" rel="noopener noreferrer"
+                className="w-14 h-14 bg-white/5 backdrop-blur-sm border border-white/10 rounded-full flex items-center justify-center hover:bg-gradient-to-br hover:from-purple-600 hover:to-pink-600 hover:border-transparent transition-all hover:scale-110">
+                <FaFacebook size={24} />
               </a>
             </div>
           </div>
