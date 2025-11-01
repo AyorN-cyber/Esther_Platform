@@ -252,7 +252,7 @@ export const ChatSystem: React.FC<ChatSystemProps> = ({ currentUser, videos, onN
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-12rem)] max-w-3xl mx-auto bg-[#efeae2] rounded-2xl overflow-hidden shadow-2xl">
+    <div className="flex flex-col h-[calc(100vh-8rem)] md:h-[calc(100vh-12rem)] max-w-3xl mx-auto bg-[#efeae2] rounded-2xl overflow-hidden shadow-2xl">
       {/* WhatsApp Header */}
       <div className="p-2 sm:p-3 bg-[#008069] flex items-center gap-3">
         <div className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center overflow-hidden">

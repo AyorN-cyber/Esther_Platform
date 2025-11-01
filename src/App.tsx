@@ -166,17 +166,17 @@ const EstherPlatform = () => {
       </div>
 
       {/* Top Navigation */}
-      <nav className="fixed top-0 w-full bg-gray-900/80 backdrop-blur-xl z-50 border-b border-purple-500/20">
-        <div className="container mx-auto px-6 lg:px-12">
-          <div className="flex justify-between items-center h-20">
+      <nav className="fixed top-0 w-full bg-gray-900/80 backdrop-blur-xl z-40 border-b border-purple-500/20">
+        <div className="container mx-auto px-4 md:px-6 lg:px-12">
+          <div className="flex justify-between items-center h-16 md:h-20">
             {/* Logo */}
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 md:gap-4 flex-shrink-0">
               <img
                 src="https://res.cloudinary.com/dtynqpjye/image/upload/v1761948158/ESTHER-REIGN-LOGO.-Photoroom_nj506d.png"
                 alt="Esther Reign Logo"
-                className="h-16 md:h-20 w-auto"
+                className="h-12 md:h-16 lg:h-20 w-auto"
               />
-              <span className="text-base md:text-lg font-bold bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400 bg-clip-text text-transparent hidden sm:inline animate-gradient bg-[length:200%_auto]">
+              <span className="text-xs md:text-base lg:text-lg font-bold bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400 bg-clip-text text-transparent hidden sm:inline animate-gradient bg-[length:200%_auto] whitespace-nowrap">
                 @officialEstherReign
               </span>
             </div>
@@ -238,16 +238,16 @@ const EstherPlatform = () => {
       </nav>
 
       {/* Hero Section */}
-      <section id="home" className="min-h-screen flex items-center relative overflow-hidden pt-20">
-        <div className="container mx-auto px-6 lg:px-12 relative z-10">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-8 animate-fade-in-left">
+      <section id="home" className="min-h-screen flex items-center relative overflow-hidden pt-16 md:pt-20">
+        <div className="container mx-auto px-4 md:px-6 lg:px-12 relative z-10">
+          <div className="grid lg:grid-cols-2 gap-8 md:gap-12 items-center">
+            <div className="space-y-6 md:space-y-8 animate-fade-in-left">
               <div className="inline-flex items-center gap-2 px-4 py-2 bg-purple-500/10 border border-purple-500/20 rounded-full backdrop-blur-sm">
                 <Sparkles size={16} className="text-purple-400" />
                 <span className="text-sm text-purple-300">Gospel Singer • Worship Leader</span>
               </div>
 
-              <h1 className="text-6xl lg:text-8xl font-black leading-tight">
+              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-8xl font-black leading-tight">
                 <span className="bg-gradient-to-r from-white via-purple-200 to-pink-200 bg-clip-text text-transparent">
                   Esther
                 </span>
@@ -257,7 +257,7 @@ const EstherPlatform = () => {
                 </span>
               </h1>
 
-              <p className="text-lg md:text-xl text-white leading-relaxed max-w-xl">
+              <p className="text-base md:text-lg lg:text-xl text-white leading-relaxed max-w-xl">
                 {settings?.hero_description || localStorage.getItem('hero_description') || 'Lifting voices in worship through powerful gospel music. Experience the presence of God through every note.'}
               </p>
 
@@ -317,21 +317,21 @@ const EstherPlatform = () => {
       </section>
 
       {/* About Section */}
-      <section id="about" className="py-32 relative overflow-hidden bg-gray-900/50">
-        <div className="container mx-auto px-6 lg:px-12 relative z-10">
+      <section id="about" className="py-16 md:py-24 lg:py-32 relative overflow-hidden bg-gray-900/50">
+        <div className="container mx-auto px-4 md:px-6 lg:px-12 relative z-10">
           <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-20 animate-fade-in-down">
+            <div className="text-center mb-12 md:mb-20 animate-fade-in-down">
               <div className="inline-flex items-center gap-2 px-4 py-2 bg-purple-500/10 border border-purple-500/20 rounded-full backdrop-blur-sm mb-6">
                 <span className="text-sm text-purple-300">About Me</span>
               </div>
-              <h2 className="text-5xl lg:text-6xl font-black mb-6">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black mb-6">
                 <span className="bg-gradient-to-r from-white to-purple-200 bg-clip-text text-transparent">
                   My Journey
                 </span>
               </h2>
             </div>
 
-            <div className="grid lg:grid-cols-2 gap-16 items-center">
+            <div className="grid lg:grid-cols-2 gap-8 md:gap-12 lg:gap-16 items-center">
               <div className="relative animate-fade-in-left">
                 <div className="absolute inset-0 bg-gradient-to-br from-purple-600 to-pink-600 rounded-3xl blur-2xl opacity-20"></div>
                 <div className="relative rounded-3xl overflow-hidden border border-white/10">
@@ -343,34 +343,34 @@ const EstherPlatform = () => {
                 </div>
               </div>
 
-              <div className="space-y-6 animate-fade-in-right">
+              <div className="space-y-4 md:space-y-6 animate-fade-in-right">
                 {(settings?.about_text || 'I am an emerging gospel artist with a deep passion for worship and praise. Through powerful cover songs, I aim to create an atmosphere where people can encounter God\'s presence.\n\nEvery song I sing is a testimony of God\'s faithfulness and love. My mission is to use my voice as an instrument of worship, touching hearts and transforming lives through gospel music.\n\nJoin me on this journey as I share my gift with the world, one song at a time, bringing glory to God through music.').split('\n\n').map((paragraph: string, index: number) => (
-                  <p key={index} className="text-lg text-white leading-relaxed">
+                  <p key={index} className="text-base md:text-lg text-white leading-relaxed">
                     {paragraph}
                   </p>
                 ))}
 
-                <div className="grid grid-cols-3 gap-6 pt-8">
-                  <div className="text-center p-6 bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl hover:bg-white/10 transition-all duration-300 group">
-                    <div className="text-5xl mb-3 group-hover:scale-110 transition-transform duration-300">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6 pt-6 md:pt-8">
+                  <div className="text-center p-4 md:p-6 bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl hover:bg-white/10 transition-all duration-300 group">
+                    <div className="text-4xl md:text-5xl mb-2 md:mb-3 group-hover:scale-110 transition-transform duration-300">
                       🎤
                     </div>
-                    <div className="text-lg font-bold text-white mb-1">Authentic Worship</div>
-                    <div className="text-sm text-gray-400">Spirit-led songs from the heart</div>
+                    <div className="text-base md:text-lg font-bold text-white mb-1">Authentic Worship</div>
+                    <div className="text-xs md:text-sm text-gray-400">Spirit-led songs from the heart</div>
                   </div>
-                  <div className="text-center p-6 bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl hover:bg-white/10 transition-all duration-300 group">
-                    <div className="text-5xl mb-3 group-hover:scale-110 transition-transform duration-300">
+                  <div className="text-center p-4 md:p-6 bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl hover:bg-white/10 transition-all duration-300 group">
+                    <div className="text-4xl md:text-5xl mb-2 md:mb-3 group-hover:scale-110 transition-transform duration-300">
                       ✨
                     </div>
-                    <div className="text-lg font-bold text-white mb-1">Fresh Sound</div>
-                    <div className="text-sm text-gray-400">Contemporary gospel music</div>
+                    <div className="text-base md:text-lg font-bold text-white mb-1">Fresh Sound</div>
+                    <div className="text-xs md:text-sm text-gray-400">Contemporary gospel music</div>
                   </div>
-                  <div className="text-center p-6 bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl hover:bg-white/10 transition-all duration-300 group">
-                    <div className="text-5xl mb-3 group-hover:scale-110 transition-transform duration-300">
+                  <div className="text-center p-4 md:p-6 bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl hover:bg-white/10 transition-all duration-300 group">
+                    <div className="text-4xl md:text-5xl mb-2 md:mb-3 group-hover:scale-110 transition-transform duration-300">
                       🙏
                     </div>
-                    <div className="text-lg font-bold text-white mb-1">Kingdom Impact</div>
-                    <div className="text-sm text-gray-400">Music that transforms lives</div>
+                    <div className="text-base md:text-lg font-bold text-white mb-1">Kingdom Impact</div>
+                    <div className="text-xs md:text-sm text-gray-400">Music that transforms lives</div>
                   </div>
                 </div>
               </div>
@@ -380,19 +380,19 @@ const EstherPlatform = () => {
       </section>
 
       {/* Videos Section */}
-      <section id="videos" className="py-32 relative overflow-hidden bg-gray-950/80">
-        <div className="container mx-auto px-6 lg:px-12 relative z-10">
-          <div className="text-center mb-20 animate-fade-in-down">
+      <section id="videos" className="py-16 md:py-24 lg:py-32 relative overflow-hidden bg-gray-950/80">
+        <div className="container mx-auto px-4 md:px-6 lg:px-12 relative z-10">
+          <div className="text-center mb-12 md:mb-20 animate-fade-in-down">
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-purple-500/10 border border-purple-500/20 rounded-full backdrop-blur-sm mb-6">
               <Play size={16} className="text-purple-400" />
               <span className="text-sm text-purple-300">Watch</span>
             </div>
-            <h2 className="text-5xl lg:text-6xl font-black mb-6">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black mb-4 md:mb-6">
               <span className="bg-gradient-to-r from-white to-purple-200 bg-clip-text text-transparent">
                 Videos
               </span>
             </h2>
-            <p className="text-white max-w-2xl mx-auto text-lg">
+            <p className="text-white max-w-2xl mx-auto text-base md:text-lg px-4">
               Experience powerful gospel worship that will uplift your spirit
             </p>
           </div>
@@ -405,7 +405,7 @@ const EstherPlatform = () => {
               <p className="text-gray-400 text-xl">New videos coming soon...</p>
             </div>
           ) : (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8 max-w-7xl mx-auto">
               {videos.map((video, index) => (
                 <div
                   key={video.id}
@@ -482,39 +482,39 @@ const EstherPlatform = () => {
       </section>
 
       {/* Contact Section */}
-      <section id="contact" className="py-32 relative overflow-hidden bg-gray-900/50">
-        <div className="container mx-auto px-6 lg:px-12 relative z-10">
+      <section id="contact" className="py-16 md:py-24 lg:py-32 relative overflow-hidden bg-gray-900/50">
+        <div className="container mx-auto px-4 md:px-6 lg:px-12 relative z-10">
           <div className="max-w-4xl mx-auto">
-            <div className="text-center mb-20 animate-fade-in-down">
+            <div className="text-center mb-12 md:mb-20 animate-fade-in-down">
               <div className="inline-flex items-center gap-2 px-4 py-2 bg-purple-500/10 border border-purple-500/20 rounded-full backdrop-blur-sm mb-6">
                 <Mail size={16} className="text-purple-400" />
                 <span className="text-sm text-purple-300">Contact</span>
               </div>
-              <h2 className="text-5xl lg:text-6xl font-black mb-6">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black mb-4 md:mb-6">
                 <span className="bg-gradient-to-r from-white to-purple-200 bg-clip-text text-transparent">
                   Let's Connect
                 </span>
               </h2>
-              <p className="text-gray-400 max-w-2xl mx-auto text-lg">
+              <p className="text-gray-400 max-w-2xl mx-auto text-base md:text-lg px-4">
                 For bookings, collaborations, or inquiries
               </p>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-8 mb-12">
-              <div className="group p-8 bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl hover:border-purple-500/50 transition-all hover:scale-105 text-center">
-                <div className="w-16 h-16 bg-gradient-to-br from-purple-600 to-pink-600 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
-                  <Phone size={28} className="text-white" />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8 mb-8 md:mb-12">
+              <div className="group p-6 md:p-8 bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl hover:border-purple-500/50 transition-all hover:scale-105 text-center">
+                <div className="w-14 h-14 md:w-16 md:h-16 bg-gradient-to-br from-purple-600 to-pink-600 rounded-2xl flex items-center justify-center mx-auto mb-3 md:mb-4 group-hover:scale-110 transition-transform">
+                  <Phone size={24} className="text-white md:w-7 md:h-7" />
                 </div>
-                <h3 className="font-bold text-xl mb-2 text-white">Phone</h3>
-                <p className="text-gray-300">{settings?.phone || '+234 818 019 4269'}</p>
+                <h3 className="font-bold text-lg md:text-xl mb-2 text-white">Phone</h3>
+                <p className="text-sm md:text-base text-gray-300 break-words">{settings?.phone || '+234 818 019 4269'}</p>
               </div>
 
-              <div className="group p-8 bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl hover:border-purple-500/50 transition-all hover:scale-105 text-center">
-                <div className="w-16 h-16 bg-gradient-to-br from-purple-600 to-pink-600 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
-                  <Mail size={28} className="text-white" />
+              <div className="group p-6 md:p-8 bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl hover:border-purple-500/50 transition-all hover:scale-105 text-center">
+                <div className="w-14 h-14 md:w-16 md:h-16 bg-gradient-to-br from-purple-600 to-pink-600 rounded-2xl flex items-center justify-center mx-auto mb-3 md:mb-4 group-hover:scale-110 transition-transform">
+                  <Mail size={24} className="text-white md:w-7 md:h-7" />
                 </div>
-                <h3 className="font-bold text-xl mb-2 text-white">Email</h3>
-                <p className="text-gray-300">{settings?.email || 'contact@estherreign.com'}</p>
+                <h3 className="font-bold text-lg md:text-xl mb-2 text-white">Email</h3>
+                <p className="text-sm md:text-base text-gray-300 break-words">{settings?.email || 'contact@estherreign.com'}</p>
               </div>
             </div>
 

@@ -95,7 +95,7 @@ export const NotificationCenter: React.FC = () => {
 
       {/* Notification Panel */}
       {showPanel && (
-        <div className="absolute right-0 top-full mt-2 w-96 bg-gray-900 border border-purple-500/20 rounded-2xl shadow-2xl overflow-hidden animate-scale-in z-50">
+        <div className="absolute right-0 top-full mt-2 w-[90vw] max-w-sm md:w-96 bg-gray-900 border border-purple-500/20 rounded-2xl shadow-2xl overflow-hidden animate-scale-in z-50">
           {/* Header */}
           <div className="p-4 border-b border-purple-500/20 flex items-center justify-between bg-gray-800/50">
             <div>
