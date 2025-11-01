@@ -149,6 +149,13 @@ export const ChatSystem: React.FC<ChatSystemProps> = ({ currentUser, videos, onN
     setMessages(updatedMessages);
     localStorage.setItem('chat_messages', JSON.stringify(updatedMessages));
 
+    // INSTANT UPDATE: Trigger storage event immediately for other components
+    window.dispatchEvent(new StorageEvent('storage', {
+      key: 'chat_messages',
+      newValue: JSON.stringify(updatedMessages),
+      url: window.location.href
+    }));
+
     // Immediately sync to cloud
     import('../lib/cloudSync').then(({ pushToCloud }) => {
       pushToCloud().catch(console.error);
