@@ -59,7 +59,7 @@ export const FloatingChat: React.FC<FloatingChatProps> = ({ currentUser, onNewMe
     loadMessages();
     loadVideos();
     
-    // Real-time message polling - check every 1 second for instant delivery
+    // Real-time message polling - check every 500ms for INSTANT delivery
     const messagePolling = setInterval(() => {
       const savedMessages = localStorage.getItem('chat_messages');
       if (savedMessages) {
@@ -68,12 +68,13 @@ export const FloatingChat: React.FC<FloatingChatProps> = ({ currentUser, onNewMe
           setMessages(parsedMessages);
         }
       }
-    }, 1000); // Check every 1 second
+    }, 500); // Check every 500ms for instant updates
     
     // Listen for storage changes from other tabs/devices
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === 'chat_messages' && e.newValue) {
-        setMessages(JSON.parse(e.newValue));
+        const newMessages = JSON.parse(e.newValue);
+        setMessages(newMessages);
       }
     };
     
@@ -291,18 +292,12 @@ export const FloatingChat: React.FC<FloatingChatProps> = ({ currentUser, onNewMe
 
   const handleClearApproval = (approve: boolean) => {
     if (approve) {
-      // Clear all messages
-      setMessages([]);
-      localStorage.setItem('chat_messages', JSON.stringify([]));
+      // Clear all messages IMMEDIATELY
+      const emptyMessages: ChatMessage[] = [];
+      setMessages(emptyMessages);
+      localStorage.setItem('chat_messages', JSON.stringify(emptyMessages));
       localStorage.removeItem('clear_chat_pending');
       setClearApprovalPending(false);
-      
-      // INSTANT UPDATE: Trigger storage event
-      window.dispatchEvent(new StorageEvent('storage', {
-        key: 'chat_messages',
-        newValue: JSON.stringify([]),
-        url: window.location.href
-      }));
       
       // Clear all voice notes
       Object.keys(localStorage).forEach(key => {
@@ -311,13 +306,25 @@ export const FloatingChat: React.FC<FloatingChatProps> = ({ currentUser, onNewMe
         }
       });
       
-      // Sync to cloud
+      // INSTANT UPDATE: Trigger storage event IMMEDIATELY
+      window.dispatchEvent(new StorageEvent('storage', {
+        key: 'chat_messages',
+        newValue: JSON.stringify(emptyMessages),
+        url: window.location.href
+      }));
+      
+      // Sync to cloud IMMEDIATELY
       import('../lib/cloudSync').then(({ pushToCloud }) => {
-        pushToCloud().catch(console.error);
+        pushToCloud().then(() => {
+          console.log('✅ Chat cleared and synced to cloud');
+        }).catch(console.error);
       });
       
       alert('Chat cleared successfully!');
     } else {
+      // Remove the approval request message first
+      const filteredMessages = messages.filter(m => !m.isApprovalRequest);
+      
       // Send denial message
       const denialMessage: ChatMessage = {
         id: Date.now().toString(),
@@ -328,7 +335,7 @@ export const FloatingChat: React.FC<FloatingChatProps> = ({ currentUser, onNewMe
         timestamp: new Date().toISOString()
       };
       
-      const updatedMessages = [...messages, denialMessage];
+      const updatedMessages = [...filteredMessages, denialMessage];
       setMessages(updatedMessages);
       localStorage.setItem('chat_messages', JSON.stringify(updatedMessages));
       localStorage.removeItem('clear_chat_pending');
@@ -376,7 +383,7 @@ export const FloatingChat: React.FC<FloatingChatProps> = ({ currentUser, onNewMe
     
     checkTyping();
     const typingInterval = setInterval(checkTyping, 500); // Check every 500ms
-    const clearInterval = setInterval(checkClearPending, 1000); // Check clear pending every 1s
+    const clearCheckInterval = setInterval(checkClearPending, 1000); // Check clear pending every 1s
     
     const handleStorageUpdate = () => {
       checkTyping();
@@ -387,7 +394,7 @@ export const FloatingChat: React.FC<FloatingChatProps> = ({ currentUser, onNewMe
     
     return () => {
       clearInterval(typingInterval);
-      clearInterval(clearInterval);
+      clearInterval(clearCheckInterval);
       window.removeEventListener('storage', handleStorageUpdate);
     };
   }, [messages, currentUser]);

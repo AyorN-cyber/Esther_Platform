@@ -43,10 +43,10 @@ export const initCloudSync = async () => {
     // Push local data to cloud initially
     await pushToCloud();
     
-    // Poll for changes every 3 seconds for immediate updates
+    // Poll for changes every 2 seconds for INSTANT updates
     setInterval(async () => {
       await pullFromCloud();
-    }, 3000); // Check every 3 seconds
+    }, 2000); // Check every 2 seconds for instant cross-device sync
     
     console.log('✅ Cloud sync initialized successfully');
   } catch (error) {
@@ -100,10 +100,28 @@ export const pullFromCloud = async () => {
     }
 
     if (data) {
-      // Merge chat messages instead of replacing (to prevent data loss)
-      if (data.chat_messages) {
-        const cloudMessages = JSON.parse(data.chat_messages);
-        const localMessages = JSON.parse(localStorage.getItem('chat_messages') || '[]');
+      const localMessagesStr = localStorage.getItem('chat_messages') || '[]';
+      const cloudMessagesStr = data.chat_messages || '[]';
+      
+      // Only update if cloud data is different from local
+      if (cloudMessagesStr !== localMessagesStr) {
+        const cloudMessages = JSON.parse(cloudMessagesStr);
+        const localMessages = JSON.parse(localMessagesStr);
+        
+        // If cloud has empty array and local has messages, keep local (user just sent a message)
+        // If cloud has messages and local is empty, use cloud (chat was cleared or initial load)
+        // Otherwise, merge by ID
+        
+        if (cloudMessages.length === 0 && localMessages.length > 0) {
+          // Local has new messages, push to cloud instead
+          await pushToCloud();
+          return;
+        }
+        
+        if (cloudMessages.length === 0 && localMessages.length === 0) {
+          // Both empty, nothing to do
+          return;
+        }
         
         // Merge messages by ID, keeping the most recent version
         const messageMap = new Map();
@@ -118,6 +136,9 @@ export const pullFromCloud = async () => {
         );
         
         localStorage.setItem('chat_messages', JSON.stringify(mergedMessages));
+        
+        // Trigger storage event to update UI
+        window.dispatchEvent(new Event('storage'));
       }
       
       // Update other data normally
@@ -126,9 +147,6 @@ export const pullFromCloud = async () => {
       if (data.hero_description) localStorage.setItem('hero_description', data.hero_description);
       
       console.log('☁️ Data pulled from cloud and merged');
-      
-      // Trigger storage event to update UI
-      window.dispatchEvent(new Event('storage'));
     }
   } catch (error) {
     console.error('Failed to pull from cloud:', error);

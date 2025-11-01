@@ -84,7 +84,7 @@ export const ChatSystem: React.FC<ChatSystemProps> = ({ currentUser, videos, onN
   useEffect(() => {
     loadMessages();
     
-    // Real-time message polling - check every 1 second for instant delivery
+    // Real-time message polling - check every 500ms for INSTANT delivery
     const messagePolling = setInterval(() => {
       const savedMessages = localStorage.getItem('chat_messages');
       if (savedMessages) {
@@ -93,12 +93,13 @@ export const ChatSystem: React.FC<ChatSystemProps> = ({ currentUser, videos, onN
           setMessages(parsedMessages);
         }
       }
-    }, 1000); // Check every 1 second
+    }, 500); // Check every 500ms for instant updates
     
     // Listen for storage changes from other tabs/devices
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === 'chat_messages' && e.newValue) {
-        setMessages(JSON.parse(e.newValue));
+        const newMessages = JSON.parse(e.newValue);
+        setMessages(newMessages);
       }
     };
     

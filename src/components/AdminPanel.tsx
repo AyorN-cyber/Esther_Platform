@@ -117,9 +117,9 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
       
       // Send login notification
       if (user.role === 'artist') {
-        addNotification('login', 'Artist Login', 'Esther Reign has logged into the admin panel');
+        addNotification('system', 'Artist Login', 'Esther Reign has logged into the admin panel');
       } else if (user.role === 'editor') {
-        addNotification('login', 'Editor Login', 'Video Editor has logged into the admin panel');
+        addNotification('system', 'Editor Login', 'Video Editor has logged into the admin panel');
         sendNotification('+234 818 019 4269', 'Video Editor has logged into the system');
       }
     } else {
@@ -715,7 +715,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
                       thumbnail_url: '',
                       status: 'pending',
                       created_at: new Date().toISOString(),
-                      updated_at: new Date().toISOString()
+                      updated_at: new Date().toISOString(),
+                      order_index: videos.length
                     });
                   }}
                   className="px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl font-semibold hover:shadow-lg hover:shadow-purple-500/50 transition-all flex items-center gap-2"
