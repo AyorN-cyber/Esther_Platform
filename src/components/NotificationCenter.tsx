@@ -95,14 +95,14 @@ export const NotificationCenter: React.FC = () => {
 
       {/* Notification Panel */}
       {showPanel && (
-        <div className="absolute right-0 top-full mt-2 w-[90vw] max-w-sm md:w-96 bg-gray-900 border border-purple-500/20 rounded-2xl shadow-2xl overflow-hidden animate-scale-in z-50">
+        <div className="fixed md:absolute right-2 md:right-0 top-16 md:top-full mt-2 w-[calc(100vw-1rem)] max-w-sm md:w-96 bg-gray-900 border border-purple-500/20 rounded-2xl shadow-2xl overflow-hidden animate-scale-in z-50 max-h-[70vh] md:max-h-[80vh] flex flex-col">
           {/* Header */}
-          <div className="p-4 border-b border-purple-500/20 flex items-center justify-between bg-gray-800/50">
+          <div className="p-3 md:p-4 border-b border-purple-500/20 flex items-center justify-between bg-gray-800/50 flex-shrink-0">
             <div>
-              <h3 className="font-bold text-white">Notifications</h3>
+              <h3 className="font-bold text-white text-sm md:text-base">Notifications</h3>
               <p className="text-xs text-gray-400">{unreadCount} unread</p>
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-2 text-xs">
               {notifications.length > 0 && (
                 <>
                   <button
@@ -129,7 +129,7 @@ export const NotificationCenter: React.FC = () => {
           </div>
 
           {/* Notifications List */}
-          <div className="max-h-96 overflow-y-auto">
+          <div className="flex-1 overflow-y-auto scrollbar-hide">
             {notifications.length === 0 ? (
               <div className="p-8 text-center text-gray-400">
                 <Bell size={48} className="mx-auto mb-4 opacity-20" />

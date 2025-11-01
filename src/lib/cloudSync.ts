@@ -95,13 +95,32 @@ export const pullFromCloud = async () => {
     }
 
     if (data) {
-      // Update local storage with cloud data
+      // Merge chat messages instead of replacing (to prevent data loss)
+      if (data.chat_messages) {
+        const cloudMessages = JSON.parse(data.chat_messages);
+        const localMessages = JSON.parse(localStorage.getItem('chat_messages') || '[]');
+        
+        // Merge messages by ID, keeping the most recent version
+        const messageMap = new Map();
+        [...localMessages, ...cloudMessages].forEach(msg => {
+          if (!messageMap.has(msg.id) || new Date(msg.timestamp) > new Date(messageMap.get(msg.id).timestamp)) {
+            messageMap.set(msg.id, msg);
+          }
+        });
+        
+        const mergedMessages = Array.from(messageMap.values()).sort((a, b) => 
+          new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
+        );
+        
+        localStorage.setItem('chat_messages', JSON.stringify(mergedMessages));
+      }
+      
+      // Update other data normally
       if (data.site_settings) localStorage.setItem('site_settings', data.site_settings);
       if (data.videos) localStorage.setItem('videos', data.videos);
       if (data.hero_description) localStorage.setItem('hero_description', data.hero_description);
-      if (data.chat_messages) localStorage.setItem('chat_messages', data.chat_messages);
       
-      console.log('☁️ Data pulled from cloud');
+      console.log('☁️ Data pulled from cloud and merged');
       
       // Trigger storage event to update UI
       window.dispatchEvent(new Event('storage'));

@@ -702,11 +702,11 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
                   key={video.id}
                   className="bg-gray-900/50 backdrop-blur-sm border border-purple-500/20 rounded-2xl p-6 hover:border-purple-500/50 transition-all"
                 >
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-3">
-                        <h3 className="text-lg font-bold text-white">{video.title}</h3>
-                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                  <div className="flex flex-col md:flex-row items-start justify-between gap-4">
+                    <div className="flex-1 w-full">
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-3">
+                        <h3 className="text-base md:text-lg font-bold text-white break-words">{video.title}</h3>
+                        <span className={`px-2 md:px-3 py-1 rounded-full text-xs font-medium self-start ${
                           video.status === 'completed' 
                             ? 'bg-green-600/20 text-green-400' 
                             : 'bg-yellow-600/20 text-yellow-400'
@@ -715,7 +715,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
                         </span>
                       </div>
                       
-                      <div className="flex gap-6 text-sm text-gray-400">
+                      <div className="flex flex-col sm:flex-row gap-2 sm:gap-6 text-xs md:text-sm text-gray-400">
                         {video.template_type && (
                           <span>📝 {video.template_type}</span>
                         )}
