@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { Menu, X, Instagram, Youtube, Mail, Phone, Play, ChevronRight, Sparkles } from 'lucide-react';
 import { FaTiktok } from 'react-icons/fa';
 import { Loader } from './components/Loader';
 import { WebGLBackground } from './components/WebGLBackground';
-import AdminPanel from './components/AdminPanel';
 import type { Video } from './types';
+
+// Lazy load AdminPanel for better performance
+const AdminPanel = lazy(() => import('./components/AdminPanel'));
 
 const EstherPlatform = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -19,7 +21,7 @@ const EstherPlatform = () => {
     trackVisit();
     loadVideos();
     loadSettings();
-    setTimeout(() => setLoading(false), 800);
+    setTimeout(() => setLoading(false), 400);
 
     // Listen for settings changes
     const handleStorageChange = () => {
@@ -138,15 +140,19 @@ const EstherPlatform = () => {
   }, []);
 
   if (showAdmin) {
-    return <AdminPanel onClose={() => {
-      setShowAdmin(false);
-      window.location.hash = '';
-      // Reload all data when returning from admin
-      loadVideos();
-      loadSettings();
-      // Force re-render
-      window.location.reload();
-    }} />;
+    return (
+      <Suspense fallback={<Loader />}>
+        <AdminPanel onClose={() => {
+          setShowAdmin(false);
+          window.location.hash = '';
+          // Reload all data when returning from admin
+          loadVideos();
+          loadSettings();
+          // Force re-render
+          window.location.reload();
+        }} />
+      </Suspense>
+    );
   }
 
   if (loading) {
@@ -155,8 +161,10 @@ const EstherPlatform = () => {
 
   return (
     <div className="bg-gradient-to-br from-gray-950 via-purple-950/20 to-gray-950 text-white">
-      {/* WebGL Animated Background */}
-      <WebGLBackground />
+      {/* WebGL Animated Background - Only on desktop for performance */}
+      <div className="hidden md:block">
+        <WebGLBackground />
+      </div>
 
       {/* Floating particles background overlay */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
@@ -175,8 +183,9 @@ const EstherPlatform = () => {
                 src="https://res.cloudinary.com/dtynqpjye/image/upload/v1761948158/ESTHER-REIGN-LOGO.-Photoroom_nj506d.png"
                 alt="Esther Reign Logo"
                 className="h-12 md:h-16 lg:h-20 w-auto"
+                loading="eager"
               />
-              <span className="text-xs md:text-base lg:text-lg font-bold bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400 bg-clip-text text-transparent hidden sm:inline animate-gradient bg-[length:200%_auto] whitespace-nowrap">
+              <span className="text-[10px] sm:text-xs md:text-base lg:text-lg font-bold bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400 bg-clip-text text-transparent animate-gradient bg-[length:200%_auto] whitespace-nowrap">
                 @officialEstherReign
               </span>
             </div>
@@ -241,7 +250,8 @@ const EstherPlatform = () => {
       <section id="home" className="min-h-screen flex items-center relative overflow-hidden pt-16 md:pt-20">
         <div className="container mx-auto px-4 md:px-6 lg:px-12 relative z-10">
           <div className="grid lg:grid-cols-2 gap-8 md:gap-12 items-center">
-            <div className="space-y-6 md:space-y-8 animate-fade-in-left">
+            {/* Text Content - Order 2 on mobile, 1 on desktop */}
+            <div className="space-y-6 md:space-y-8 animate-fade-in-left order-2 lg:order-1">
               <div className="inline-flex items-center gap-2 px-4 py-2 bg-purple-500/10 border border-purple-500/20 rounded-full backdrop-blur-sm">
                 <Sparkles size={16} className="text-purple-400" />
                 <span className="text-sm text-purple-300">Gospel Singer • Worship Leader</span>
@@ -294,13 +304,15 @@ const EstherPlatform = () => {
               </div>
             </div>
 
-            <div className="relative animate-fade-in-right">
+            {/* Image - Order 1 on mobile, 2 on desktop */}
+            <div className="relative animate-fade-in-right order-1 lg:order-2">
               <div className="absolute inset-0 bg-gradient-to-br from-purple-600 to-pink-600 rounded-3xl blur-3xl opacity-30 animate-pulse"></div>
               <div className="relative rounded-3xl overflow-hidden border border-white/10 backdrop-blur-sm">
                 <img
                   src={settings?.hero_image || "/Estherreign.jpg"}
                   alt="Esther Reign"
                   className="w-full h-auto"
+                  loading="eager"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-gray-950 via-transparent to-transparent"></div>
               </div>
@@ -339,6 +351,7 @@ const EstherPlatform = () => {
                     src={settings?.about_image || "/IMG-20250915-WA0023.jpg"}
                     alt="About Esther"
                     className="w-full h-auto"
+                    loading="lazy"
                   />
                 </div>
               </div>
@@ -436,6 +449,7 @@ const EstherPlatform = () => {
                       src={video.thumbnail_url || getVideoThumbnail(video.video_link || '')}
                       alt={video.title}
                       className="absolute inset-0 w-full h-full object-cover"
+                      loading="lazy"
                       onError={(e) => {
                         const img = e.target as HTMLImageElement;
                         // If thumbnail fails, try to show a placeholder

@@ -462,17 +462,17 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
       </div>
 
       {/* Mobile Top Bar */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 bg-gray-900/95 backdrop-blur-xl border-b border-purple-500/20 p-4 flex justify-between items-center z-50">
-        <h1 className="text-lg font-black bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+      <div className="lg:hidden fixed top-0 left-0 right-0 bg-gray-900/95 backdrop-blur-xl border-b border-purple-500/20 p-3 flex justify-between items-center z-50">
+        <h1 className="text-base font-black bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent flex-shrink-0">
           Admin Panel
         </h1>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1 flex-shrink-0">
           <NotificationCenter />
           <button
             onClick={onClose}
             className="p-2 bg-gray-800/50 hover:bg-gray-800 rounded-lg transition-all text-white"
           >
-            <Eye size={20} />
+            <Eye size={18} />
           </button>
         </div>
       </div>

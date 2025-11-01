@@ -415,7 +415,7 @@ export const FloatingChat: React.FC<FloatingChatProps> = ({ currentUser, onNewMe
       {/* Floating Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={`fixed bottom-4 right-4 md:bottom-6 md:right-6 w-14 h-14 md:w-16 md:h-16 rounded-full shadow-2xl flex items-center justify-center transition-all duration-300 z-[100] ${
+        className={`fixed bottom-20 right-4 md:bottom-6 md:right-6 w-14 h-14 md:w-16 md:h-16 rounded-full shadow-2xl flex items-center justify-center transition-all duration-300 z-[100] ${
           isOpen ? 'bg-gray-200 scale-0' : 'bg-gradient-to-br from-[#008069] to-[#00a884] hover:scale-110'
         }`}
       >
