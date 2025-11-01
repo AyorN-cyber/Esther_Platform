@@ -24,7 +24,7 @@ interface FloatingChatProps {
   onNewMessage?: () => void;
 }
 
-const EMOJI_LIST = ['😊', '😂', '🥰', '😍', '🤗', '😘', '😎', '🤩', '👍', '👏', '🙌', '❤️', '💖', '🎵', '🎶', '✨', '⭐', '🔥', '💯', '🎉'];
+const EMOJI_LIST = ['😊', '😂', '🥰', '😍', '🤗', '😘', '😎', '🤩', '🥳', '😋', '😜', '🤪', '👍', '👏', '🙌', '🤝', '💪', '🙏', '❤️', '💖', '💕', '💗', '💙', '💚', '💛', '🧡', '💜', '🎵', '🎶', '🎤', '🎧', '✨', '⭐', '🌟', '💫', '🔥', '💯', '🎉', '🎊', '🎈', '🎁', '🏆', '🌸', '🌺', '🌻', '🌹', '🍕', '🍔', '🍰', '🎂'];
 
 export const FloatingChat: React.FC<FloatingChatProps> = ({ currentUser, onNewMessage }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -134,9 +134,9 @@ export const FloatingChat: React.FC<FloatingChatProps> = ({ currentUser, onNewMe
     setSelectedVideo('');
     setShowVideoSelector(false);
     
-    // Simulate typing indicator
-    setIsTyping(true);
-    setTimeout(() => setIsTyping(false), 2000);
+    // Clear typing indicator when message is sent
+    localStorage.removeItem(`typing_${currentUser.id}`);
+    window.dispatchEvent(new Event('storage'));
   };
 
   const playNotificationSound = () => {
@@ -281,20 +281,50 @@ export const FloatingChat: React.FC<FloatingChatProps> = ({ currentUser, onNewMe
     if (pending && pending !== currentUser.id) {
       setClearApprovalPending(true);
     }
-  }, [messages]);
+    
+    // Listen for typing indicator from other user
+    const checkTyping = () => {
+      const otherUserId = currentUser.role === 'artist' ? 'manager' : 'artist';
+      const typingTimestamp = localStorage.getItem(`typing_${otherUserId}`);
+      
+      if (typingTimestamp) {
+        const timeSinceTyping = Date.now() - parseInt(typingTimestamp);
+        setIsTyping(timeSinceTyping < 2000); // Show typing if less than 2 seconds ago
+      } else {
+        setIsTyping(false);
+      }
+    };
+    
+    checkTyping();
+    const interval = setInterval(checkTyping, 500); // Check every 500ms
+    
+    window.addEventListener('storage', checkTyping);
+    
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('storage', checkTyping);
+    };
+  }, [messages, currentUser]);
 
   const handleTyping = (value: string) => {
     setNewMessage(value);
+    
+    // Set typing indicator for other user to see
+    if (value.length > 0) {
+      localStorage.setItem(`typing_${currentUser.id}`, Date.now().toString());
+      window.dispatchEvent(new Event('storage'));
+    }
     
     // Clear existing timeout
     if (typingTimeoutRef.current) {
       clearTimeout(typingTimeoutRef.current);
     }
     
-    // Set new timeout
+    // Set new timeout to clear typing indicator
     typingTimeoutRef.current = setTimeout(() => {
-      // Send typing stopped signal
-    }, 1000);
+      localStorage.removeItem(`typing_${currentUser.id}`);
+      window.dispatchEvent(new Event('storage'));
+    }, 1500);
   };
 
   const handleVoiceNote = async () => {

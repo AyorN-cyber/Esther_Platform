@@ -114,6 +114,14 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
       setIsLoggedIn(true);
       // Save session
       localStorage.setItem('admin_session', JSON.stringify({ user, timestamp: Date.now() }));
+      
+      // Send login notification
+      if (user.role === 'artist') {
+        addNotification('login', 'Artist Login', 'Esther Reign has logged into the admin panel');
+      } else if (user.role === 'editor') {
+        addNotification('login', 'Editor Login', 'Video Editor has logged into the admin panel');
+        sendNotification('+234 818 019 4269', 'Video Editor has logged into the system');
+      }
     } else {
       alert('Invalid credentials');
     }

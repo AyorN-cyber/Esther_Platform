@@ -56,17 +56,33 @@ export const VideoChart: React.FC<{ videos: any[] }> = ({ videos }) => {
   const maxValue = Math.max(...updates.map(u => u.total), 1);
   const chartHeight = 200;
 
-  // Calculate points for the lines
-  const getPoints = (dataKey: 'completed' | 'pending') => {
-    return updates.map((update, index) => {
-      const x = (index / (updates.length - 1)) * 100;
-      const y = 100 - ((update[dataKey] / maxValue) * 100);
-      return `${x},${y}`;
-    }).join(' ');
+  // Calculate smooth curved path (bezier curves for zigzag effect)
+  const getCurvedPath = (dataKey: 'completed' | 'pending') => {
+    const points = updates.map((update, index) => ({
+      x: (index / (updates.length - 1)) * 100,
+      y: 100 - ((update[dataKey] / maxValue) * 100)
+    }));
+
+    if (points.length === 0) return '';
+    if (points.length === 1) return `M ${points[0].x},${points[0].y}`;
+
+    let path = `M ${points[0].x},${points[0].y}`;
+    
+    for (let i = 0; i < points.length - 1; i++) {
+      const current = points[i];
+      const next = points[i + 1];
+      const controlX = (current.x + next.x) / 2;
+      
+      // Create smooth curve with control points
+      path += ` Q ${controlX},${current.y} ${controlX},${(current.y + next.y) / 2}`;
+      path += ` Q ${controlX},${next.y} ${next.x},${next.y}`;
+    }
+    
+    return path;
   };
 
-  const completedPoints = getPoints('completed');
-  const pendingPoints = getPoints('pending');
+  const completedPath = getCurvedPath('completed');
+  const pendingPath = getCurvedPath('pending');
 
   return (
     <div className="bg-gray-900/50 backdrop-blur-sm border border-purple-500/20 rounded-2xl p-6">
@@ -114,19 +130,9 @@ export const VideoChart: React.FC<{ videos: any[] }> = ({ videos }) => {
             />
           ))}
 
-          {/* Completed area */}
-          <polygon
-            points={`0,100 ${completedPoints} 100,100`}
-            fill="url(#completedGradient)"
-            style={{
-              transition: 'all 1s ease-out',
-              opacity: animationProgress / 100
-            }}
-          />
-
-          {/* Completed line */}
-          <polyline
-            points={completedPoints}
+          {/* Completed line - Curved/Zigzag */}
+          <path
+            d={completedPath}
             fill="none"
             stroke="rgb(34, 197, 94)"
             strokeWidth="3"
@@ -139,19 +145,9 @@ export const VideoChart: React.FC<{ videos: any[] }> = ({ videos }) => {
             }}
           />
 
-          {/* Pending area */}
-          <polygon
-            points={`0,100 ${pendingPoints} 100,100`}
-            fill="url(#pendingGradient)"
-            style={{
-              transition: 'all 1s ease-out',
-              opacity: animationProgress / 100
-            }}
-          />
-
-          {/* Pending line */}
-          <polyline
-            points={pendingPoints}
+          {/* Pending line - Curved/Zigzag */}
+          <path
+            d={pendingPath}
             fill="none"
             stroke="rgb(234, 179, 8)"
             strokeWidth="3"
