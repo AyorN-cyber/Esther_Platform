@@ -280,8 +280,8 @@ const EstherPlatform = () => {
         <div className="container mx-auto px-4 md:px-6 lg:px-12 relative z-10">
           <div className="grid lg:grid-cols-2 gap-8 md:gap-12 items-center">
             {/* Text Content - Order 2 on mobile, 1 on desktop */}
-            <div className="space-y-6 md:space-y-8 animate-fade-in-left order-2 lg:order-1">
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-purple-500/10 border border-purple-500/20 rounded-full backdrop-blur-sm">
+            <div className="space-y-6 md:space-y-8 animate-fade-in-left order-2 lg:order-1 text-center lg:text-left">
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-purple-500/10 border border-purple-500/20 rounded-full backdrop-blur-sm mx-auto lg:mx-0">
                 <Sparkles size={16} className="text-purple-400" />
                 <span className="text-sm text-purple-300">Gospel Singer • Worship Leader</span>
               </div>
@@ -300,7 +300,7 @@ const EstherPlatform = () => {
                 {settings?.hero_description || localStorage.getItem('hero_description') || 'Lifting voices in worship through powerful gospel music. Experience the presence of God through every note.'}
               </p>
 
-              <div className="flex flex-wrap gap-4">
+              <div className="flex flex-wrap gap-4 justify-center lg:justify-start">
                 <button
                   onClick={() => scrollToSection('videos')}
                   className="group px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full font-semibold transition-all hover:shadow-2xl hover:shadow-purple-500/50 hover:scale-105 flex items-center gap-2"
@@ -317,7 +317,7 @@ const EstherPlatform = () => {
               </div>
 
               {/* Social Links */}
-              <div className="flex gap-4 pt-4">
+              <div className="flex gap-4 pt-6 justify-center lg:justify-start">
                 <a href="https://instagram.com/estherreign" target="_blank" rel="noopener noreferrer"
                   className="w-12 h-12 bg-white/5 backdrop-blur-sm border border-white/10 rounded-full flex items-center justify-center hover:bg-purple-600 hover:border-purple-600 transition-all hover:scale-110">
                   <Instagram size={20} />
