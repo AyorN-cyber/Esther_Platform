@@ -1,72 +1,65 @@
 export interface Video {
-  id: number;
+  id: string;
   title: string;
-  status: string;
-  template: string;
-  notes: string;
-  drive_link: string;
-  thumbnail_url: string;
-  added_by: string;
-  comments?: Comment[];
-  public_comments?: PublicComment[];
+  status: 'pending' | 'completed';
+  template_type?: string;
+  video_link?: string;
+  thumbnail_url?: string;
+  created_at: string;
+  updated_at: string;
+  order_index: number;
 }
 
-export interface Comment {
+export interface User {
   id: string;
-  video_id?: number;
-  author: string;
-  role: string;
-  text: string;
-  created_at: string;
-  parent_comment_id?: string;
-  replies?: CommentReply[];
+  email: string;
+  role: 'artist' | 'editor';
+  phone: string;
+  name: string;
 }
 
-export interface CommentReply {
-  id: string;
-  comment_id: string;
-  author: string;
-  role: string;
-  text: string;
-  created_at: string;
-}
-
-export interface PublicComment {
-  id: string;
-  video_id: number;
-  author_name: string;
-  author_email: string;
-  text: string;
-  created_at: string;
+export interface Analytics {
+  total_visitors: number;
+  page_visits: Record<string, number>;
+  artist_logins: number;
+  last_updated: string;
 }
 
 export interface Notification {
   id: string;
-  user_role: string;
-  title: string;
+  recipient_phone: string;
   message: string;
-  type: string;
-  reference_id: number;
-  is_read: boolean;
-  created_at: string;
-}
-
-export interface User {
-  username: string;
-  role: string;
-  name: string;
+  sent_at: string;
+  type: 'video_update' | 'artist_login';
 }
 
 export interface SiteSettings {
-  id?: string;
-  profile_image: string;
+  hero_image: string;
+  hero_description?: string;
   about_image: string;
   about_text: string;
-  social_tiktok: string;
-  social_facebook: string;
-  social_youtube: string;
-  social_twitter: string;
-  social_instagram: string;
-  social_email: string;
-  social_other: Array<{ name: string; url: string; icon: string }>;
+  phone: string;
+  email: string;
+  location: string;
+  social_links: {
+    instagram: string;
+    youtube: string;
+    tiktok: string;
+    facebook: string;
+    twitter: string;
+  };
+}
+
+export interface ChatMessage {
+  id: string;
+  sender_id: string;
+  sender_name: string;
+  sender_role: 'artist' | 'editor';
+  message: string;
+  video_reference?: string;
+  reply_to?: string;
+  timestamp: string;
+  deletedFor?: string[];
+  isApprovalRequest?: boolean;
+  edited?: boolean;
 }

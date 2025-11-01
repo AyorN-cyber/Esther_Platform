@@ -1,1187 +1,609 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { Lock, LogOut, Plus, MessageSquare, Eye, Music, Instagram, Youtube, Mail, CheckCircle, Clock, AlertCircle, EyeOff, Save, Upload, Facebook, Twitter, Globe, Bell, Smile, Send, Reply, X } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Menu, X, Instagram, Youtube, Mail, Phone, Play, ChevronRight, Sparkles } from 'lucide-react';
 import { FaTiktok } from 'react-icons/fa';
-import EmojiPicker from 'emoji-picker-react';
-import { ImageUpload } from './components/ImageUpload';
-import { createNotification, getUnreadNotifications, markAllNotificationsAsRead } from './services/notifications';
-import { supabase, extractGoogleDriveThumbnail } from './lib/supabase';
-import type { Video, Comment, User, SiteSettings, PublicComment, CommentReply } from './types';
+import { Loader } from './components/Loader';
+import { WebGLBackground } from './components/WebGLBackground';
+import AdminPanel from './components/AdminPanel';
+import type { Video } from './types';
 
 const EstherPlatform = () => {
-  const [currentView, setCurrentView] = useState('public');
-  const [user, setUser] = useState<User | null>(null);
-  const [videos, setVideos] = useState<Video[]>([]);
-  const [settings, setSettings] = useState<SiteSettings | null>(null);
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState('home');
   const [loading, setLoading] = useState(true);
-  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
-  const [notifications, setNotifications] = useState<any[]>([]);
-  const [showNotifications, setShowNotifications] = useState(false);
+  const [showAdmin, setShowAdmin] = useState(false);
+  const [videos, setVideos] = useState<Video[]>([]);
+  const [settings, setSettings] = useState<any>(null);
+  const [playingVideo, setPlayingVideo] = useState<Video | null>(null);
 
   useEffect(() => {
-    loadData();
+    trackVisit();
+    loadVideos();
+    loadSettings();
+    setTimeout(() => setLoading(false), 800);
+
+    // Listen for settings changes
+    const handleStorageChange = () => {
+      loadSettings();
+      loadVideos();
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
 
+  const loadSettings = () => {
+    const saved = localStorage.getItem('site_settings');
+    if (saved) {
+      setSettings(JSON.parse(saved));
+    }
+  };
+
+  const trackVisit = () => {
+    const visits = parseInt(localStorage.getItem('total_visits') || '0');
+    localStorage.setItem('total_visits', (visits + 1).toString());
+  };
+
+  const loadVideos = () => {
+    const savedVideos = localStorage.getItem('videos');
+    if (savedVideos) {
+      const allVideos: Video[] = JSON.parse(savedVideos);
+      setVideos(allVideos.filter(v => v.status === 'completed'));
+    }
+  };
+
+  const getVideoThumbnail = (url: string): string => {
+    if (!url) return '';
+    
+    // Check if it's a Cloudinary video
+    if (url.includes('cloudinary.com')) {
+      // Method 1: Use Cloudinary transformation to get video thumbnail
+      // Add transformation parameters to get first frame as JPG
+      if (url.includes('/upload/')) {
+        // Insert transformation after /upload/
+        const thumbnailUrl = url.replace('/upload/', '/upload/so_0,w_640,h_360,c_fill,f_jpg/');
+        return thumbnailUrl;
+      }
+      
+      // Method 2: If video path exists, convert to image
+      if (url.includes('/video/')) {
+        const thumbnailUrl = url
+          .replace('/video/', '/image/')
+          .replace(/\.(mp4|mov|avi|webm|mkv)$/i, '.jpg');
+        return thumbnailUrl;
+      }
+      
+      // Method 3: Just add transformation parameters
+      return url.replace('/upload/', '/upload/so_0,f_jpg/');
+    }
+    
+    // Extract YouTube video ID from various URL formats
+    let videoId = '';
+    
+    // Standard watch URL
+    const watchMatch = url.match(/[?&]v=([^&]+)/);
+    if (watchMatch) {
+      videoId = watchMatch[1];
+    }
+    
+    // Short URL (youtu.be)
+    const shortMatch = url.match(/youtu\.be\/([^?]+)/);
+    if (shortMatch) {
+      videoId = shortMatch[1];
+    }
+    
+    // Embed URL
+    const embedMatch = url.match(/embed\/([^?]+)/);
+    if (embedMatch) {
+      videoId = embedMatch[1];
+    }
+    
+    // Return high quality thumbnail if video ID found
+    if (videoId) {
+      return `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+    }
+    
+    return '';
+  };
+
   useEffect(() => {
-    if (user) {
-      loadNotifications();
-      const interval = setInterval(loadNotifications, 30000);
-      return () => clearInterval(interval);
-    }
-  }, [user]);
-
-  const loadNotifications = useCallback(async () => {
-    if (!user) return;
-    const unread = await getUnreadNotifications(user.role);
-    setNotifications(unread);
-  }, [user]);
-
-  const loadData = async () => {
-    try {
-      const [videosResult, settingsResult, commentsResult, publicCommentsResult] = await Promise.all([
-        supabase.from('videos').select('*').order('id', { ascending: true }),
-        supabase.from('site_settings').select('*').limit(1).maybeSingle(),
-        supabase.from('comments').select('*'),
-        supabase.from('public_comments').select('*')
-      ]);
-
-      if (videosResult.data) {
-        const videosWithComments = videosResult.data.map(video => ({
-          ...video,
-          comments: commentsResult.data?.filter((c: any) => c.video_id === video.id) || [],
-          public_comments: publicCommentsResult.data?.filter((c: any) => c.video_id === video.id) || []
-        }));
-        setVideos(videosWithComments);
-      }
-
-      if (settingsResult.data) {
-        setSettings(settingsResult.data);
-      }
-    } catch (error) {
-      console.error('Load error:', error);
-    }
-    setLoading(false);
-  };
-
-  const saveAllChanges = async () => {
-    setIsSaving(true);
-    try {
-      for (const video of videos) {
-        const { comments, public_comments, ...videoData } = video;
-        await supabase
-          .from('videos')
-          .upsert({
-            ...videoData,
-            thumbnail_url: extractGoogleDriveThumbnail(video.drive_link),
-            updated_at: new Date().toISOString()
-          });
-      }
-
-      await createNotification(
-        'artist',
-        'Videos Updated',
-        `Admin has made changes to ${videos.length} video(s).`,
-        'update',
-        0
-      );
-
-      setHasUnsavedChanges(false);
-      await loadData();
-    } catch (error) {
-      console.error('Save error:', error);
-      alert('Error saving changes. Please try again.');
-    }
-    setIsSaving(false);
-  };
-
-  const handleLogin = async (username: string, password: string) => {
-    const users: Record<string, { password: string; role: string; name: string }> = {
-      admin: { password: 'admin2024', role: 'admin', name: 'Video Editor' },
-      esther: { password: 'esther2024', role: 'artist', name: 'Esther Reign' }
-    };
-
-    if (users[username] && users[username].password === password) {
-      const userData = { username, role: users[username].role, name: users[username].name };
-      setUser(userData);
-      setCurrentView('dashboard');
-      return true;
-    }
-    return false;
-  };
-
-  const handleLogout = () => {
-    if (hasUnsavedChanges) {
-      if (!confirm('You have unsaved changes. Are you sure you want to logout?')) {
-        return;
-      }
-    }
-    setUser(null);
-    setHasUnsavedChanges(false);
-    setCurrentView('login');
-  };
-
-  const PublicPage = () => {
-    const completedVideos = videos.filter(v => v.status === 'complete' && v.drive_link);
-    const [publicCommentingId, setPublicCommentingId] = useState<number | null>(null);
-    const [publicCommentData, setPublicCommentData] = useState({ name: '', email: '', text: '' });
-
-    const addPublicComment = async (videoId: number) => {
-      if (!publicCommentData.name.trim() || !publicCommentData.text.trim()) {
-        alert('Please enter your name and comment');
-        return;
-      }
-
-      try {
-        const { error } = await supabase
-          .from('public_comments')
-          .insert([{
-            video_id: videoId,
-            author_name: publicCommentData.name,
-            author_email: publicCommentData.email,
-            text: publicCommentData.text
-          }]);
-
-        if (error) throw error;
-
-        await createNotification(
-          'admin',
-          'New Public Comment',
-          `${publicCommentData.name} commented on a video.`,
-          'comment',
-          videoId
-        );
-
-        setPublicCommentData({ name: '', email: '', text: '' });
-        setPublicCommentingId(null);
-        await loadData();
-      } catch (error) {
-        console.error('Add public comment error:', error);
-        alert('Error adding comment. Please try again.');
-      }
-    };
-
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900">
-        {/* Hero Section with Video Background */}
-        <div className="relative min-h-screen flex items-center justify-center overflow-hidden py-12 px-4">
-          {/* Video Slideshow Background */}
-          <div className="absolute inset-0 z-0">
-            <div className="absolute inset-0 bg-black/60 z-10"></div>
-            <img
-              src="/IMG-20250915-WA0035.jpg"
-              alt="Background"
-              className="w-full h-full object-cover opacity-30"
-            />
-          </div>
-
-          <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 to-pink-900/20 animate-pulse-slow z-10"></div>
-
-          <div className="relative z-20 text-center max-w-4xl mx-auto animate-fade-in">
-            <div className="mb-8 animate-slide-up">
-              <div className="w-48 h-48 md:w-64 md:h-64 mx-auto rounded-full overflow-hidden border-4 border-purple-500 shadow-2xl shadow-purple-500/50 hover:scale-105 transition-transform duration-300">
-                <img
-                  src={settings?.profile_image || '/Estherreign.jpg'}
-                  alt="Esther Reign"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-            </div>
-            <h1 className="text-4xl md:text-6xl lg:text-8xl font-bold text-white mb-4 animate-slide-up delay-100">
-              OfficialEstherReign
-            </h1>
-            <p className="text-xl md:text-2xl lg:text-3xl text-purple-300 mb-8 animate-slide-up delay-200">
-              Gospel Music • Worship Leader • Content Creator
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8 animate-slide-up delay-300">
-              <a href="#videos" className="bg-purple-600 text-white px-8 py-3 rounded-full font-semibold hover:bg-purple-700 hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-purple-500/50">
-                Watch Videos
-              </a>
-              <button
-                onClick={() => setCurrentView('login')}
-                className="bg-gray-800 text-white px-8 py-3 rounded-full font-semibold hover:bg-gray-700 hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2 shadow-lg"
-              >
-                <Lock size={20} />
-                Creator Login
-              </button>
-            </div>
-            <div className="flex gap-6 justify-center animate-slide-up delay-400">
-              {settings?.social_tiktok && (
-                <a href={settings.social_tiktok} target="_blank" rel="noopener noreferrer" className="text-purple-400 hover:text-purple-300 hover:scale-110 transition-all duration-300">
-                  <FaTiktok size={32} />
-                </a>
-              )}
-              {settings?.social_facebook && (
-                <a href={settings.social_facebook} target="_blank" rel="noopener noreferrer" className="text-purple-400 hover:text-purple-300 hover:scale-110 transition-all duration-300">
-                  <Facebook size={32} />
-                </a>
-              )}
-              {settings?.social_instagram && (
-                <a href={settings.social_instagram} target="_blank" rel="noopener noreferrer" className="text-purple-400 hover:text-purple-300 hover:scale-110 transition-all duration-300">
-                  <Instagram size={32} />
-                </a>
-              )}
-              {settings?.social_youtube && (
-                <a href={settings.social_youtube} target="_blank" rel="noopener noreferrer" className="text-purple-400 hover:text-purple-300 hover:scale-110 transition-all duration-300">
-                  <Youtube size={32} />
-                </a>
-              )}
-              {settings?.social_twitter && (
-                <a href={settings.social_twitter} target="_blank" rel="noopener noreferrer" className="text-purple-400 hover:text-purple-300 hover:scale-110 transition-all duration-300">
-                  <Twitter size={32} />
-                </a>
-              )}
-              {settings?.social_email && (
-                <a href={`mailto:${settings.social_email}`} className="text-purple-400 hover:text-purple-300 hover:scale-110 transition-all duration-300">
-                  <Mail size={32} />
-                </a>
-              )}
-              {settings?.social_other && settings.social_other.map((social, idx) => (
-                <a key={idx} href={social.url} target="_blank" rel="noopener noreferrer" className="text-purple-400 hover:text-purple-300 hover:scale-110 transition-all duration-300">
-                  <Globe size={32} />
-                </a>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* About Section */}
-        <div className="bg-gradient-to-br from-gray-800 to-gray-900 py-20 px-4">
-          <div className="max-w-6xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-12 text-center animate-fade-in">About Esther Reign</h2>
-            <div className="grid md:grid-cols-2 gap-8 items-center">
-              <div className="order-2 md:order-1 animate-slide-left">
-                <div className="text-lg md:text-xl text-gray-300 leading-relaxed whitespace-pre-line">
-                  {settings?.about_text || ''}
-                </div>
-              </div>
-              <div className="order-1 md:order-2 animate-slide-right">
-                <img
-                  src={settings?.about_image || '/IMG-20250915-WA0023.jpg'}
-                  alt="Esther Reign performing"
-                  className="w-full rounded-2xl shadow-2xl shadow-purple-500/20 hover:scale-105 transition-transform duration-500"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Ministry Impact Section */}
-        <div className="bg-gradient-to-br from-black to-gray-900 py-20 px-4">
-          <div className="max-w-6xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-12 text-center">Ministry Impact</h2>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              <div className="bg-gray-800/50 border border-purple-500/30 rounded-xl p-6 text-center hover:scale-105 transition-transform">
-                <div className="text-4xl font-bold text-purple-400 mb-2">27+</div>
-                <div className="text-gray-300">Songs Released</div>
-              </div>
-              <div className="bg-gray-800/50 border border-purple-500/30 rounded-xl p-6 text-center hover:scale-105 transition-transform">
-                <div className="text-4xl font-bold text-purple-400 mb-2">10K+</div>
-                <div className="text-gray-300">Lives Touched</div>
-              </div>
-              <div className="bg-gray-800/50 border border-purple-500/30 rounded-xl p-6 text-center hover:scale-105 transition-transform">
-                <div className="text-4xl font-bold text-purple-400 mb-2">100+</div>
-                <div className="text-gray-300">Worship Events</div>
-              </div>
-              <div className="bg-gray-800/50 border border-purple-500/30 rounded-xl p-6 text-center hover:scale-105 transition-transform">
-                <div className="text-4xl font-bold text-purple-400 mb-2">∞</div>
-                <div className="text-gray-300">God's Faithfulness</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Videos Section with Public Comments */}
-        <div id="videos" className="bg-gradient-to-br from-gray-900 to-black py-20 px-4">
-          <div className="max-w-6xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-12 text-center animate-fade-in">Latest Videos</h2>
-            {completedVideos.length === 0 ? (
-              <p className="text-center text-gray-400 text-lg">No videos available yet. Check back soon!</p>
-            ) : (
-              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {completedVideos.slice(0, 6).map((video, idx) => (
-                  <div
-                    key={video.id}
-                    className="bg-gray-800 rounded-xl shadow-lg overflow-hidden hover:shadow-2xl hover:shadow-purple-500/20 hover:scale-105 transition-all duration-300"
-                  >
-                    <div className="aspect-video bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center overflow-hidden">
-                      {video.thumbnail_url || extractGoogleDriveThumbnail(video.drive_link) ? (
-                        <img
-                          src={video.thumbnail_url || extractGoogleDriveThumbnail(video.drive_link)}
-                          alt={video.title}
-                          className="w-full h-full object-cover"
-                          onError={(e) => {
-                            (e.target as HTMLImageElement).style.display = 'none';
-                          }}
-                        />
-                      ) : <Music size={64} className="text-white" />}
-                    </div>
-                    <div className="p-6">
-                      <h3 className="font-bold text-lg text-white mb-2 line-clamp-2">{video.title}</h3>
-                      {video.drive_link && (
-                        <a
-                          href={video.drive_link}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-purple-400 hover:text-purple-300 font-semibold hover:underline transition-all block mb-4"
-                        >
-                          Watch Now →
-                        </a>
-                      )}
-
-                      {/* Public Comments Section */}
-                      <div className="border-t border-gray-700 pt-4 mt-4">
-                        <div className="flex items-center gap-2 mb-3">
-                          <MessageSquare size={16} className="text-gray-400" />
-                          <span className="text-sm font-semibold text-gray-300">
-                            Comments ({(video.public_comments || []).length})
-                          </span>
-                        </div>
-
-                        {/* Show recent comments */}
-                        <div className="max-h-32 overflow-y-auto space-y-2 mb-3 scrollbar-thin">
-                          {(video.public_comments || []).slice(-3).map((comment: PublicComment) => (
-                            <div key={comment.id} className="bg-gray-900 rounded p-2 text-xs">
-                              <span className="font-semibold text-purple-400">{comment.author_name}</span>
-                              <p className="text-gray-300 mt-1">{comment.text}</p>
-                            </div>
-                          ))}
-                        </div>
-
-                        {publicCommentingId === video.id ? (
-                          <div className="space-y-2">
-                            <input
-                              type="text"
-                              placeholder="Your name"
-                              value={publicCommentData.name}
-                              onChange={(e) => setPublicCommentData({...publicCommentData, name: e.target.value})}
-                              className="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded text-sm text-white"
-                            />
-                            <textarea
-                              placeholder="Your comment..."
-                              value={publicCommentData.text}
-                              onChange={(e) => setPublicCommentData({...publicCommentData, text: e.target.value})}
-                              rows={2}
-                              className="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded text-sm text-white resize-none"
-                            />
-                            <div className="flex gap-2">
-                              <button
-                                onClick={() => addPublicComment(video.id)}
-                                className="flex-1 bg-purple-600 text-white px-3 py-2 rounded text-sm hover:bg-purple-700"
-                              >
-                                Post
-                              </button>
-                              <button
-                                onClick={() => {
-                                  setPublicCommentingId(null);
-                                  setPublicCommentData({ name: '', email: '', text: '' });
-                                }}
-                                className="flex-1 bg-gray-700 text-gray-300 px-3 py-2 rounded text-sm hover:bg-gray-600"
-                              >
-                                Cancel
-                              </button>
-                            </div>
-                          </div>
-                        ) : (
-                          <button
-                            onClick={() => setPublicCommentingId(video.id)}
-                            className="text-purple-400 text-sm font-semibold hover:text-purple-300"
-                          >
-                            + Add Comment
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Footer */}
-        <div className="bg-black text-gray-400 py-12 px-4">
-          <div className="max-w-6xl mx-auto text-center">
-            <div className="mb-6">
-              <h3 className="text-2xl font-bold text-white mb-2">Stay Connected</h3>
-              <p className="text-gray-400 mb-4">Follow the journey of worship and faith</p>
-              <div className="flex gap-4 justify-center">
-                {settings?.social_tiktok && (
-                  <a href={settings.social_tiktok} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-purple-400 transition">
-                    <FaTiktok size={24} />
-                  </a>
-                )}
-                {settings?.social_facebook && (
-                  <a href={settings.social_facebook} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-purple-400 transition">
-                    <Facebook size={24} />
-                  </a>
-                )}
-                {settings?.social_instagram && (
-                  <a href={settings.social_instagram} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-purple-400 transition">
-                    <Instagram size={24} />
-                  </a>
-                )}
-                {settings?.social_youtube && (
-                  <a href={settings.social_youtube} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-purple-400 transition">
-                    <Youtube size={24} />
-                  </a>
-                )}
-              </div>
-            </div>
-            <p className="text-sm">&copy; 2025 OfficialEstherReign. All rights reserved.</p>
-            <p className="text-xs text-gray-500 mt-2">Spreading the Gospel through Music and Worship</p>
-          </div>
-        </div>
-      </div>
-    );
-  };
-  const LoginPage = () => {
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
-    const [showPassword, setShowPassword] = useState(false);
-
-    const handleSubmit = async (e: React.FormEvent) => {
-      e.preventDefault();
-      const success = await handleLogin(username, password);
-      if (!success) {
-        setError('Invalid credentials. Please try again.');
-      }
-    };
-
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 flex items-center justify-center p-4 animate-fade-in">
-        <button
-          onClick={() => setCurrentView('public')}
-          className="absolute top-8 left-4 md:left-8 text-purple-400 hover:text-purple-300 transition flex items-center gap-2 hover:scale-105 duration-300"
-        >
-          ← Back to Home
-        </button>
-
-        <div className="bg-gray-800 rounded-2xl shadow-2xl p-6 md:p-8 w-full max-w-md border border-gray-700 animate-slide-up">
-          <div className="text-center mb-8">
-            <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">Creator Login</h2>
-            <p className="text-gray-400">Access your workspace</p>
-          </div>
-
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Username</label>
-              <input
-                type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-white transition-all"
-                placeholder="Enter username"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Password</label>
-              <div className="relative">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-4 py-3 pr-12 bg-gray-900 border border-gray-700 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-white transition-all"
-                  placeholder="Enter password"
-                  required
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-300 transition"
-                >
-                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                </button>
-              </div>
-            </div>
-
-            {error && (
-              <div className="bg-red-900/50 border border-red-700 text-red-300 px-4 py-3 rounded-lg text-sm animate-shake">
-                {error}
-              </div>
-            )}
-
-            <button
-              type="submit"
-              className="w-full bg-purple-600 text-white py-3 rounded-lg font-semibold hover:bg-purple-700 hover:scale-105 active:scale-95 transition-all duration-300 shadow-lg hover:shadow-purple-500/50"
-            >
-              Sign In
-            </button>
-          </form>
-        </div>
-      </div>
-    );
-  };
-
-  const Dashboard = () => {
-    const [newVideo, setNewVideo] = useState({ title: '', notes: '' });
-    const [commentText, setCommentText] = useState('');
-    const [commentingId, setCommentingId] = useState<number | null>(null);
-    const [editingTitleId, setEditingTitleId] = useState<number | null>(null);
-    const [editTitleText, setEditTitleText] = useState('');
-    const [localVideos, setLocalVideos] = useState<Video[]>(videos);
-
-    useEffect(() => {
-      setLocalVideos(videos);
-    }, [videos]);
-
-    const stats = {
-      total: localVideos.length,
-      notStarted: localVideos.filter(v => v.status === 'not-started').length,
-      inProgress: localVideos.filter(v => v.status === 'in-progress').length,
-      underReview: localVideos.filter(v => v.status === 'under-review').length,
-      complete: localVideos.filter(v => v.status === 'complete').length
-    };
-
-    const progress = stats.total > 0 ? ((stats.complete / stats.total) * 100).toFixed(0) : '0';
-
-    const updateVideoLocally = useCallback((id: number, field: string, value: string) => {
-      setLocalVideos(prev => prev.map(v =>
-        v.id === id ? { ...v, [field]: value } : v
-      ));
-      setVideos(prev => prev.map(v =>
-        v.id === id ? { ...v, [field]: value } : v
-      ));
-      setHasUnsavedChanges(true);
-    }, []);
-
-    const addVideo = async () => {
-      if (!newVideo.title.trim()) return;
-
-      try {
-        const { data, error } = await supabase
-          .from('videos')
-          .insert([{
-            title: newVideo.title,
-            status: 'not-started',
-            template: '',
-            notes: newVideo.notes,
-            drive_link: '',
-            thumbnail_url: '',
-            added_by: user!.role
-          }])
-          .select()
-          .single();
-
-        if (error) throw error;
-
-        if (data) {
-          const newVideoWithComments = { ...data, comments: [] };
-          setVideos([...videos, newVideoWithComments]);
-          setLocalVideos([...localVideos, newVideoWithComments]);
+    const handleScroll = () => {
+      const sections = ['home', 'about', 'videos', 'contact'];
+      const current = sections.find(section => {
+        const element = document.getElementById(section);
+        if (element) {
+          const rect = element.getBoundingClientRect();
+          return rect.top <= 100 && rect.bottom >= 100;
         }
-
-        setNewVideo({ title: '', notes: '' });
-        setShowAddModal(false);
-      } catch (error) {
-        console.error('Add video error:', error);
-        alert('Error adding video. Please try again.');
-      }
-    };
-
-    const addComment = async (videoId: number) => {
-      if (!commentText.trim()) return;
-
-      try {
-        const { data, error } = await supabase
-          .from('comments')
-          .insert([{
-            video_id: videoId,
-            author: user!.name,
-            role: user!.role,
-            text: commentText
-          }])
-          .select()
-          .single();
-
-        if (error) throw error;
-
-        const updated = localVideos.map(v => {
-          if (v.id === videoId) {
-            return {
-              ...v,
-              comments: [...(v.comments || []), data]
-            };
-          }
-          return v;
-        });
-
-        setLocalVideos(updated);
-        setVideos(updated);
-        setCommentText('');
-        setCommentingId(null);
-      } catch (error) {
-        console.error('Add comment error:', error);
-        alert('Error adding comment. Please try again.');
-      }
-    };
-
-    const requestReview = async (videoId: number) => {
-      updateVideoLocally(videoId, 'status', 'under-review');
-      setHasUnsavedChanges(true);
-    };
-
-    const getStatusColor = (status: string) => {
-      const colors: Record<string, string> = {
-        'not-started': 'bg-gray-700 text-gray-300',
-        'in-progress': 'bg-yellow-900/50 text-yellow-300',
-        'under-review': 'bg-blue-900/50 text-blue-300',
-        'complete': 'bg-green-900/50 text-green-300'
-      };
-      return colors[status];
-    };
-
-    const getStatusIcon = (status: string) => {
-      const icons: Record<string, React.ComponentType<any>> = {
-        'not-started': AlertCircle,
-        'in-progress': Clock,
-        'under-review': Eye,
-        'complete': CheckCircle
-      };
-      const Icon = icons[status];
-      return <Icon size={16} />;
-    };
-
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900">
-        <div className="bg-gray-800 border-b border-gray-700 shadow-lg sticky top-0 z-40 backdrop-blur-sm bg-gray-800/95">
-          <div className="max-w-7xl mx-auto px-4 py-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            <div>
-              <h1 className="text-xl md:text-2xl font-bold text-white">OfficialEstherReign</h1>
-              <p className="text-sm text-gray-400">Welcome, {user?.name}</p>
-            </div>
-            <div className="flex gap-2 sm:gap-3 items-center w-full sm:w-auto flex-wrap">
-              {hasUnsavedChanges && (
-                <button
-                  onClick={saveAllChanges}
-                  disabled={isSaving}
-                  className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 active:bg-green-800 transition flex items-center gap-2 text-sm touch-manipulation disabled:opacity-50 disabled:cursor-not-allowed animate-pulse-subtle"
-                >
-                  <Save size={18} />
-                  {isSaving ? 'Saving...' : 'Save Changes'}
-                </button>
-              )}
-              <button
-                onClick={() => setShowSettingsModal(true)}
-                className="bg-gray-700 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition flex items-center gap-2 text-sm touch-manipulation"
-              >
-                <Upload size={18} />
-                <span className="hidden sm:inline">Settings</span>
-              </button>
-              <button
-                onClick={() => setCurrentView('public')}
-                className="text-purple-400 hover:text-purple-300 transition flex items-center gap-2 text-sm py-2 px-3 sm:px-0"
-              >
-                <Eye size={18} />
-                <span className="hidden sm:inline">View Public</span>
-              </button>
-              <button
-                onClick={handleLogout}
-                className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition flex items-center gap-2 text-sm touch-manipulation"
-              >
-                <LogOut size={18} />
-                <span>Logout</span>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <div className="max-w-7xl mx-auto px-4 py-6 md:py-8">
-          <div className="bg-gray-800 border border-gray-700 rounded-xl shadow-lg p-4 md:p-6 mb-6 md:mb-8 animate-fade-in">
-            <div className="mb-6">
-              <div className="flex justify-between items-center mb-2">
-                <span className="text-sm font-semibold text-gray-300">Overall Progress</span>
-                <span className="text-xl md:text-2xl font-bold text-purple-400">{progress}%</span>
-              </div>
-              <div className="w-full bg-gray-700 rounded-full h-3 md:h-4 overflow-hidden">
-                <div
-                  className="bg-gradient-to-r from-purple-500 to-pink-500 h-3 md:h-4 rounded-full transition-all duration-1000 ease-out"
-                  style={{ width: `${progress}%` }}
-                ></div>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-3 md:gap-4">
-              <div className="text-center p-3 bg-gray-900 rounded-lg hover:scale-105 transition-transform">
-                <div className="text-xl md:text-2xl font-bold text-white">{stats.total}</div>
-                <div className="text-xs text-gray-400">Total</div>
-              </div>
-              <div className="text-center p-3 bg-gray-900 rounded-lg hover:scale-105 transition-transform">
-                <div className="text-xl md:text-2xl font-bold text-gray-300">{stats.notStarted}</div>
-                <div className="text-xs text-gray-400">Not Started</div>
-              </div>
-              <div className="text-center p-3 bg-yellow-900/30 rounded-lg hover:scale-105 transition-transform">
-                <div className="text-xl md:text-2xl font-bold text-yellow-300">{stats.inProgress}</div>
-                <div className="text-xs text-yellow-300">In Progress</div>
-              </div>
-              <div className="text-center p-3 bg-blue-900/30 rounded-lg hover:scale-105 transition-transform">
-                <div className="text-xl md:text-2xl font-bold text-blue-300">{stats.underReview}</div>
-                <div className="text-xs text-blue-300">Review</div>
-              </div>
-              <div className="text-center p-3 bg-green-900/30 rounded-lg col-span-2 md:col-span-1 hover:scale-105 transition-transform">
-                <div className="text-xl md:text-2xl font-bold text-green-300">{stats.complete}</div>
-                <div className="text-xs text-green-300">Complete</div>
-              </div>
-            </div>
-          </div>
-
-          <div className="mb-6">
-            <button
-              onClick={() => setShowAddModal(true)}
-              className="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 active:bg-purple-800 transition flex items-center gap-2 font-semibold w-full sm:w-auto justify-center touch-manipulation shadow-lg hover:scale-105 duration-300"
-            >
-              <Plus size={20} />
-              Add New Video
-            </button>
-          </div>
-
-          <div className="grid gap-4 md:gap-6 xl:grid-cols-2">
-            {localVideos.map((video) => (
-              <div
-                key={video.id}
-                className="bg-gray-800 border border-gray-700 rounded-xl shadow-lg hover:shadow-purple-500/20 transition-all duration-300 p-4 md:p-5 hover:scale-[1.02]"
-              >
-                <div className="flex justify-between items-start mb-4 gap-2">
-                  <div className="flex-1 min-w-0">
-                    <div className="text-xs text-purple-400 font-semibold mb-1">Video #{video.id}</div>
-                    {editingTitleId === video.id ? (
-                      <div className="flex gap-2 items-center mb-2">
-                        <input
-                          type="text"
-                          value={editTitleText}
-                          onChange={(e) => setEditTitleText(e.target.value)}
-                          className="flex-1 px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-sm text-white focus:ring-2 focus:ring-purple-500 transition-all"
-                          autoFocus
-                        />
-                        <button
-                          onClick={() => {
-                            updateVideoLocally(video.id, 'title', editTitleText);
-                            setEditingTitleId(null);
-                          }}
-                          className="bg-purple-600 text-white px-3 py-1 rounded text-xs hover:bg-purple-700 transition"
-                        >
-                          Save
-                        </button>
-                        <button
-                          onClick={() => setEditingTitleId(null)}
-                          className="bg-gray-700 text-gray-300 px-3 py-1 rounded text-xs hover:bg-gray-600 transition"
-                        >
-                          Cancel
-                        </button>
-                      </div>
-                    ) : (
-                      <h3
-                        className="font-bold text-base md:text-lg text-white mb-2 break-words cursor-pointer hover:text-purple-400 transition-colors"
-                        onClick={() => {
-                          setEditingTitleId(video.id);
-                          setEditTitleText(video.title);
-                        }}
-                        title="Click to edit title"
-                      >
-                        {video.title}
-                      </h3>
-                    )}
-                  </div>
-                  <div className={`px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1 whitespace-nowrap ${getStatusColor(video.status)} transition-all`}>
-                    {getStatusIcon(video.status)}
-                    <span className="hidden sm:inline">{video.status.replace('-', ' ')}</span>
-                  </div>
-                </div>
-
-                {user?.role === 'admin' && (
-                  <div className="space-y-3 mb-4">
-                    <div>
-                      <label className="text-xs text-gray-400 block mb-1">Status</label>
-                      <select
-                        value={video.status}
-                        onChange={(e) => updateVideoLocally(video.id, 'status', e.target.value)}
-                        className="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-sm text-white focus:ring-2 focus:ring-purple-500 transition-all"
-                      >
-                        <option value="not-started">Not Started</option>
-                        <option value="in-progress">In Progress</option>
-                        <option value="under-review">Under Review</option>
-                        <option value="complete">Complete</option>
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="text-xs text-gray-400 block mb-1">Edit Template</label>
-                      <input
-                        type="text"
-                        value={video.template}
-                        onChange={(e) => updateVideoLocally(video.id, 'template', e.target.value)}
-                        placeholder="e.g., Animated Lyrics + Emojis"
-                        className="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-sm text-white focus:ring-2 focus:ring-purple-500 transition-all"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="text-xs text-gray-400 block mb-1">Google Drive Link</label>
-                      <input
-                        type="url"
-                        value={video.drive_link}
-                        onChange={(e) => updateVideoLocally(video.id, 'drive_link', e.target.value)}
-                        placeholder="https://drive.google.com/..."
-                        className="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-sm text-white focus:ring-2 focus:ring-purple-500 transition-all"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="text-xs text-gray-400 block mb-1">Edit Notes</label>
-                      <textarea
-                        value={video.notes}
-                        onChange={(e) => updateVideoLocally(video.id, 'notes', e.target.value)}
-                        placeholder="Creative ideas, special effects..."
-                        rows={2}
-                        className="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-sm text-white focus:ring-2 focus:ring-purple-500 resize-none transition-all"
-                      />
-                    </div>
-                  </div>
-                )}
-
-                {user?.role === 'artist' && (
-                  <div className="space-y-2 mb-4">
-                    {video.template && (
-                      <div className="text-sm">
-                        <span className="font-semibold text-gray-300">Style:</span>
-                        <span className="text-gray-400 ml-2">{video.template}</span>
-                      </div>
-                    )}
-                    {video.notes && (
-                      <div className="text-sm">
-                        <span className="font-semibold text-gray-300">Notes:</span>
-                        <p className="text-gray-400 mt-1">{video.notes}</p>
-                      </div>
-                    )}
-                    {video.drive_link && (
-                      <a
-                        href={video.drive_link}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-block bg-purple-900/50 text-purple-300 px-4 py-2.5 rounded-lg text-sm font-semibold hover:bg-purple-900 active:bg-purple-800 transition touch-manipulation"
-                      >
-                        View Video →
-                      </a>
-                    )}
-                    {video.status === 'in-progress' && (
-                      <button
-                        onClick={() => requestReview(video.id)}
-                        className="w-full bg-blue-600 text-white px-4 py-2.5 rounded-lg text-sm font-semibold hover:bg-blue-700 active:bg-blue-800 transition touch-manipulation"
-                      >
-                        Request Review
-                      </button>
-                    )}
-                  </div>
-                )}
-
-                <div className="border-t border-gray-700 pt-4">
-                  <div className="flex items-center gap-2 mb-3">
-                    <MessageSquare size={16} className="text-gray-400" />
-                    <span className="text-sm font-semibold text-gray-300">
-                      Comments ({(video.comments || []).length})
-                    </span>
-                  </div>
-
-                  <div className="max-h-48 overflow-y-auto space-y-2 mb-3 scrollbar-thin">
-                    {(video.comments || []).map(comment => (
-                      <div key={comment.id} className="bg-gray-900 rounded-lg p-3 animate-fade-in">
-                        <div className="flex justify-between items-start mb-1 gap-2">
-                          <span className="text-xs font-semibold text-purple-400">{comment.author}</span>
-                          <span className="text-xs text-gray-500">
-                            {new Date(comment.created_at).toLocaleDateString()}
-                          </span>
-                        </div>
-                        <p className="text-sm text-gray-300 break-words">{comment.text}</p>
-                      </div>
-                    ))}
-                  </div>
-
-                  {commentingId === video.id ? (
-                    <div className="space-y-2 animate-slide-down">
-                      <textarea
-                        value={commentText}
-                        onChange={(e) => setCommentText(e.target.value)}
-                        placeholder="Add your comment..."
-                        rows={2}
-                        className="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-sm text-white focus:ring-2 focus:ring-purple-500 resize-none transition-all"
-                        autoFocus
-                      />
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => addComment(video.id)}
-                          className="flex-1 sm:flex-none bg-purple-600 text-white px-4 py-2.5 rounded-lg text-sm hover:bg-purple-700 active:bg-purple-800 transition touch-manipulation font-semibold"
-                        >
-                          Post
-                        </button>
-                        <button
-                          onClick={() => {
-                            setCommentingId(null);
-                            setCommentText('');
-                          }}
-                          className="flex-1 sm:flex-none bg-gray-700 text-gray-300 px-4 py-2.5 rounded-lg text-sm hover:bg-gray-600 active:bg-gray-500 transition touch-manipulation"
-                        >
-                          Cancel
-                        </button>
-                      </div>
-                    </div>
-                  ) : (
-                    <button
-                      onClick={() => setCommentingId(video.id)}
-                      className="text-purple-400 text-sm font-semibold hover:text-purple-300 active:text-purple-200 transition py-2 touch-manipulation"
-                    >
-                      + Add Comment
-                    </button>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {showAddModal && <AddVideoModal />}
-        {showSettingsModal && <SettingsModal />}
-      </div>
-    );
-
-    function AddVideoModal() {
-      return (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 overflow-y-auto animate-fade-in">
-          <div className="bg-gray-800 border border-gray-700 rounded-xl shadow-2xl p-5 sm:p-6 md:p-8 max-w-md w-full my-8 animate-slide-up">
-            <h3 className="text-xl md:text-2xl font-bold text-white mb-6">Add New Video</h3>
-
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">Video Title</label>
-                <input
-                  type="text"
-                  value={newVideo.title}
-                  onChange={(e) => setNewVideo({...newVideo, title: e.target.value})}
-                  placeholder="Enter video title"
-                  className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg focus:ring-2 focus:ring-purple-500 text-white transition-all"
-                  autoFocus
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">Initial Notes (Optional)</label>
-                <textarea
-                  value={newVideo.notes}
-                  onChange={(e) => setNewVideo({...newVideo, notes: e.target.value})}
-                  placeholder="Add any initial notes or ideas..."
-                  rows={3}
-                  className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg focus:ring-2 focus:ring-purple-500 text-white resize-none transition-all"
-                />
-              </div>
-
-              <div className="flex flex-col sm:flex-row gap-3 pt-4">
-                <button
-                  onClick={addVideo}
-                  className="flex-1 bg-purple-600 text-white py-3 rounded-lg font-semibold hover:bg-purple-700 active:bg-purple-800 transition touch-manipulation"
-                >
-                  Add Video
-                </button>
-                <button
-                  onClick={() => {
-                    setShowAddModal(false);
-                    setNewVideo({ title: '', notes: '' });
-                  }}
-                  className="flex-1 bg-gray-700 text-gray-300 py-3 rounded-lg font-semibold hover:bg-gray-600 active:bg-gray-500 transition touch-manipulation"
-                >
-                  Cancel
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      );
-    }
-
-    function SettingsModal() {
-      const [localSettings, setLocalSettings] = useState<SiteSettings>(settings || {
-        profile_image: '/Estherreign.jpg',
-        about_image: '/IMG-20250915-WA0023.jpg',
-        about_text: '',
-        social_tiktok: '',
-        social_facebook: '',
-        social_youtube: '',
-        social_twitter: '',
-        social_instagram: '',
-        social_email: '',
-        social_other: []
+        return false;
       });
-      const [isSavingSettings, setIsSavingSettings] = useState(false);
+      if (current) setActiveSection(current);
+    };
 
-      const saveSettings = async () => {
-        setIsSavingSettings(true);
-        try {
-          const { error } = await supabase
-            .from('site_settings')
-            .update({
-              ...localSettings,
-              updated_at: new Date().toISOString()
-            })
-            .eq('id', settings?.id || '');
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
-          if (error) throw error;
-
-          await createNotification(
-            'artist',
-            'Settings Updated',
-            'Profile and site settings have been updated by admin.',
-            'update',
-            0
-          );
-
-          setSettings(localSettings);
-          setShowSettingsModal(false);
-          await loadData();
-        } catch (error) {
-          console.error('Save settings error:', error);
-          alert('Error saving settings. Please try again.');
-        }
-        setIsSavingSettings(false);
-      };
-
-      return (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 overflow-y-auto animate-fade-in">
-          <div className="bg-gray-800 border border-gray-700 rounded-xl shadow-2xl p-5 sm:p-6 md:p-8 max-w-2xl w-full my-8 animate-slide-up max-h-[90vh] overflow-y-auto scrollbar-thin">
-            <h3 className="text-xl md:text-2xl font-bold text-white mb-6">Site Settings</h3>
-
-            <div className="space-y-4">
-              <ImageUpload
-                currentImage={localSettings.profile_image}
-                onImageChange={(base64) => setLocalSettings({...localSettings, profile_image: base64})}
-                label="Profile Picture (Hero Section)"
-              />
-
-              <ImageUpload
-                currentImage={localSettings.about_image}
-                onImageChange={(base64) => setLocalSettings({...localSettings, about_image: base64})}
-                label="About Section Image"
-              />
-
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">About Text</label>
-                <textarea
-                  value={localSettings.about_text}
-                  onChange={(e) => setLocalSettings({...localSettings, about_text: e.target.value})}
-                  placeholder="About Esther Reign..."
-                  rows={6}
-                  className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg focus:ring-2 focus:ring-purple-500 text-white resize-none transition-all"
-                />
-              </div>
-
-              <div className="grid sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">TikTok URL</label>
-                  <input
-                    type="url"
-                    value={localSettings.social_tiktok}
-                    onChange={(e) => setLocalSettings({...localSettings, social_tiktok: e.target.value})}
-                    placeholder="https://tiktok.com/@username"
-                    className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg focus:ring-2 focus:ring-purple-500 text-white transition-all"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Facebook URL</label>
-                  <input
-                    type="url"
-                    value={localSettings.social_facebook}
-                    onChange={(e) => setLocalSettings({...localSettings, social_facebook: e.target.value})}
-                    placeholder="https://facebook.com/username"
-                    className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg focus:ring-2 focus:ring-purple-500 text-white transition-all"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Instagram URL</label>
-                  <input
-                    type="url"
-                    value={localSettings.social_instagram}
-                    onChange={(e) => setLocalSettings({...localSettings, social_instagram: e.target.value})}
-                    placeholder="https://instagram.com/username"
-                    className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg focus:ring-2 focus:ring-purple-500 text-white transition-all"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">YouTube URL</label>
-                  <input
-                    type="url"
-                    value={localSettings.social_youtube}
-                    onChange={(e) => setLocalSettings({...localSettings, social_youtube: e.target.value})}
-                    placeholder="https://youtube.com/@username"
-                    className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg focus:ring-2 focus:ring-purple-500 text-white transition-all"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Twitter URL</label>
-                  <input
-                    type="url"
-                    value={localSettings.social_twitter}
-                    onChange={(e) => setLocalSettings({...localSettings, social_twitter: e.target.value})}
-                    placeholder="https://twitter.com/username"
-                    className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg focus:ring-2 focus:ring-purple-500 text-white transition-all"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Email</label>
-                  <input
-                    type="email"
-                    value={localSettings.social_email}
-                    onChange={(e) => setLocalSettings({...localSettings, social_email: e.target.value})}
-                    placeholder="contact@example.com"
-                    className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg focus:ring-2 focus:ring-purple-500 text-white transition-all"
-                  />
-                </div>
-              </div>
-
-              <div className="flex flex-col sm:flex-row gap-3 pt-4">
-                <button
-                  onClick={saveSettings}
-                  disabled={isSavingSettings}
-                  className="flex-1 bg-purple-600 text-white py-3 rounded-lg font-semibold hover:bg-purple-700 active:bg-purple-800 transition touch-manipulation disabled:opacity-50"
-                >
-                  {isSavingSettings ? 'Saving...' : 'Save Settings'}
-                </button>
-                <button
-                  onClick={() => setShowSettingsModal(false)}
-                  className="flex-1 bg-gray-700 text-gray-300 py-3 rounded-lg font-semibold hover:bg-gray-600 active:bg-gray-500 transition touch-manipulation"
-                >
-                  Cancel
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      );
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
     }
+    setIsMenuOpen(false);
   };
+
+  useEffect(() => {
+    if (window.location.hash === '#admin') {
+      setShowAdmin(true);
+    }
+  }, []);
+
+  if (showAdmin) {
+    return <AdminPanel onClose={() => {
+      setShowAdmin(false);
+      window.location.hash = '';
+      // Reload all data when returning from admin
+      loadVideos();
+      loadSettings();
+      // Force re-render
+      window.location.reload();
+    }} />;
+  }
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-purple-500 mx-auto mb-4"></div>
-          <p className="text-gray-400 font-semibold">Loading workspace...</p>
-        </div>
-      </div>
-    );
+    return <Loader />;
   }
 
   return (
-    <>
-      {currentView === 'public' && <PublicPage />}
-      {currentView === 'login' && <LoginPage />}
-      {currentView === 'dashboard' && user && <Dashboard />}
-    </>
+    <div className="bg-gradient-to-br from-gray-950 via-purple-950/20 to-gray-950 text-white">
+      {/* WebGL Animated Background */}
+      <WebGLBackground />
+
+      {/* Floating particles background overlay */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute w-96 h-96 bg-purple-600/10 rounded-full blur-3xl top-0 -left-20 animate-blob"></div>
+        <div className="absolute w-96 h-96 bg-pink-600/10 rounded-full blur-3xl top-20 right-20 animate-blob animation-delay-2000"></div>
+        <div className="absolute w-96 h-96 bg-blue-600/10 rounded-full blur-3xl bottom-20 left-40 animate-blob animation-delay-4000"></div>
+      </div>
+
+      {/* Top Navigation */}
+      <nav className="fixed top-0 w-full bg-gray-900/80 backdrop-blur-xl z-50 border-b border-purple-500/20">
+        <div className="container mx-auto px-6 lg:px-12">
+          <div className="flex justify-between items-center h-20">
+            {/* Logo */}
+            <div className="flex items-center gap-4">
+              <img
+                src="https://res.cloudinary.com/dtynqpjye/image/upload/v1761948158/ESTHER-REIGN-LOGO.-Photoroom_nj506d.png"
+                alt="Esther Reign Logo"
+                className="h-16 md:h-20 w-auto"
+              />
+              <span className="text-base md:text-lg font-bold bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400 bg-clip-text text-transparent hidden sm:inline animate-gradient bg-[length:200%_auto]">
+                @officialEstherReign
+              </span>
+            </div>
+
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center space-x-8">
+              {[
+                { id: 'home', label: 'Home' },
+                { id: 'about', label: 'About' },
+                { id: 'videos', label: 'Videos' },
+                { id: 'contact', label: 'Contact' }
+              ].map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => scrollToSection(item.id)}
+                  className={`text-sm font-medium transition-all relative group ${activeSection === item.id
+                    ? 'text-purple-400'
+                    : 'text-gray-300 hover:text-white'
+                    }`}
+                >
+                  {item.label}
+                  <span className={`absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-purple-500 to-pink-500 transition-all ${activeSection === item.id ? 'w-full' : 'w-0 group-hover:w-full'
+                    }`}></span>
+                </button>
+              ))}
+            </div>
+
+            {/* Mobile Menu Button */}
+            <button
+              className="md:hidden text-white"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+            >
+              {isMenuOpen ? <X size={28} /> : <Menu size={28} />}
+            </button>
+          </div>
+        </div>
+
+        {/* Mobile Menu */}
+        {isMenuOpen && (
+          <div className="md:hidden bg-gray-900/95 backdrop-blur-xl border-t border-purple-500/20">
+            <nav className="container mx-auto px-6 py-6 space-y-4">
+              {[
+                { id: 'home', label: 'Home' },
+                { id: 'about', label: 'About' },
+                { id: 'videos', label: 'Videos' },
+                { id: 'contact', label: 'Contact' }
+              ].map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => scrollToSection(item.id)}
+                  className="block w-full text-left py-2 text-gray-300 hover:text-purple-400 transition-colors"
+                >
+                  {item.label}
+                </button>
+              ))}
+            </nav>
+          </div>
+        )}
+      </nav>
+
+      {/* Hero Section */}
+      <section id="home" className="min-h-screen flex items-center relative overflow-hidden pt-20">
+        <div className="container mx-auto px-6 lg:px-12 relative z-10">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div className="space-y-8 animate-fade-in-left">
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-purple-500/10 border border-purple-500/20 rounded-full backdrop-blur-sm">
+                <Sparkles size={16} className="text-purple-400" />
+                <span className="text-sm text-purple-300">Gospel Singer • Worship Leader</span>
+              </div>
+
+              <h1 className="text-6xl lg:text-8xl font-black leading-tight">
+                <span className="bg-gradient-to-r from-white via-purple-200 to-pink-200 bg-clip-text text-transparent">
+                  Esther
+                </span>
+                <br />
+                <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400 bg-clip-text text-transparent animate-gradient">
+                  Reign
+                </span>
+              </h1>
+
+              <p className="text-lg md:text-xl text-white leading-relaxed max-w-xl">
+                {settings?.hero_description || localStorage.getItem('hero_description') || 'Lifting voices in worship through powerful gospel music. Experience the presence of God through every note.'}
+              </p>
+
+              <div className="flex flex-wrap gap-4">
+                <button
+                  onClick={() => scrollToSection('videos')}
+                  className="group px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full font-semibold transition-all hover:shadow-2xl hover:shadow-purple-500/50 hover:scale-105 flex items-center gap-2"
+                >
+                  Watch Videos
+                  <ChevronRight size={20} className="group-hover:translate-x-1 transition-transform" />
+                </button>
+                <button
+                  onClick={() => scrollToSection('contact')}
+                  className="px-8 py-4 bg-white/5 backdrop-blur-sm border border-white/10 rounded-full font-semibold hover:bg-white/10 transition-all"
+                >
+                  Get In Touch
+                </button>
+              </div>
+
+              {/* Social Links */}
+              <div className="flex gap-4 pt-4">
+                <a href="https://instagram.com/estherreign" target="_blank" rel="noopener noreferrer"
+                  className="w-12 h-12 bg-white/5 backdrop-blur-sm border border-white/10 rounded-full flex items-center justify-center hover:bg-purple-600 hover:border-purple-600 transition-all hover:scale-110">
+                  <Instagram size={20} />
+                </a>
+                <a href="https://youtube.com/@estherreign" target="_blank" rel="noopener noreferrer"
+                  className="w-12 h-12 bg-white/5 backdrop-blur-sm border border-white/10 rounded-full flex items-center justify-center hover:bg-purple-600 hover:border-purple-600 transition-all hover:scale-110">
+                  <Youtube size={20} />
+                </a>
+                <a href="https://tiktok.com/@estherreign" target="_blank" rel="noopener noreferrer"
+                  className="w-12 h-12 bg-white/5 backdrop-blur-sm border border-white/10 rounded-full flex items-center justify-center hover:bg-purple-600 hover:border-purple-600 transition-all hover:scale-110">
+                  <FaTiktok size={20} />
+                </a>
+              </div>
+            </div>
+
+            <div className="relative animate-fade-in-right">
+              <div className="absolute inset-0 bg-gradient-to-br from-purple-600 to-pink-600 rounded-3xl blur-3xl opacity-30 animate-pulse"></div>
+              <div className="relative rounded-3xl overflow-hidden border border-white/10 backdrop-blur-sm">
+                <img
+                  src={settings?.hero_image || "/Estherreign.jpg"}
+                  alt="Esther Reign"
+                  className="w-full h-auto"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-gray-950 via-transparent to-transparent"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Scroll Indicator */}
+        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+          <div className="w-6 h-10 border-2 border-purple-500/50 rounded-full flex justify-center p-2">
+            <div className="w-1 h-3 bg-purple-500 rounded-full animate-pulse"></div>
+          </div>
+        </div>
+      </section>
+
+      {/* About Section */}
+      <section id="about" className="py-32 relative overflow-hidden bg-gray-900/50">
+        <div className="container mx-auto px-6 lg:px-12 relative z-10">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-20 animate-fade-in-down">
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-purple-500/10 border border-purple-500/20 rounded-full backdrop-blur-sm mb-6">
+                <span className="text-sm text-purple-300">About Me</span>
+              </div>
+              <h2 className="text-5xl lg:text-6xl font-black mb-6">
+                <span className="bg-gradient-to-r from-white to-purple-200 bg-clip-text text-transparent">
+                  My Journey
+                </span>
+              </h2>
+            </div>
+
+            <div className="grid lg:grid-cols-2 gap-16 items-center">
+              <div className="relative animate-fade-in-left">
+                <div className="absolute inset-0 bg-gradient-to-br from-purple-600 to-pink-600 rounded-3xl blur-2xl opacity-20"></div>
+                <div className="relative rounded-3xl overflow-hidden border border-white/10">
+                  <img
+                    src={settings?.about_image || "/IMG-20250915-WA0023.jpg"}
+                    alt="About Esther"
+                    className="w-full h-auto"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-6 animate-fade-in-right">
+                {(settings?.about_text || 'I am an emerging gospel artist with a deep passion for worship and praise. Through powerful cover songs, I aim to create an atmosphere where people can encounter God\'s presence.\n\nEvery song I sing is a testimony of God\'s faithfulness and love. My mission is to use my voice as an instrument of worship, touching hearts and transforming lives through gospel music.\n\nJoin me on this journey as I share my gift with the world, one song at a time, bringing glory to God through music.').split('\n\n').map((paragraph: string, index: number) => (
+                  <p key={index} className="text-lg text-white leading-relaxed">
+                    {paragraph}
+                  </p>
+                ))}
+
+                <div className="grid grid-cols-3 gap-6 pt-8">
+                  <div className="text-center p-6 bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl hover:bg-white/10 transition-all duration-300 group">
+                    <div className="text-5xl mb-3 group-hover:scale-110 transition-transform duration-300">
+                      🎤
+                    </div>
+                    <div className="text-lg font-bold text-white mb-1">Authentic Worship</div>
+                    <div className="text-sm text-gray-400">Spirit-led songs from the heart</div>
+                  </div>
+                  <div className="text-center p-6 bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl hover:bg-white/10 transition-all duration-300 group">
+                    <div className="text-5xl mb-3 group-hover:scale-110 transition-transform duration-300">
+                      ✨
+                    </div>
+                    <div className="text-lg font-bold text-white mb-1">Fresh Sound</div>
+                    <div className="text-sm text-gray-400">Contemporary gospel music</div>
+                  </div>
+                  <div className="text-center p-6 bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl hover:bg-white/10 transition-all duration-300 group">
+                    <div className="text-5xl mb-3 group-hover:scale-110 transition-transform duration-300">
+                      🙏
+                    </div>
+                    <div className="text-lg font-bold text-white mb-1">Kingdom Impact</div>
+                    <div className="text-sm text-gray-400">Music that transforms lives</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Videos Section */}
+      <section id="videos" className="py-32 relative overflow-hidden bg-gray-950/80">
+        <div className="container mx-auto px-6 lg:px-12 relative z-10">
+          <div className="text-center mb-20 animate-fade-in-down">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-purple-500/10 border border-purple-500/20 rounded-full backdrop-blur-sm mb-6">
+              <Play size={16} className="text-purple-400" />
+              <span className="text-sm text-purple-300">Watch</span>
+            </div>
+            <h2 className="text-5xl lg:text-6xl font-black mb-6">
+              <span className="bg-gradient-to-r from-white to-purple-200 bg-clip-text text-transparent">
+                Videos
+              </span>
+            </h2>
+            <p className="text-white max-w-2xl mx-auto text-lg">
+              Experience powerful gospel worship that will uplift your spirit
+            </p>
+          </div>
+
+          {videos.length === 0 ? (
+            <div className="text-center py-20">
+              <div className="w-24 h-24 bg-purple-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                <Play size={48} className="text-purple-400" />
+              </div>
+              <p className="text-gray-400 text-xl">New videos coming soon...</p>
+            </div>
+          ) : (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+              {videos.map((video, index) => (
+                <div
+                  key={video.id}
+                  className={`group relative overflow-hidden rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10 hover:border-purple-500/50 transition-all animate-scale-in stagger-${(index % 6) + 1}`}
+                >
+                  <div 
+                    className="aspect-video bg-gradient-to-br from-purple-900/50 to-pink-900/50 flex items-center justify-center relative overflow-hidden cursor-pointer"
+                    onClick={() => setPlayingVideo(video)}
+                    onMouseEnter={(e) => {
+                      // Start video preview on hover
+                      const videoEl = e.currentTarget.querySelector('video');
+                      if (videoEl) {
+                        videoEl.currentTime = 0;
+                        videoEl.play().catch(() => {});
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      // Stop video preview on mouse leave
+                      const videoEl = e.currentTarget.querySelector('video');
+                      if (videoEl) {
+                        videoEl.pause();
+                        videoEl.currentTime = 0;
+                      }
+                    }}
+                  >
+                    {/* Thumbnail Image - Always visible */}
+                    <img
+                      src={video.thumbnail_url || getVideoThumbnail(video.video_link || '')}
+                      alt={video.title}
+                      className="absolute inset-0 w-full h-full object-cover"
+                      onError={(e) => {
+                        const img = e.target as HTMLImageElement;
+                        // If thumbnail fails, try to show a placeholder
+                        img.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="640" height="360"%3E%3Crect fill="%23374151" width="640" height="360"/%3E%3Ctext fill="%239CA3AF" font-family="Arial" font-size="24" x="50%25" y="50%25" text-anchor="middle" dominant-baseline="middle"%3E' + encodeURIComponent(video.title) + '%3C/text%3E%3C/svg%3E';
+                      }}
+                    />
+                    
+                    {/* Hover Preview Video (for non-YouTube videos) - Plays on hover */}
+                    {video.video_link && !video.video_link.includes('youtube.com') && !video.video_link.includes('youtu.be') && (
+                      <video
+                        src={video.video_link}
+                        className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+                        muted
+                        loop
+                        playsInline
+                        preload="metadata"
+                      />
+                    )}
+                    
+                    {/* Dark Overlay with Play Button */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent flex items-center justify-center transition-all duration-300 group-hover:bg-black/40">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setPlayingVideo(video);
+                        }}
+                        className="w-20 h-20 bg-white/95 hover:bg-white rounded-full flex items-center justify-center transform transition-all shadow-2xl group-hover:scale-125"
+                      >
+                        <Play size={32} className="text-purple-600 ml-1" fill="currentColor" />
+                      </button>
+                    </div>
+                  </div>
+                  <div className="p-6">
+                    <h3 className="text-lg font-bold mb-2 line-clamp-2">{video.title}</h3>
+                    {video.template_type && (
+                      <p className="text-sm text-purple-400 mb-2">{video.template_type}</p>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* Contact Section */}
+      <section id="contact" className="py-32 relative overflow-hidden bg-gray-900/50">
+        <div className="container mx-auto px-6 lg:px-12 relative z-10">
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-20 animate-fade-in-down">
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-purple-500/10 border border-purple-500/20 rounded-full backdrop-blur-sm mb-6">
+                <Mail size={16} className="text-purple-400" />
+                <span className="text-sm text-purple-300">Contact</span>
+              </div>
+              <h2 className="text-5xl lg:text-6xl font-black mb-6">
+                <span className="bg-gradient-to-r from-white to-purple-200 bg-clip-text text-transparent">
+                  Let's Connect
+                </span>
+              </h2>
+              <p className="text-gray-400 max-w-2xl mx-auto text-lg">
+                For bookings, collaborations, or inquiries
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-8 mb-12">
+              <div className="group p-8 bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl hover:border-purple-500/50 transition-all hover:scale-105 text-center">
+                <div className="w-16 h-16 bg-gradient-to-br from-purple-600 to-pink-600 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                  <Phone size={28} className="text-white" />
+                </div>
+                <h3 className="font-bold text-xl mb-2 text-white">Phone</h3>
+                <p className="text-gray-300">{settings?.phone || '+234 818 019 4269'}</p>
+              </div>
+
+              <div className="group p-8 bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl hover:border-purple-500/50 transition-all hover:scale-105 text-center">
+                <div className="w-16 h-16 bg-gradient-to-br from-purple-600 to-pink-600 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                  <Mail size={28} className="text-white" />
+                </div>
+                <h3 className="font-bold text-xl mb-2 text-white">Email</h3>
+                <p className="text-gray-300">{settings?.email || 'contact@estherreign.com'}</p>
+              </div>
+            </div>
+
+            <div className="flex justify-center gap-6 animate-fade-in-up">
+              <a href={settings?.social_links?.instagram || "https://instagram.com/estherreign"} target="_blank" rel="noopener noreferrer"
+                className="w-14 h-14 bg-white/5 backdrop-blur-sm border border-white/10 rounded-full flex items-center justify-center hover:bg-gradient-to-br hover:from-purple-600 hover:to-pink-600 hover:border-transparent transition-all hover:scale-110">
+                <Instagram size={24} />
+              </a>
+              <a href={settings?.social_links?.youtube || "https://youtube.com/@estherreign"} target="_blank" rel="noopener noreferrer"
+                className="w-14 h-14 bg-white/5 backdrop-blur-sm border border-white/10 rounded-full flex items-center justify-center hover:bg-gradient-to-br hover:from-purple-600 hover:to-pink-600 hover:border-transparent transition-all hover:scale-110">
+                <Youtube size={24} />
+              </a>
+              <a href={settings?.social_links?.tiktok || "https://tiktok.com/@estherreign"} target="_blank" rel="noopener noreferrer"
+                className="w-14 h-14 bg-white/5 backdrop-blur-sm border border-white/10 rounded-full flex items-center justify-center hover:bg-gradient-to-br hover:from-purple-600 hover:to-pink-600 hover:border-transparent transition-all hover:scale-110">
+                <FaTiktok size={24} />
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="py-8 border-t border-white/10 backdrop-blur-sm bg-gray-900/80">
+        <div className="container mx-auto px-6 lg:px-12">
+          <div className="text-center">
+            <p className="text-white text-sm font-medium">
+              © 2025 Esther Reign. All rights reserved.
+            </p>
+          </div>
+        </div>
+      </footer>
+
+      {/* Video Player Modal */}
+      {playingVideo && (
+        <div className="fixed inset-0 bg-black/95 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
+          <button
+            onClick={() => setPlayingVideo(null)}
+            className="absolute top-6 right-6 w-12 h-12 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center transition-colors z-10"
+          >
+            <X size={24} className="text-white" />
+          </button>
+          
+          <div className="w-full max-w-5xl animate-scale-in">
+            <div className="mb-4">
+              <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">{playingVideo.title}</h2>
+              {playingVideo.template_type && (
+                <p className="text-purple-400 text-sm">{playingVideo.template_type}</p>
+              )}
+            </div>
+            
+            <div className="relative aspect-video bg-black rounded-xl overflow-hidden shadow-2xl">
+              {playingVideo.video_link?.includes('youtube.com') || playingVideo.video_link?.includes('youtu.be') ? (
+                // YouTube embed
+                <iframe
+                  src={`https://www.youtube.com/embed/${playingVideo.video_link.match(/[?&]v=([^&]+)/)?.[1] || playingVideo.video_link.match(/youtu\.be\/([^?]+)/)?.[1]}`}
+                  className="w-full h-full"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  title={playingVideo.title}
+                />
+              ) : (
+                // Direct video (Cloudinary, etc.)
+                <video
+                  src={playingVideo.video_link}
+                  controls
+                  autoPlay
+                  className="w-full h-full"
+                  controlsList="nodownload"
+                >
+                  Your browser does not support the video tag.
+                </video>
+              )}
+            </div>
+            
+            <div className="mt-4 flex justify-center gap-4">
+              <a
+                href={playingVideo.video_link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-6 py-3 bg-purple-600 hover:bg-purple-700 rounded-full text-white font-medium transition-colors flex items-center gap-2"
+              >
+                Open in New Tab
+                <ChevronRight size={18} />
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
 
