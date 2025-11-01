@@ -59,7 +59,7 @@ export const FloatingChat: React.FC<FloatingChatProps> = ({ currentUser, onNewMe
     loadMessages();
     loadVideos();
     
-    // Real-time message polling - check every 2 seconds
+    // Real-time message polling - check every 1 second for instant delivery
     const messagePolling = setInterval(() => {
       const savedMessages = localStorage.getItem('chat_messages');
       if (savedMessages) {
@@ -68,7 +68,7 @@ export const FloatingChat: React.FC<FloatingChatProps> = ({ currentUser, onNewMe
           setMessages(parsedMessages);
         }
       }
-    }, 2000); // Check every 2 seconds
+    }, 1000); // Check every 1 second
     
     // Listen for storage changes from other tabs/devices
     const handleStorageChange = (e: StorageEvent) => {
