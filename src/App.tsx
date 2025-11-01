@@ -177,8 +177,32 @@ const EstherPlatform = () => {
       <nav className="fixed top-0 w-full bg-gray-900/80 backdrop-blur-xl z-40 border-b border-purple-500/20">
         <div className="container mx-auto px-4 md:px-6 lg:px-12">
           <div className="flex justify-between items-center h-16 md:h-20">
-            {/* Logo */}
-            <div className="flex items-center gap-2 md:gap-4 flex-shrink-0">
+            {/* Logo - Triple tap to access admin */}
+            <div 
+              className="flex items-center gap-2 md:gap-4 flex-shrink-0 cursor-pointer"
+              onClick={(e) => {
+                const now = Date.now();
+                const lastTap = parseInt(localStorage.getItem('lastLogoTap') || '0');
+                const tapCount = parseInt(localStorage.getItem('logoTapCount') || '0');
+                
+                if (now - lastTap < 500) {
+                  const newCount = tapCount + 1;
+                  localStorage.setItem('logoTapCount', newCount.toString());
+                  
+                  if (newCount >= 3) {
+                    localStorage.removeItem('logoTapCount');
+                    localStorage.removeItem('lastLogoTap');
+                    setShowAdmin(true);
+                    window.location.hash = '#admin';
+                  }
+                } else {
+                  localStorage.setItem('logoTapCount', '1');
+                }
+                
+                localStorage.setItem('lastLogoTap', now.toString());
+              }}
+              title="Triple tap for admin access"
+            >
               <img
                 src="https://res.cloudinary.com/dtynqpjye/image/upload/v1761948158/ESTHER-REIGN-LOGO.-Photoroom_nj506d.png"
                 alt="Esther Reign Logo"

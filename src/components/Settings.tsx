@@ -280,3 +280,82 @@ export const Settings: React.FC = () => {
     </div>
   );
 };
+
+
+        {/* Sync Data Across Devices */}
+        <div className="bg-gradient-to-br from-purple-900/30 to-pink-900/30 backdrop-blur-sm border border-purple-500/30 rounded-2xl p-6">
+          <h3 className="text-xl font-bold mb-4 text-white flex items-center gap-2">
+            <Upload size={20} className="text-purple-400" />
+            Sync Data Across Devices
+          </h3>
+          <p className="text-gray-300 mb-4 text-sm">
+            Use this feature to sync your settings, videos, and images between your computer and mobile device.
+          </p>
+          
+          <div className="grid md:grid-cols-2 gap-4">
+            <button
+              onClick={() => {
+                const data = {
+                  settings: localStorage.getItem('site_settings'),
+                  videos: localStorage.getItem('videos'),
+                  hero_description: localStorage.getItem('hero_description'),
+                  messages: localStorage.getItem('chat_messages'),
+                  timestamp: Date.now()
+                };
+                const dataStr = JSON.stringify(data);
+                const blob = new Blob([dataStr], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `esther-reign-data-${Date.now()}.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+                alert('Data exported! Transfer this file to your other device.');
+              }}
+              className="px-6 py-3 bg-purple-600 hover:bg-purple-700 rounded-xl font-semibold transition-all flex items-center justify-center gap-2"
+            >
+              <Upload size={18} />
+              Export Data
+            </button>
+            
+            <label className="px-6 py-3 bg-pink-600 hover:bg-pink-700 rounded-xl font-semibold transition-all flex items-center justify-center gap-2 cursor-pointer">
+              <Upload size={18} className="rotate-180" />
+              Import Data
+              <input
+                type="file"
+                accept=".json"
+                className="hidden"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                      try {
+                        const data = JSON.parse(event.target?.result as string);
+                        if (data.settings) localStorage.setItem('site_settings', data.settings);
+                        if (data.videos) localStorage.setItem('videos', data.videos);
+                        if (data.hero_description) localStorage.setItem('hero_description', data.hero_description);
+                        if (data.messages) localStorage.setItem('chat_messages', data.messages);
+                        alert('Data imported successfully! Reloading page...');
+                        setTimeout(() => window.location.reload(), 1000);
+                      } catch (error) {
+                        alert('Error importing data. Please check the file.');
+                      }
+                    };
+                    reader.readAsText(file);
+                  }
+                }}
+              />
+            </label>
+          </div>
+          
+          <div className="mt-4 p-4 bg-blue-500/10 border border-blue-500/20 rounded-xl">
+            <p className="text-sm text-blue-300">
+              <strong>How to sync:</strong><br/>
+              1. On your computer: Click "Export Data" and save the file<br/>
+              2. Transfer the file to your phone (email, WhatsApp, etc.)<br/>
+              3. On your phone: Open admin panel, click "Import Data" and select the file<br/>
+              4. All your settings, images, and videos will sync!
+            </p>
+          </div>
+        </div>
