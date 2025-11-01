@@ -287,37 +287,37 @@ const EstherPlatform = () => {
               </div>
 
               <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black leading-tight">
-                <span className="bg-gradient-to-r from-white via-purple-200 to-pink-200 bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-white via-purple-200 to-pink-200 bg-clip-text text-transparent animate-text-reveal">
                   Esther
                 </span>
                 <br />
-                <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400 bg-clip-text text-transparent animate-gradient">
+                <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400 bg-clip-text text-transparent animate-gradient animate-text-reveal stagger-delay-2">
                   Reign
                 </span>
               </h1>
 
-              <p className="text-base md:text-lg lg:text-xl text-white leading-relaxed max-w-xl">
+              <p className="text-base md:text-lg lg:text-xl text-white leading-relaxed max-w-xl animate-text-reveal stagger-delay-3">
                 {settings?.hero_description || localStorage.getItem('hero_description') || 'Lifting voices in worship through powerful gospel music. Experience the presence of God through every note.'}
               </p>
 
-              <div className="flex flex-wrap gap-4 justify-center lg:justify-start">
+              <div className="flex flex-wrap gap-4 justify-center lg:justify-start animate-bounce-in stagger-delay-4">
                 <button
                   onClick={() => scrollToSection('videos')}
-                  className="group px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full font-semibold transition-all hover:shadow-2xl hover:shadow-purple-500/50 hover:scale-105 flex items-center gap-2"
+                  className="group px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full font-semibold transition-all hover:shadow-2xl hover:shadow-purple-500/50 hover:scale-110 flex items-center gap-2 animate-glow-pulse"
                 >
                   Watch Videos
                   <ChevronRight size={20} className="group-hover:translate-x-1 transition-transform" />
                 </button>
                 <button
                   onClick={() => scrollToSection('contact')}
-                  className="px-8 py-4 bg-white/5 backdrop-blur-sm border border-white/10 rounded-full font-semibold hover:bg-white/10 transition-all"
+                  className="px-8 py-4 bg-white/5 backdrop-blur-sm border border-white/10 rounded-full font-semibold hover:bg-white/10 hover:scale-105 transition-all"
                 >
                   Get In Touch
                 </button>
               </div>
 
               {/* Social Links */}
-              <div className="flex gap-4 pt-6 justify-center lg:justify-start">
+              <div className="flex gap-4 pt-6 justify-center lg:justify-start animate-slide-in-left stagger-delay-5">
                 <a href="https://instagram.com/estherreign" target="_blank" rel="noopener noreferrer"
                   className="w-12 h-12 bg-white/5 backdrop-blur-sm border border-white/10 rounded-full flex items-center justify-center hover:bg-purple-600 hover:border-purple-600 transition-all hover:scale-110">
                   <Instagram size={20} />
@@ -334,9 +334,9 @@ const EstherPlatform = () => {
             </div>
 
             {/* Image - Order 1 on mobile, 2 on desktop - Circular on mobile */}
-            <div className="relative animate-fade-in-right order-1 lg:order-2 max-w-sm mx-auto lg:max-w-none">
+            <div className="relative animate-zoom-in order-1 lg:order-2 max-w-sm mx-auto lg:max-w-none">
               <div className="absolute inset-0 bg-gradient-to-br from-purple-600 to-pink-600 rounded-full lg:rounded-3xl blur-3xl opacity-30 animate-pulse"></div>
-              <div className="relative rounded-full lg:rounded-3xl overflow-hidden border-4 lg:border-2 border-purple-500/30 lg:border-white/10 backdrop-blur-sm aspect-square lg:aspect-auto">
+              <div className="relative rounded-full lg:rounded-3xl overflow-hidden border-4 lg:border-2 border-purple-500/30 lg:border-white/10 backdrop-blur-sm aspect-square lg:aspect-auto animate-glow-pulse">
                 <img
                   src={settings?.hero_image || "/Estherreign.jpg"}
                   alt="Esther Reign"

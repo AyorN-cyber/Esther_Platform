@@ -233,9 +233,19 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
   const handleSaveVideo = () => {
     if (!editingVideo) return;
 
-    const updatedVideos = videos.map(v => 
-      v.id === editingVideo.id ? { ...editingVideo, updated_at: new Date().toISOString() } : v
-    );
+    // Check if this is a new video or existing one
+    const existingIndex = videos.findIndex(v => v.id === editingVideo.id);
+    let updatedVideos;
+    
+    if (existingIndex >= 0) {
+      // Update existing video
+      updatedVideos = videos.map(v => 
+        v.id === editingVideo.id ? { ...editingVideo, updated_at: new Date().toISOString() } : v
+      );
+    } else {
+      // Add new video
+      updatedVideos = [...videos, { ...editingVideo, created_at: new Date().toISOString(), updated_at: new Date().toISOString() }];
+    }
     
     setVideos(updatedVideos);
     localStorage.setItem('videos', JSON.stringify(updatedVideos));
@@ -246,12 +256,13 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
     });
     
     if (currentUser?.role === 'editor') {
-      sendNotification('+234 818 019 4269', `Video "${editingVideo.title}" has been updated to ${editingVideo.status}`);
-      addNotification('video_update', 'Video Updated', `"${editingVideo.title}" status changed to ${editingVideo.status}`);
+      const action = existingIndex >= 0 ? 'updated' : 'added';
+      sendNotification('+234 818 019 4269', `Video "${editingVideo.title}" has been ${action}`);
+      addNotification('video_update', `Video ${action === 'added' ? 'Added' : 'Updated'}`, `"${editingVideo.title}" ${action === 'added' ? 'added to' : 'updated in'} the gallery`);
     }
     
     setEditingVideo(null);
-    alert('Video updated and synced across all devices!');
+    alert(`Video ${existingIndex >= 0 ? 'updated' : 'added'} and synced across all devices!`);
   };
 
   const handleLogout = () => {
@@ -689,16 +700,33 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
         {/* Videos Tab */}
         {activeTab === 'videos' && (
           <div className="space-y-6">
-            <div className="flex justify-between items-center">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
               <div>
                 <h2 className="text-3xl font-black mb-2 text-white">Video Management</h2>
                 <p className="text-gray-400">Manage all video content</p>
               </div>
-              <div className="flex gap-4">
-                <div className="px-4 py-2 bg-green-600/20 rounded-xl text-green-400 text-sm">
+              <div className="flex flex-wrap gap-4">
+                <button
+                  onClick={() => {
+                    setEditingVideo({
+                      id: `video-${Date.now()}`,
+                      title: '',
+                      video_link: '',
+                      thumbnail_url: '',
+                      status: 'pending',
+                      created_at: new Date().toISOString(),
+                      updated_at: new Date().toISOString()
+                    });
+                  }}
+                  className="px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl font-semibold hover:shadow-lg hover:shadow-purple-500/50 transition-all flex items-center gap-2"
+                >
+                  <Upload size={20} />
+                  Add New Video
+                </button>
+                <div className="px-4 py-2 bg-green-600/20 rounded-xl text-green-400 text-sm flex items-center">
                   {completedCount} Completed
                 </div>
-                <div className="px-4 py-2 bg-yellow-600/20 rounded-xl text-yellow-400 text-sm">
+                <div className="px-4 py-2 bg-yellow-600/20 rounded-xl text-yellow-400 text-sm flex items-center">
                   {pendingCount} Pending
                 </div>
               </div>
