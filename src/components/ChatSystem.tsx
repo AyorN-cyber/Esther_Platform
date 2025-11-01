@@ -252,9 +252,9 @@ export const ChatSystem: React.FC<ChatSystemProps> = ({ currentUser, videos, onN
   };
 
   return (
-    <div className="flex flex-col h-[100dvh] md:h-[calc(100vh-12rem)] max-w-3xl mx-auto bg-[#efeae2] md:rounded-2xl overflow-hidden shadow-2xl">
-      {/* WhatsApp Header - Fixed at top */}
-      <div className="p-2 sm:p-3 bg-[#008069] flex items-center gap-3 flex-shrink-0 z-10">
+    <div className="flex flex-col h-[100dvh] md:h-[calc(100vh-12rem)] max-w-3xl mx-auto bg-[#efeae2] md:rounded-2xl shadow-2xl relative">
+      {/* WhatsApp Header - Absolutely positioned to stay fixed */}
+      <div className="absolute top-0 left-0 right-0 p-2 sm:p-3 bg-[#008069] flex items-center gap-3 z-20">
         <div className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center overflow-hidden">
           <div className="w-full h-full bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center text-white font-bold text-lg">
             {currentUser.role === 'artist' ? 'E' : 'M'}
@@ -271,7 +271,7 @@ export const ChatSystem: React.FC<ChatSystemProps> = ({ currentUser, videos, onN
 
       {/* Messages - WhatsApp background pattern */}
       <div 
-        className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-1 scrollbar-hide" 
+        className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-1 scrollbar-hide pt-16" 
         style={{ 
           backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'300\' height=\'300\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cdefs%3E%3Cpattern id=\'pattern\' x=\'0\' y=\'0\' width=\'100\' height=\'100\' patternUnits=\'userSpaceOnUse\'%3E%3Cpath d=\'M20 20h60v60H20z\' fill=\'none\' stroke=\'%23d9d9d9\' stroke-width=\'0.5\' opacity=\'0.3\'/%3E%3C/pattern%3E%3C/defs%3E%3Crect width=\'300\' height=\'300\' fill=\'%23efeae2\'/%3E%3Crect width=\'300\' height=\'300\' fill=\'url(%23pattern)\'/%3E%3C/svg%3E")',
           backgroundColor: '#efeae2'

@@ -1,7 +1,8 @@
 import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+// Supabase configuration
+const supabaseUrl = 'https://ciawsbarwhhebghhyjub.supabase.co'
+const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNpYXdzYmFyd2hoZWJnaGh5anViIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE5NTI1MTYsImV4cCI6MjA3NzUyODUxNn0.XQIlffM2nzb_qQpe9BD7P55NccPEHr9XwOE4od6U3B8'
 
 // Mock Supabase client for development
 const createMockClient = () => {
@@ -39,10 +40,10 @@ const createMockClient = () => {
       },
       insert: (data: unknown) => Promise.resolve({ data, error: null }),
       upsert: (data: unknown) => Promise.resolve({ data, error: null }),
-      update: (data: unknown) => ({ 
+      update: (data: unknown) => ({
         eq: () => Promise.resolve({ data, error: null })
       }),
-      delete: () => ({ 
+      delete: () => ({
         eq: () => Promise.resolve({ data: null, error: null })
       })
     }),
@@ -55,18 +56,12 @@ const createMockClient = () => {
   };
 };
 
-// Use mock client if environment variables are not set
-let supabase: any;
-
-if (!supabaseUrl || !supabaseAnonKey) {
-  console.log('Using mock Supabase client');
-  supabase = createMockClient();
-} else {
-  console.log('Using real Supabase client');
-  supabase = createClient(supabaseUrl, supabaseAnonKey);
-}
-
-export { supabase }
+// Create Supabase client
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    persistSession: false // We're not using auth, just storage
+  }
+})
 
 export const extractGoogleDriveThumbnail = (url: string): string => {
   // Extract file ID from Google Drive URL

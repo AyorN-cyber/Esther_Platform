@@ -165,7 +165,7 @@ const EstherPlatform = () => {
   }
 
   return (
-    <div className="bg-gradient-to-br from-gray-950 via-purple-950/20 to-gray-950 text-white">
+    <div className="bg-gradient-to-br from-black via-gray-950 to-black text-white">
       {/* WebGL Animated Background - Only on desktop for performance */}
       <div className="hidden md:block">
         <WebGLBackground />
@@ -179,7 +179,7 @@ const EstherPlatform = () => {
       </div>
 
       {/* Top Navigation */}
-      <nav className="fixed top-0 w-full bg-gray-900/95 md:bg-gray-900/80 md:backdrop-blur-xl z-40 border-b border-purple-500/20">
+      <nav className="fixed top-0 w-full bg-black/95 md:bg-black/90 md:backdrop-blur-xl z-40 border-b border-purple-500/30">
         <div className="container mx-auto px-4 md:px-6 lg:px-12">
           <div className="flex justify-between items-center h-16 md:h-20">
             {/* Logo - Triple tap to access admin */}
@@ -254,7 +254,7 @@ const EstherPlatform = () => {
 
         {/* Mobile Menu */}
         {isMenuOpen && (
-          <div className="md:hidden bg-gray-900/95 backdrop-blur-xl border-t border-purple-500/20">
+          <div className="md:hidden bg-black/98 backdrop-blur-xl border-t border-purple-500/30">
             <nav className="container mx-auto px-6 py-6 space-y-4">
               {[
                 { id: 'home', label: 'Home' },
@@ -286,7 +286,7 @@ const EstherPlatform = () => {
                 <span className="text-sm text-purple-300">Gospel Singer • Worship Leader</span>
               </div>
 
-              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-8xl font-black leading-tight">
+              <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black leading-tight">
                 <span className="bg-gradient-to-r from-white via-purple-200 to-pink-200 bg-clip-text text-transparent">
                   Esther
                 </span>
@@ -333,14 +333,14 @@ const EstherPlatform = () => {
               </div>
             </div>
 
-            {/* Image - Order 1 on mobile, 2 on desktop */}
-            <div className="relative animate-fade-in-right order-1 lg:order-2">
-              <div className="absolute inset-0 bg-gradient-to-br from-purple-600 to-pink-600 rounded-3xl blur-3xl opacity-30 animate-pulse"></div>
-              <div className="relative rounded-3xl overflow-hidden border border-white/10 backdrop-blur-sm">
+            {/* Image - Order 1 on mobile, 2 on desktop - Circular on mobile */}
+            <div className="relative animate-fade-in-right order-1 lg:order-2 max-w-sm mx-auto lg:max-w-none">
+              <div className="absolute inset-0 bg-gradient-to-br from-purple-600 to-pink-600 rounded-full lg:rounded-3xl blur-3xl opacity-30 animate-pulse"></div>
+              <div className="relative rounded-full lg:rounded-3xl overflow-hidden border-4 lg:border-2 border-purple-500/30 lg:border-white/10 backdrop-blur-sm aspect-square lg:aspect-auto">
                 <img
                   src={settings?.hero_image || "/Estherreign.jpg"}
                   alt="Esther Reign"
-                  className="w-full h-auto"
+                  className="w-full h-full object-cover"
                   loading="eager"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-gray-950 via-transparent to-transparent"></div>
@@ -358,7 +358,7 @@ const EstherPlatform = () => {
       </section>
 
       {/* About Section */}
-      <section id="about" className="py-16 md:py-24 lg:py-32 relative overflow-hidden bg-gray-900/50">
+      <section id="about" className="py-16 md:py-24 lg:py-32 relative overflow-hidden bg-black/60">
         <div className="container mx-auto px-4 md:px-6 lg:px-12 relative z-10">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-12 md:mb-20 animate-fade-in-down">
@@ -422,7 +422,7 @@ const EstherPlatform = () => {
       </section>
 
       {/* Videos Section */}
-      <section id="videos" className="py-16 md:py-24 lg:py-32 relative overflow-hidden bg-gray-950/80">
+      <section id="videos" className="py-16 md:py-24 lg:py-32 relative overflow-hidden bg-black/90">
         <div className="container mx-auto px-4 md:px-6 lg:px-12 relative z-10">
           <div className="text-center mb-12 md:mb-20 animate-fade-in-down">
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-purple-500/10 border border-purple-500/20 rounded-full backdrop-blur-sm mb-6">
@@ -457,7 +457,7 @@ const EstherPlatform = () => {
                     className="aspect-video bg-gradient-to-br from-purple-900/50 to-pink-900/50 flex items-center justify-center relative overflow-hidden cursor-pointer"
                     onClick={() => setPlayingVideo(video)}
                     onMouseEnter={(e) => {
-                      // Start video preview on hover
+                      // Start video preview on hover (desktop)
                       const videoEl = e.currentTarget.querySelector('video');
                       if (videoEl) {
                         videoEl.currentTime = 0;
@@ -465,11 +465,23 @@ const EstherPlatform = () => {
                       }
                     }}
                     onMouseLeave={(e) => {
-                      // Stop video preview on mouse leave
+                      // Stop video preview on mouse leave (desktop)
                       const videoEl = e.currentTarget.querySelector('video');
                       if (videoEl) {
                         videoEl.pause();
                         videoEl.currentTime = 0;
+                      }
+                    }}
+                    onTouchStart={(e) => {
+                      // Start video preview on touch (mobile)
+                      const videoEl = e.currentTarget.querySelector('video');
+                      if (videoEl && !videoEl.paused) {
+                        // If already playing, stop it (toggle behavior)
+                        videoEl.pause();
+                        videoEl.currentTime = 0;
+                      } else if (videoEl) {
+                        videoEl.currentTime = 0;
+                        videoEl.play().catch(() => {});
                       }
                     }}
                   >
@@ -486,11 +498,11 @@ const EstherPlatform = () => {
                       }}
                     />
                     
-                    {/* Hover Preview Video (for non-YouTube videos) - Plays on hover */}
+                    {/* Preview Video (for non-YouTube videos) - Plays on hover/touch */}
                     {video.video_link && !video.video_link.includes('youtube.com') && !video.video_link.includes('youtu.be') && (
                       <video
                         src={video.video_link}
-                        className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+                        className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-20"
                         muted
                         loop
                         playsInline
@@ -525,7 +537,7 @@ const EstherPlatform = () => {
       </section>
 
       {/* Contact Section */}
-      <section id="contact" className="py-16 md:py-24 lg:py-32 relative overflow-hidden bg-gray-900/50">
+      <section id="contact" className="py-16 md:py-24 lg:py-32 relative overflow-hidden bg-black/60">
         <div className="container mx-auto px-4 md:px-6 lg:px-12 relative z-10">
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-12 md:mb-20 animate-fade-in-down">
@@ -580,7 +592,7 @@ const EstherPlatform = () => {
       </section>
 
       {/* Footer */}
-      <footer className="py-8 border-t border-white/10 backdrop-blur-sm bg-gray-900/80">
+      <footer className="py-8 border-t border-white/10 backdrop-blur-sm bg-black/90">
         <div className="container mx-auto px-6 lg:px-12">
           <div className="text-center">
             <p className="text-white text-sm font-medium">
