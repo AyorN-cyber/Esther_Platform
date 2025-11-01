@@ -232,13 +232,18 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
     setVideos(updatedVideos);
     localStorage.setItem('videos', JSON.stringify(updatedVideos));
     
+    // Sync to cloud automatically
+    import('../lib/cloudSync').then(({ pushToCloud }) => {
+      pushToCloud().catch(console.error);
+    });
+    
     if (currentUser?.role === 'editor') {
       sendNotification('+234 818 019 4269', `Video "${editingVideo.title}" has been updated to ${editingVideo.status}`);
       addNotification('video_update', 'Video Updated', `"${editingVideo.title}" status changed to ${editingVideo.status}`);
     }
     
     setEditingVideo(null);
-    alert('Video updated successfully!');
+    alert('Video updated and synced across all devices!');
   };
 
   const handleLogout = () => {

@@ -1,209 +1,175 @@
 /**
- * Cloud Sync Service
- * Automatically syncs data across devices using a simple cloud storage
+ * Cloud Sync Utility
+ * Automatically syncs data between devices using Supabase
  */
 
-const SYNC_KEY = 'esther_reign_sync_data';
-const SYNC_INTERVAL = 30000; // 30 seconds
+import { supabase } from './supabase';
 
-interface SyncData {
-  settings: string | null;
+const SYNC_KEY = 'esther_reign_data';
+const DEVICE_ID = (() => {
+  let id = localStorage.getItem('device_id');
+  if (!id) {
+    id = `device_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    localStorage.setItem('device_id', id);
+  }
+  return id;
+})();
+
+export interface SyncData {
+  id?: string;
+  device_id: string;
+  site_settings: string | null;
   videos: string | null;
   hero_description: string | null;
-  messages: string | null;
-  timestamp: number;
+  chat_messages: string | null;
+  updated_at: string;
 }
 
-class CloudSyncService {
-  private syncTimer: NodeJS.Timeout | null = null;
-  private lastSyncTime: number = 0;
-
-  /**
-   * Initialize auto-sync
-   */
-  init() {
-    // Sync on page load
-    this.pullFromCloud();
-
-    // Auto-sync every 30 seconds
-    this.syncTimer = setInterval(() => {
-      this.autoSync();
-    }, SYNC_INTERVAL);
-
-    // Sync when page becomes visible
-    document.addEventListener('visibilitychange', () => {
-      if (!document.hidden) {
-        this.pullFromCloud();
-      }
-    });
-
-    // Sync before page unload
-    window.addEventListener('beforeunload', () => {
-      this.pushToCloud();
-    });
+/**
+ * Initialize cloud sync
+ * Sets up real-time listeners and initial sync
+ */
+export const initCloudSync = async () => {
+  console.log('🔄 Initializing cloud sync...');
+  
+  try {
+    // Create table if it doesn't exist (will be done in Supabase dashboard)
+    // First, try to fetch existing data
+    await pullFromCloud();
+    
+    // Set up real-time listener for changes from other devices
+    setupRealtimeSync();
+    
+    // Push local data to cloud initially
+    await pushToCloud();
+    
+    console.log('✅ Cloud sync initialized successfully');
+  } catch (error) {
+    console.error('❌ Cloud sync initialization failed:', error);
+    // Fallback to localStorage only
   }
+};
 
-  /**
-   * Auto-sync: Pull from cloud if newer data exists
-   */
-  private async autoSync() {
-    try {
-      const cloudData = await this.getFromCloud();
-      if (cloudData && cloudData.timestamp > this.lastSyncTime) {
-        // Cloud has newer data, pull it
-        this.applyCloudData(cloudData);
-        this.lastSyncTime = cloudData.timestamp;
-      }
-    } catch (error) {
-      console.log('Auto-sync check failed:', error);
+/**
+ * Push local data to cloud
+ */
+export const pushToCloud = async () => {
+  try {
+    const data: SyncData = {
+      device_id: DEVICE_ID,
+      site_settings: localStorage.getItem('site_settings'),
+      videos: localStorage.getItem('videos'),
+      hero_description: localStorage.getItem('hero_description'),
+      chat_messages: localStorage.getItem('chat_messages'),
+      updated_at: new Date().toISOString()
+    };
+
+    const { error } = await supabase
+      .from('sync_data')
+      .upsert(data, { onConflict: 'device_id' });
+
+    if (error) throw error;
+    
+    console.log('☁️ Data pushed to cloud');
+  } catch (error) {
+    console.error('Failed to push to cloud:', error);
+  }
+};
+
+/**
+ * Pull data from cloud
+ */
+export const pullFromCloud = async () => {
+  try {
+    const { data, error } = await supabase
+      .from('sync_data')
+      .select('*')
+      .order('updated_at', { ascending: false })
+      .limit(1)
+      .single();
+
+    if (error) {
+      // Table might not exist yet or no data
+      console.log('No cloud data found, using local data');
+      return;
     }
-  }
 
-  /**
-   * Push local data to cloud
-   */
-  async pushToCloud(): Promise<boolean> {
-    try {
-      const data: SyncData = {
-        settings: localStorage.getItem('site_settings'),
-        videos: localStorage.getItem('videos'),
-        hero_description: localStorage.getItem('hero_description'),
-        messages: localStorage.getItem('chat_messages'),
-        timestamp: Date.now()
-      };
-
-      // Use localStorage as a simple "cloud" - in production, this would be a real API
-      // For now, we'll use a shared key that can be accessed via URL parameter
-      const syncCode = this.generateSyncCode();
-      localStorage.setItem(`${SYNC_KEY}_${syncCode}`, JSON.stringify(data));
-      localStorage.setItem('current_sync_code', syncCode);
+    if (data) {
+      // Update local storage with cloud data
+      if (data.site_settings) localStorage.setItem('site_settings', data.site_settings);
+      if (data.videos) localStorage.setItem('videos', data.videos);
+      if (data.hero_description) localStorage.setItem('hero_description', data.hero_description);
+      if (data.chat_messages) localStorage.setItem('chat_messages', data.chat_messages);
       
-      this.lastSyncTime = data.timestamp;
-      return true;
-    } catch (error) {
-      console.error('Push to cloud failed:', error);
-      return false;
-    }
-  }
-
-  /**
-   * Pull data from cloud
-   */
-  async pullFromCloud(): Promise<boolean> {
-    try {
-      const cloudData = await this.getFromCloud();
-      if (cloudData) {
-        this.applyCloudData(cloudData);
-        this.lastSyncTime = cloudData.timestamp;
-        return true;
-      }
-      return false;
-    } catch (error) {
-      console.error('Pull from cloud failed:', error);
-      return false;
-    }
-  }
-
-  /**
-   * Get data from cloud
-   */
-  private async getFromCloud(): Promise<SyncData | null> {
-    try {
-      // Check URL for sync code
-      const urlParams = new URLSearchParams(window.location.search);
-      const urlSyncCode = urlParams.get('sync');
+      console.log('☁️ Data pulled from cloud');
       
-      // Use URL sync code or stored sync code
-      const syncCode = urlSyncCode || localStorage.getItem('current_sync_code');
-      
-      if (syncCode) {
-        const dataStr = localStorage.getItem(`${SYNC_KEY}_${syncCode}`);
-        if (dataStr) {
-          return JSON.parse(dataStr);
-        }
-      }
-      return null;
-    } catch (error) {
-      console.error('Get from cloud failed:', error);
-      return null;
-    }
-  }
-
-  /**
-   * Apply cloud data to local storage
-   */
-  private applyCloudData(data: SyncData) {
-    let hasChanges = false;
-
-    if (data.settings && data.settings !== localStorage.getItem('site_settings')) {
-      localStorage.setItem('site_settings', data.settings);
-      hasChanges = true;
-    }
-
-    if (data.videos && data.videos !== localStorage.getItem('videos')) {
-      localStorage.setItem('videos', data.videos);
-      hasChanges = true;
-    }
-
-    if (data.hero_description && data.hero_description !== localStorage.getItem('hero_description')) {
-      localStorage.setItem('hero_description', data.hero_description);
-      hasChanges = true;
-    }
-
-    if (data.messages && data.messages !== localStorage.getItem('chat_messages')) {
-      localStorage.setItem('chat_messages', data.messages);
-      hasChanges = true;
-    }
-
-    if (hasChanges) {
       // Trigger storage event to update UI
       window.dispatchEvent(new Event('storage'));
-      console.log('✅ Data synced from cloud');
     }
+  } catch (error) {
+    console.error('Failed to pull from cloud:', error);
   }
+};
 
-  /**
-   * Generate a simple sync code
-   */
-  private generateSyncCode(): string {
-    const existing = localStorage.getItem('current_sync_code');
-    if (existing) return existing;
-    
-    // Generate a simple 6-character code
-    return Math.random().toString(36).substring(2, 8).toUpperCase();
+/**
+ * Set up real-time sync listener
+ */
+const setupRealtimeSync = () => {
+  const channel = supabase
+    .channel('sync_changes')
+    .on(
+      'postgres_changes',
+      {
+        event: '*',
+        schema: 'public',
+        table: 'sync_data'
+      },
+      (payload) => {
+        console.log('🔔 Real-time update received:', payload);
+        
+        // Only update if change is from another device
+        if (payload.new && (payload.new as SyncData).device_id !== DEVICE_ID) {
+          const newData = payload.new as SyncData;
+          
+          // Update local storage
+          if (newData.site_settings) localStorage.setItem('site_settings', newData.site_settings);
+          if (newData.videos) localStorage.setItem('videos', newData.videos);
+          if (newData.hero_description) localStorage.setItem('hero_description', newData.hero_description);
+          if (newData.chat_messages) localStorage.setItem('chat_messages', newData.chat_messages);
+          
+          // Trigger storage event to update UI
+          window.dispatchEvent(new Event('storage'));
+          
+          console.log('✨ Local data updated from another device');
+        }
+      }
+    )
+    .subscribe();
+
+  return channel;
+};
+
+/**
+ * Sync on data change
+ * Call this whenever you update localStorage
+ */
+export const syncOnChange = () => {
+  // Debounce to avoid too many requests
+  if ((window as any).syncTimeout) {
+    clearTimeout((window as any).syncTimeout);
   }
+  
+  (window as any).syncTimeout = setTimeout(() => {
+    pushToCloud();
+  }, 1000); // Wait 1 second after last change
+};
 
-  /**
-   * Get current sync code
-   */
-  getSyncCode(): string {
-    let code = localStorage.getItem('current_sync_code');
-    if (!code) {
-      code = this.generateSyncCode();
-      localStorage.setItem('current_sync_code', code);
-    }
-    return code;
-  }
-
-  /**
-   * Get sync URL for sharing
-   */
-  getSyncUrl(): string {
-    const code = this.getSyncCode();
-    const baseUrl = window.location.origin + window.location.pathname;
-    return `${baseUrl}?sync=${code}`;
-  }
-
-  /**
-   * Stop auto-sync
-   */
-  stop() {
-    if (this.syncTimer) {
-      clearInterval(this.syncTimer);
-      this.syncTimer = null;
-    }
-  }
-}
-
-// Export singleton instance
-export const cloudSync = new CloudSyncService();
+/**
+ * Manual sync trigger
+ */
+export const manualSync = async () => {
+  console.log('🔄 Manual sync triggered');
+  await pullFromCloud();
+  await pushToCloud();
+  console.log('✅ Manual sync complete');
+};

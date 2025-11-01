@@ -33,7 +33,7 @@ export const Settings: React.FC = () => {
     }
   }, []);
 
-  const handleSave = () => {
+  const handleSave = async () => {
     const updatedSettings = {
       ...settings,
       hero_description: heroDescription
@@ -41,6 +41,15 @@ export const Settings: React.FC = () => {
     
     localStorage.setItem('site_settings', JSON.stringify(updatedSettings));
     localStorage.setItem('hero_description', heroDescription);
+    
+    // Sync to cloud automatically
+    try {
+      const { pushToCloud } = await import('../lib/cloudSync');
+      await pushToCloud();
+      console.log('✅ Settings synced to cloud');
+    } catch (error) {
+      console.error('Failed to sync to cloud:', error);
+    }
     
     // Trigger a storage event to notify other components
     window.dispatchEvent(new Event('storage'));
@@ -50,7 +59,7 @@ export const Settings: React.FC = () => {
       window.location.reload();
     }, 500);
     
-    alert('Settings saved successfully! The page will reload to show changes.');
+    alert('Settings saved and synced across all devices! The page will reload to show changes.');
   };
 
   const handleImageUpload = (type: 'hero' | 'about', event: React.ChangeEvent<HTMLInputElement>) => {

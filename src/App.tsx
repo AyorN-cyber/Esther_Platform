@@ -23,9 +23,9 @@ const EstherPlatform = () => {
     loadSettings();
     setTimeout(() => setLoading(false), 400);
 
-    // Initialize cloud sync
-    import('./lib/cloudSync').then(({ cloudSync }) => {
-      cloudSync.init();
+    // Initialize cloud sync for automatic data syncing across devices
+    import('./lib/cloudSync').then(({ initCloudSync }) => {
+      initCloudSync().catch(console.error);
     });
 
     // Listen for settings changes
