@@ -11,10 +11,22 @@
     scroll-behavior: smooth;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    /* Optimize scrolling performance */
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Optimize animations for mobile */
+  @media (max-width: 768px) {
+    * {
+      animation-duration: 0.3s !important;
+      transition-duration: 0.2s !important;
+    }
   }
 
   body {
     overscroll-behavior-y: none;
+    /* Improve scrolling performance */
+    -webkit-overflow-scrolling: touch;
   }
 
   /* Hide all scrollbars globally */
@@ -25,6 +37,16 @@
 
   *::-webkit-scrollbar {
     display: none;  /* Chrome, Safari and Opera */
+  }
+  
+  /* GPU acceleration for better performance */
+  .animate-fade-in,
+  .animate-slide-up,
+  .animate-slide-down,
+  .animate-scale-in {
+    will-change: transform, opacity;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
   }
 
   input,

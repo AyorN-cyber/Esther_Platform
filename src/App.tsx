@@ -23,6 +23,11 @@ const EstherPlatform = () => {
     loadSettings();
     setTimeout(() => setLoading(false), 400);
 
+    // Initialize cloud sync
+    import('./lib/cloudSync').then(({ cloudSync }) => {
+      cloudSync.init();
+    });
+
     // Listen for settings changes
     const handleStorageChange = () => {
       loadSettings();
@@ -174,7 +179,7 @@ const EstherPlatform = () => {
       </div>
 
       {/* Top Navigation */}
-      <nav className="fixed top-0 w-full bg-gray-900/80 backdrop-blur-xl z-40 border-b border-purple-500/20">
+      <nav className="fixed top-0 w-full bg-gray-900/95 md:bg-gray-900/80 md:backdrop-blur-xl z-40 border-b border-purple-500/20">
         <div className="container mx-auto px-4 md:px-6 lg:px-12">
           <div className="flex justify-between items-center h-16 md:h-20">
             {/* Logo - Triple tap to access admin */}

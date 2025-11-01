@@ -288,8 +288,48 @@ export const Settings: React.FC = () => {
             <Upload size={20} className="text-purple-400" />
             Sync Data Across Devices
           </h3>
+          
+          {/* Auto-Sync URL */}
+          <div className="mb-6 p-4 bg-green-500/10 border border-green-500/20 rounded-xl">
+            <p className="text-sm text-green-300 mb-2">
+              <strong>✨ Auto-Sync Enabled!</strong>
+            </p>
+            <p className="text-xs text-gray-300 mb-3">
+              Open this URL on your other devices to automatically sync all data:
+            </p>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                readOnly
+                value={(() => {
+                  const code = localStorage.getItem('current_sync_code') || Math.random().toString(36).substring(2, 8).toUpperCase();
+                  if (!localStorage.getItem('current_sync_code')) {
+                    localStorage.setItem('current_sync_code', code);
+                  }
+                  return `${window.location.origin}${window.location.pathname}?sync=${code}`;
+                })()}
+                className="flex-1 px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm"
+                onClick={(e) => (e.target as HTMLInputElement).select()}
+              />
+              <button
+                onClick={() => {
+                  const code = localStorage.getItem('current_sync_code') || Math.random().toString(36).substring(2, 8).toUpperCase();
+                  const url = `${window.location.origin}${window.location.pathname}?sync=${code}`;
+                  navigator.clipboard.writeText(url);
+                  alert('Sync URL copied! Open this on your other device.');
+                }}
+                className="px-4 py-2 bg-green-600 hover:bg-green-700 rounded-lg text-sm font-semibold"
+              >
+                Copy
+              </button>
+            </div>
+            <p className="text-xs text-gray-400 mt-2">
+              💡 Tip: Bookmark this URL on all your devices for instant sync!
+            </p>
+          </div>
+          
           <p className="text-gray-300 mb-4 text-sm">
-            Use this feature to sync your settings, videos, and images between your computer and mobile device.
+            Or manually export/import data between devices:
           </p>
           
           <div className="grid md:grid-cols-2 gap-4">
