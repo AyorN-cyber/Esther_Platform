@@ -43,6 +43,11 @@ export const initCloudSync = async () => {
     // Push local data to cloud initially
     await pushToCloud();
     
+    // Poll for changes every 5 seconds for immediate updates
+    setInterval(async () => {
+      await pullFromCloud();
+    }, 5000); // Check every 5 seconds
+    
     console.log('✅ Cloud sync initialized successfully');
   } catch (error) {
     console.error('❌ Cloud sync initialization failed:', error);

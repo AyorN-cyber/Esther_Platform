@@ -58,13 +58,38 @@ export const FloatingChat: React.FC<FloatingChatProps> = ({ currentUser, onNewMe
   useEffect(() => {
     loadMessages();
     loadVideos();
+    
+    // Real-time message polling - check every 2 seconds
+    const messagePolling = setInterval(() => {
+      const savedMessages = localStorage.getItem('chat_messages');
+      if (savedMessages) {
+        const parsedMessages = JSON.parse(savedMessages);
+        if (JSON.stringify(parsedMessages) !== JSON.stringify(messages)) {
+          setMessages(parsedMessages);
+        }
+      }
+    }, 2000); // Check every 2 seconds
+    
+    // Listen for storage changes from other tabs/devices
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'chat_messages' && e.newValue) {
+        setMessages(JSON.parse(e.newValue));
+      }
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    
     // Simulate WebSocket connection
-    const interval = setInterval(() => {
+    const onlineInterval = setInterval(() => {
       setIsOnline(Math.random() > 0.1); // 90% online
     }, 30000);
 
-    return () => clearInterval(interval);
-  }, []);
+    return () => {
+      clearInterval(messagePolling);
+      clearInterval(onlineInterval);
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, [messages]);
 
   const loadVideos = () => {
     const savedVideos = localStorage.getItem('videos');
