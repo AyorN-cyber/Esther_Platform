@@ -349,10 +349,11 @@ const EstherPlatform = () => {
           </div>
         </div>
 
-        {/* Scroll Indicator */}
+        {/* Scroll Indicator - Sparkle Animation */}
         <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-          <div className="w-6 h-10 border-2 border-purple-500/50 rounded-full flex justify-center p-2">
-            <div className="w-1 h-3 bg-purple-500 rounded-full animate-pulse"></div>
+          <div className="relative">
+            <Sparkles size={32} className="text-purple-400 animate-pulse" />
+            <div className="absolute inset-0 blur-xl bg-purple-500/30 animate-pulse"></div>
           </div>
         </div>
       </section>
@@ -362,9 +363,6 @@ const EstherPlatform = () => {
         <div className="container mx-auto px-4 md:px-6 lg:px-12 relative z-10">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-12 md:mb-20 animate-fade-in-down">
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-purple-500/10 border border-purple-500/20 rounded-full backdrop-blur-sm mb-6">
-                <span className="text-sm text-purple-300">About Me</span>
-              </div>
               <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black mb-6">
                 <span className="bg-gradient-to-r from-white to-purple-200 bg-clip-text text-transparent">
                   About Me
@@ -555,38 +553,8 @@ const EstherPlatform = () => {
               </p>
             </div>
 
-            {/* Stats/Achievements Section */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-8 md:mb-12">
-              <div className="group p-4 md:p-6 bg-gradient-to-br from-purple-600/20 to-pink-600/20 backdrop-blur-sm border border-purple-500/30 rounded-2xl hover:scale-105 transition-all text-center animate-fade-in-up">
-                <div className="text-3xl md:text-4xl font-black bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent mb-2">
-                  {videos.length}+
-                </div>
-                <p className="text-xs md:text-sm text-gray-300">Videos</p>
-              </div>
-
-              <div className="group p-4 md:p-6 bg-gradient-to-br from-purple-600/20 to-pink-600/20 backdrop-blur-sm border border-purple-500/30 rounded-2xl hover:scale-105 transition-all text-center animate-fade-in-up delay-100">
-                <div className="text-3xl md:text-4xl font-black bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent mb-2">
-                  100K+
-                </div>
-                <p className="text-xs md:text-sm text-gray-300">Streams</p>
-              </div>
-
-              <div className="group p-4 md:p-6 bg-gradient-to-br from-purple-600/20 to-pink-600/20 backdrop-blur-sm border border-purple-500/30 rounded-2xl hover:scale-105 transition-all text-center animate-fade-in-up delay-200">
-                <div className="text-3xl md:text-4xl font-black bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent mb-2">
-                  50K+
-                </div>
-                <p className="text-xs md:text-sm text-gray-300">Followers</p>
-              </div>
-
-              <div className="group p-4 md:p-6 bg-gradient-to-br from-purple-600/20 to-pink-600/20 backdrop-blur-sm border border-purple-500/30 rounded-2xl hover:scale-105 transition-all text-center animate-fade-in-up delay-300">
-                <div className="text-3xl md:text-4xl font-black bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent mb-2">
-                  24/7
-                </div>
-                <p className="text-xs md:text-sm text-gray-300">Worship</p>
-              </div>
-            </div>
-
-            <div className="flex justify-center gap-6 animate-fade-in-up">
+            {/* Social Media Links */}
+            <div className="flex justify-center gap-6 animate-fade-in-up mb-12 md:mb-16">
               <a href={settings?.social_links?.instagram || "https://instagram.com/estherreign"} target="_blank" rel="noopener noreferrer"
                 className="w-14 h-14 bg-white/5 backdrop-blur-sm border border-white/10 rounded-full flex items-center justify-center hover:bg-gradient-to-br hover:from-purple-600 hover:to-pink-600 hover:border-transparent transition-all hover:scale-110">
                 <Instagram size={24} />

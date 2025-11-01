@@ -124,6 +124,11 @@ export const ChatSystem: React.FC<ChatSystemProps> = ({ currentUser, videos, onN
     setMessages(updatedMessages);
     localStorage.setItem('chat_messages', JSON.stringify(updatedMessages));
 
+    // Immediately sync to cloud
+    import('../lib/cloudSync').then(({ pushToCloud }) => {
+      pushToCloud().catch(console.error);
+    });
+
     if (onNewMessage) onNewMessage();
 
     setNewMessage('');

@@ -125,6 +125,11 @@ export const FloatingChat: React.FC<FloatingChatProps> = ({ currentUser, onNewMe
     setMessages(updatedMessages);
     localStorage.setItem('chat_messages', JSON.stringify(updatedMessages));
 
+    // Immediately sync to cloud
+    import('../lib/cloudSync').then(({ pushToCloud }) => {
+      pushToCloud().catch(console.error);
+    });
+
     // Play notification sound
     playNotificationSound();
 
