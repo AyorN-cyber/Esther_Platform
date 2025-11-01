@@ -367,7 +367,7 @@ const EstherPlatform = () => {
               </div>
               <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black mb-6">
                 <span className="bg-gradient-to-r from-white to-purple-200 bg-clip-text text-transparent">
-                  My Journey
+                  About Me
                 </span>
               </h2>
             </div>
@@ -555,21 +555,34 @@ const EstherPlatform = () => {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8 mb-8 md:mb-12">
-              <div className="group p-6 md:p-8 bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl hover:border-purple-500/50 transition-all hover:scale-105 text-center">
-                <div className="w-14 h-14 md:w-16 md:h-16 bg-gradient-to-br from-purple-600 to-pink-600 rounded-2xl flex items-center justify-center mx-auto mb-3 md:mb-4 group-hover:scale-110 transition-transform">
-                  <Phone size={24} className="text-white md:w-7 md:h-7" />
+            {/* Stats/Achievements Section */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-8 md:mb-12">
+              <div className="group p-4 md:p-6 bg-gradient-to-br from-purple-600/20 to-pink-600/20 backdrop-blur-sm border border-purple-500/30 rounded-2xl hover:scale-105 transition-all text-center animate-fade-in-up">
+                <div className="text-3xl md:text-4xl font-black bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent mb-2">
+                  {videos.length}+
                 </div>
-                <h3 className="font-bold text-lg md:text-xl mb-2 text-white">Phone</h3>
-                <p className="text-sm md:text-base text-gray-300 break-words">{settings?.phone || '+234 818 019 4269'}</p>
+                <p className="text-xs md:text-sm text-gray-300">Videos</p>
               </div>
 
-              <div className="group p-6 md:p-8 bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl hover:border-purple-500/50 transition-all hover:scale-105 text-center">
-                <div className="w-14 h-14 md:w-16 md:h-16 bg-gradient-to-br from-purple-600 to-pink-600 rounded-2xl flex items-center justify-center mx-auto mb-3 md:mb-4 group-hover:scale-110 transition-transform">
-                  <Mail size={24} className="text-white md:w-7 md:h-7" />
+              <div className="group p-4 md:p-6 bg-gradient-to-br from-purple-600/20 to-pink-600/20 backdrop-blur-sm border border-purple-500/30 rounded-2xl hover:scale-105 transition-all text-center animate-fade-in-up delay-100">
+                <div className="text-3xl md:text-4xl font-black bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent mb-2">
+                  100K+
                 </div>
-                <h3 className="font-bold text-lg md:text-xl mb-2 text-white">Email</h3>
-                <p className="text-sm md:text-base text-gray-300 break-words">{settings?.email || 'contact@estherreign.com'}</p>
+                <p className="text-xs md:text-sm text-gray-300">Streams</p>
+              </div>
+
+              <div className="group p-4 md:p-6 bg-gradient-to-br from-purple-600/20 to-pink-600/20 backdrop-blur-sm border border-purple-500/30 rounded-2xl hover:scale-105 transition-all text-center animate-fade-in-up delay-200">
+                <div className="text-3xl md:text-4xl font-black bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent mb-2">
+                  50K+
+                </div>
+                <p className="text-xs md:text-sm text-gray-300">Followers</p>
+              </div>
+
+              <div className="group p-4 md:p-6 bg-gradient-to-br from-purple-600/20 to-pink-600/20 backdrop-blur-sm border border-purple-500/30 rounded-2xl hover:scale-105 transition-all text-center animate-fade-in-up delay-300">
+                <div className="text-3xl md:text-4xl font-black bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent mb-2">
+                  24/7
+                </div>
+                <p className="text-xs md:text-sm text-gray-300">Worship</p>
               </div>
             </div>
 
