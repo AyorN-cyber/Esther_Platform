@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useEffect, useRef } from 'react';
-import { MessageCircle, X, Send, Smile, Paperclip, Video as VideoIcon } from 'lucide-react';
+import { MessageCircle, X, Send, Smile, Paperclip, Video as VideoIcon, Trash2, Edit2 } from 'lucide-react';
 import type { User, Video } from '../types';
 
 interface ChatMessage {
@@ -14,6 +14,8 @@ interface ChatMessage {
   message: string;
   timestamp: string;
   video_id?: string;
+  edited?: boolean;
+  isApprovalRequest?: boolean;
 }
 
 interface UltraSimpleChatProps {
@@ -30,6 +32,10 @@ export const UltraSimpleChat: React.FC<UltraSimpleChatProps> = ({ currentUser })
   const [showVideos, setShowVideos] = useState(false);
   const [selectedVideo, setSelectedVideo] = useState('');
   const [videos, setVideos] = useState<Video[]>([]);
+  const [showClearConfirm, setShowClearConfirm] = useState(false);
+  const [clearApprovalPending, setClearApprovalPending] = useState(false);
+  const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
+  const [editText, setEditText] = useState('');
   const [unread, setUnread] = useState(0);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -41,18 +47,25 @@ export const UltraSimpleChat: React.FC<UltraSimpleChatProps> = ({ currentUser })
   useEffect(() => {
     loadMessages();
     loadVideos();
+    checkClearApproval();
     
     // Listen for new messages from other tabs/devices
     const handleStorage = (e: StorageEvent) => {
       if (e.key === 'ultra_chat_messages') {
         loadMessages();
       }
+      if (e.key === 'ultra_chat_clear_pending') {
+        checkClearApproval();
+      }
     };
     
     window.addEventListener('storage', handleStorage);
     
-    // Poll for updates every 500ms (simple and reliable)
-    const interval = setInterval(loadMessages, 500);
+    // Poll for updates every 200ms for instant messaging
+    const interval = setInterval(() => {
+      loadMessages();
+      checkClearApproval();
+    }, 200);
     
     return () => {
       window.removeEventListener('storage', handleStorage);
@@ -132,13 +145,117 @@ export const UltraSimpleChat: React.FC<UltraSimpleChatProps> = ({ currentUser })
     playSound();
   };
 
-  const clearChat = () => {
-    if (confirm('Clear all messages? This cannot be undone.')) {
+  const checkClearApproval = () => {
+    const pending = localStorage.getItem('ultra_chat_clear_pending');
+    if (pending && pending !== currentUser.id) {
+      setClearApprovalPending(true);
+    } else {
+      setClearApprovalPending(false);
+    }
+  };
+
+  const requestClearChat = () => {
+    const approvalMsg: ChatMessage = {
+      id: Date.now().toString() + Math.random(),
+      sender_id: currentUser.id,
+      sender_name: currentUser.name,
+      message: `🗑️ ${currentUser.name} wants to clear all chat messages. Please approve or deny.`,
+      timestamp: new Date().toISOString(),
+      isApprovalRequest: true
+    };
+
+    const updated = [...messages, approvalMsg];
+    setMessages(updated);
+    localStorage.setItem('ultra_chat_messages', JSON.stringify(updated));
+    localStorage.setItem('ultra_chat_clear_pending', currentUser.id);
+    
+    window.dispatchEvent(new StorageEvent('storage', {
+      key: 'ultra_chat_messages',
+      newValue: JSON.stringify(updated),
+      url: window.location.href
+    }));
+    
+    setShowClearConfirm(false);
+  };
+
+  const handleClearApproval = (approve: boolean) => {
+    if (approve) {
       setMessages([]);
       localStorage.setItem('ultra_chat_messages', JSON.stringify([]));
+      localStorage.removeItem('ultra_chat_clear_pending');
+      setClearApprovalPending(false);
+      
       window.dispatchEvent(new StorageEvent('storage', {
         key: 'ultra_chat_messages',
         newValue: '[]',
+        url: window.location.href
+      }));
+    } else {
+      const filteredMessages = messages.filter(m => !m.isApprovalRequest);
+      const denialMsg: ChatMessage = {
+        id: Date.now().toString() + Math.random(),
+        sender_id: currentUser.id,
+        sender_name: currentUser.name,
+        message: `❌ ${currentUser.name} denied the request to clear chat.`,
+        timestamp: new Date().toISOString()
+      };
+      
+      const updated = [...filteredMessages, denialMsg];
+      setMessages(updated);
+      localStorage.setItem('ultra_chat_messages', JSON.stringify(updated));
+      localStorage.removeItem('ultra_chat_clear_pending');
+      setClearApprovalPending(false);
+      
+      window.dispatchEvent(new StorageEvent('storage', {
+        key: 'ultra_chat_messages',
+        newValue: JSON.stringify(updated),
+        url: window.location.href
+      }));
+    }
+  };
+
+  const canEditOrDelete = (msgTimestamp: string) => {
+    const messageTime = new Date(msgTimestamp).getTime();
+    const now = Date.now();
+    return (now - messageTime) <= 5 * 60 * 1000; // 5 minutes
+  };
+
+  const startEdit = (msg: ChatMessage) => {
+    setEditingMessageId(msg.id);
+    setEditText(msg.message);
+  };
+
+  const saveEdit = () => {
+    if (!editText.trim() || !editingMessageId) return;
+    
+    const updated = messages.map(m => 
+      m.id === editingMessageId 
+        ? { ...m, message: editText.trim(), edited: true }
+        : m
+    );
+    
+    setMessages(updated);
+    localStorage.setItem('ultra_chat_messages', JSON.stringify(updated));
+    
+    window.dispatchEvent(new StorageEvent('storage', {
+      key: 'ultra_chat_messages',
+      newValue: JSON.stringify(updated),
+      url: window.location.href
+    }));
+    
+    setEditingMessageId(null);
+    setEditText('');
+  };
+
+  const deleteMessage = (msgId: string) => {
+    if (confirm('Delete this message?')) {
+      const updated = messages.filter(m => m.id !== msgId);
+      setMessages(updated);
+      localStorage.setItem('ultra_chat_messages', JSON.stringify(updated));
+      
+      window.dispatchEvent(new StorageEvent('storage', {
+        key: 'ultra_chat_messages',
+        newValue: JSON.stringify(updated),
         url: window.location.href
       }));
     }
@@ -200,7 +317,7 @@ export const UltraSimpleChat: React.FC<UltraSimpleChatProps> = ({ currentUser })
         style={{ transformOrigin: 'bottom right' }}
       >
         {/* Header */}
-        <div className="sticky top-0 z-10 bg-gradient-to-r from-purple-600 to-pink-600 p-4 md:rounded-t-2xl flex items-center justify-between shadow-md">
+        <div className="sticky top-0 z-10 bg-gradient-to-r from-purple-600 to-pink-600 p-4 rounded-t-2xl flex items-center justify-between shadow-md">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-purple-600 font-bold">
               {otherUser[0]}
@@ -211,8 +328,8 @@ export const UltraSimpleChat: React.FC<UltraSimpleChatProps> = ({ currentUser })
             </div>
           </div>
           <div className="flex gap-2">
-            <button onClick={clearChat} className="p-2 hover:bg-white/20 rounded-full" title="Clear chat">
-              <X size={18} className="text-white" />
+            <button onClick={() => setShowClearConfirm(true)} className="p-2 hover:bg-white/20 rounded-full" title="Clear chat">
+              <Trash2 size={18} className="text-white" />
             </button>
             <button onClick={() => setIsOpen(false)} className="p-2 hover:bg-white/20 rounded-full">
               <X size={20} className="text-white" />
@@ -244,14 +361,53 @@ export const UltraSimpleChat: React.FC<UltraSimpleChatProps> = ({ currentUser })
                   </div>
                 )}
                 
-                <div className={`flex ${isOwn ? 'justify-end' : 'justify-start'}`}>
-                  <div className={`max-w-[80%] ${isOwn ? 'items-end' : 'items-start'} flex flex-col`}>
+                <div className={`group flex ${isOwn ? 'justify-end' : 'justify-start'}`}>
+                  <div className={`max-w-[80%] ${isOwn ? 'items-end' : 'items-start'} flex flex-col relative`}>
                     {!isOwn && (
                       <span className="text-xs text-gray-600 mb-1 ml-1 font-medium">{msg.sender_name}</span>
                     )}
+                    
+                    {/* Edit/Delete buttons for own messages within 5 minutes */}
+                    {isOwn && !msg.isApprovalRequest && canEditOrDelete(msg.timestamp) && (
+                      <div className="absolute -top-2 -right-2 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1 z-10">
+                        <button
+                          onClick={() => startEdit(msg)}
+                          className="w-6 h-6 bg-blue-500 hover:bg-blue-600 rounded-full flex items-center justify-center text-white shadow-lg"
+                          title="Edit message"
+                        >
+                          <Edit2 size={12} />
+                        </button>
+                        <button
+                          onClick={() => deleteMessage(msg.id)}
+                          className="w-6 h-6 bg-red-500 hover:bg-red-600 rounded-full flex items-center justify-center text-white shadow-lg"
+                          title="Delete message"
+                        >
+                          <X size={12} />
+                        </button>
+                      </div>
+                    )}
+                    
                     <div className={`rounded-2xl px-4 py-3 shadow-lg ${
                       isOwn ? 'bg-gradient-to-br from-purple-600 to-pink-500 text-white' : 'bg-white text-gray-900'
                     }`}>
+                      {/* Approval Request Buttons */}
+                      {msg.isApprovalRequest && !isOwn && (
+                        <div className="mt-3 flex gap-2">
+                          <button
+                            onClick={() => handleClearApproval(false)}
+                            className="flex-1 px-3 py-1.5 bg-gray-200 hover:bg-gray-300 rounded-lg text-xs font-medium transition-colors"
+                          >
+                            Deny
+                          </button>
+                          <button
+                            onClick={() => handleClearApproval(true)}
+                            className="flex-1 px-3 py-1.5 bg-green-500 hover:bg-green-600 rounded-lg text-white text-xs font-medium transition-colors"
+                          >
+                            Approve
+                          </button>
+                        </div>
+                      )}
+                      
                       {video && (
                         <div className={`mb-2 p-2 rounded-lg flex items-center gap-2 ${
                           isOwn ? 'bg-white/20' : 'bg-purple-50'
@@ -267,10 +423,49 @@ export const UltraSimpleChat: React.FC<UltraSimpleChatProps> = ({ currentUser })
                           </div>
                         </div>
                       )}
-                      <p className="text-[15px] whitespace-pre-wrap break-words">{msg.message}</p>
-                      <div className={`text-[11px] mt-1 ${isOwn ? 'text-white/70' : 'text-gray-400'}`}>
-                        {formatTime(msg.timestamp)}
-                      </div>
+                      
+                      {editingMessageId === msg.id ? (
+                        <div className="space-y-2">
+                          <input
+                            type="text"
+                            value={editText}
+                            onChange={e => setEditText(e.target.value)}
+                            onKeyPress={e => e.key === 'Enter' && saveEdit()}
+                            className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-white/30"
+                            autoFocus
+                          />
+                          <div className="flex gap-2">
+                            <button
+                              onClick={saveEdit}
+                              className="px-3 py-1 bg-green-500 hover:bg-green-600 rounded text-xs text-white font-medium"
+                            >
+                              Save
+                            </button>
+                            <button
+                              onClick={() => {
+                                setEditingMessageId(null);
+                                setEditText('');
+                              }}
+                              className="px-3 py-1 bg-gray-500 hover:bg-gray-600 rounded text-xs text-white font-medium"
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <>
+                          <p className="text-[15px] whitespace-pre-wrap break-words">{msg.message}</p>
+                          {msg.edited && (
+                            <span className={`text-[10px] italic ${isOwn ? 'text-white/60' : 'text-gray-400'}`}> (edited)</span>
+                          )}
+                        </>
+                      )}
+                      
+                      {editingMessageId !== msg.id && (
+                        <div className={`text-[11px] mt-1 ${isOwn ? 'text-white/70' : 'text-gray-400'}`}>
+                          {formatTime(msg.timestamp)}
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -281,7 +476,7 @@ export const UltraSimpleChat: React.FC<UltraSimpleChatProps> = ({ currentUser })
         </div>
 
         {/* Input */}
-        <div className="p-4 bg-white border-t md:rounded-b-2xl">
+        <div className="p-4 bg-white border-t rounded-b-2xl">
           {selectedVideo && (
             <div className="mb-2 p-2 bg-purple-50 rounded-lg flex items-center justify-between">
               <div className="flex items-center gap-2 flex-1 min-w-0">
@@ -372,6 +567,58 @@ export const UltraSimpleChat: React.FC<UltraSimpleChatProps> = ({ currentUser })
             </button>
           </div>
         </div>
+
+        {/* Clear Chat Confirmation Modal */}
+        {showClearConfirm && (
+          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 rounded-2xl">
+            <div className="bg-white rounded-xl p-6 m-4 max-w-sm">
+              <h3 className="text-lg font-bold text-gray-900 mb-2">Clear All Chat?</h3>
+              <p className="text-sm text-gray-600 mb-4">
+                This will send an approval request to {otherUser}. The chat will only be cleared if they approve.
+              </p>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setShowClearConfirm(false)}
+                  className="flex-1 px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg text-gray-700 font-medium transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={requestClearChat}
+                  className="flex-1 px-4 py-2 bg-red-500 hover:bg-red-600 rounded-lg text-white font-medium transition-colors"
+                >
+                  Request
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Clear Approval Modal */}
+        {clearApprovalPending && localStorage.getItem('ultra_chat_clear_pending') !== currentUser.id && (
+          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 rounded-2xl">
+            <div className="bg-white rounded-xl p-6 m-4 max-w-sm">
+              <h3 className="text-lg font-bold text-gray-900 mb-2">Clear Chat Request</h3>
+              <p className="text-sm text-gray-600 mb-4">
+                {otherUser} wants to clear all chat messages. Do you approve?
+              </p>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => handleClearApproval(false)}
+                  className="flex-1 px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg text-gray-700 font-medium transition-colors"
+                >
+                  Deny
+                </button>
+                <button
+                  onClick={() => handleClearApproval(true)}
+                  className="flex-1 px-4 py-2 bg-green-500 hover:bg-green-600 rounded-lg text-white font-medium transition-colors"
+                >
+                  Approve
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </>
   );
