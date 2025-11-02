@@ -86,6 +86,16 @@ export const ChatSystem: React.FC<ChatSystemProps> = ({ currentUser, videos, onN
     
     // Real-time message polling - check every 300ms for INSTANT delivery
     const messagePolling = setInterval(() => {
+      // Check if chat was recently cleared
+      const clearTimestamp = localStorage.getItem('chat_clear_timestamp');
+      if (clearTimestamp) {
+        const timeSinceClear = Date.now() - parseInt(clearTimestamp);
+        if (timeSinceClear < 5000) {
+          // Don't restore messages within 5 seconds of clearing
+          return;
+        }
+      }
+      
       const savedMessages = localStorage.getItem('chat_messages');
       if (savedMessages) {
         try {

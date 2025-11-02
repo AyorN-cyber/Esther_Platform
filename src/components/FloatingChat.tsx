@@ -61,6 +61,16 @@ export const FloatingChat: React.FC<FloatingChatProps> = ({ currentUser, onNewMe
     
     // Real-time message polling - check every 300ms for INSTANT delivery
     const messagePolling = setInterval(() => {
+      // Check if chat was recently cleared
+      const clearTimestamp = localStorage.getItem('chat_clear_timestamp');
+      if (clearTimestamp) {
+        const timeSinceClear = Date.now() - parseInt(clearTimestamp);
+        if (timeSinceClear < 5000) {
+          // Don't restore messages within 5 seconds of clearing
+          return;
+        }
+      }
+      
       const savedMessages = localStorage.getItem('chat_messages');
       if (savedMessages) {
         try {
@@ -317,6 +327,10 @@ export const FloatingChat: React.FC<FloatingChatProps> = ({ currentUser, onNewMe
     if (approve) {
       // Clear all messages IMMEDIATELY
       const emptyMessages: ChatMessage[] = [];
+      
+      // Set a flag to prevent polling from restoring messages
+      localStorage.setItem('chat_clear_timestamp', Date.now().toString());
+      
       setMessages(emptyMessages);
       localStorage.setItem('chat_messages', JSON.stringify(emptyMessages));
       localStorage.removeItem('clear_chat_pending');
@@ -329,17 +343,22 @@ export const FloatingChat: React.FC<FloatingChatProps> = ({ currentUser, onNewMe
         }
       });
       
-      // INSTANT UPDATE: Trigger storage event IMMEDIATELY
+      // INSTANT UPDATE: Trigger storage event IMMEDIATELY with empty string to force clear
       window.dispatchEvent(new StorageEvent('storage', {
         key: 'chat_messages',
-        newValue: JSON.stringify(emptyMessages),
+        newValue: '[]',
+        oldValue: JSON.stringify(messages),
         url: window.location.href
       }));
       
-      // Sync to cloud IMMEDIATELY
+      // Sync to cloud IMMEDIATELY - push empty array
       import('../lib/cloudSync').then(({ pushToCloud }) => {
         pushToCloud().then(() => {
           console.log('✅ Chat cleared and synced to cloud');
+          // Remove the clear timestamp after 5 seconds
+          setTimeout(() => {
+            localStorage.removeItem('chat_clear_timestamp');
+          }, 5000);
         }).catch(console.error);
       });
       

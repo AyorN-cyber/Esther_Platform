@@ -108,13 +108,31 @@ export const pullFromCloud = async () => {
         const cloudMessages = JSON.parse(cloudMessagesStr);
         const localMessages = JSON.parse(localMessagesStr);
         
-        // If cloud has empty array and local has messages, keep local (user just sent a message)
-        // If cloud has messages and local is empty, use cloud (chat was cleared or initial load)
-        // Otherwise, merge by ID
+        // Check if chat was recently cleared
+        const clearTimestamp = localStorage.getItem('chat_clear_timestamp');
+        const recentlyClearedLocal = clearTimestamp && (Date.now() - parseInt(clearTimestamp)) < 5000;
         
+        // If cloud has empty array and local has messages
         if (cloudMessages.length === 0 && localMessages.length > 0) {
-          // Local has new messages, push to cloud instead
+          // If we recently cleared locally, respect the clear
+          if (recentlyClearedLocal) {
+            return; // Keep local empty
+          }
+          // Otherwise, local has new messages, push to cloud
           await pushToCloud();
+          return;
+        }
+        
+        // If cloud has messages and local is empty
+        if (cloudMessages.length > 0 && localMessages.length === 0) {
+          // If we recently cleared locally, push empty to cloud
+          if (recentlyClearedLocal) {
+            await pushToCloud();
+            return;
+          }
+          // Otherwise, use cloud messages
+          localStorage.setItem('chat_messages', JSON.stringify(cloudMessages));
+          window.dispatchEvent(new Event('storage'));
           return;
         }
         
