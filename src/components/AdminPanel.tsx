@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, LogOut, Save, BarChart3, Video as VideoIcon, User, Eye, TrendingUp, Users, Clock, CheckCircle, Edit2, Settings as SettingsIcon, Key, Upload } from 'lucide-react';
-import { UltraSimpleChat } from './UltraSimpleChat';
+import { SupabaseChat } from './SupabaseChat';
 import { Settings } from './Settings';
 import { NotificationCenter, addNotification } from './NotificationCenter';
 import { VideoChart } from './VideoChart';
@@ -984,7 +984,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
 
       {/* Floating Chat Widget */}
       {currentUser && (
-        <UltraSimpleChat currentUser={currentUser} />
+        <SupabaseChat currentUser={currentUser} />
       )}
     </div>
   );
