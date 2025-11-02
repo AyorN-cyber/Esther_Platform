@@ -84,22 +84,38 @@ export const ChatSystem: React.FC<ChatSystemProps> = ({ currentUser, videos, onN
   useEffect(() => {
     loadMessages();
     
-    // Real-time message polling - check every 500ms for INSTANT delivery
+    // Real-time message polling - check every 300ms for INSTANT delivery
     const messagePolling = setInterval(() => {
       const savedMessages = localStorage.getItem('chat_messages');
       if (savedMessages) {
-        const parsedMessages = JSON.parse(savedMessages);
-        if (JSON.stringify(parsedMessages) !== JSON.stringify(messages)) {
-          setMessages(parsedMessages);
+        try {
+          const parsedMessages = JSON.parse(savedMessages);
+          // Only update if messages actually changed
+          if (parsedMessages.length !== messages.length || 
+              (parsedMessages.length > 0 && messages.length > 0 && 
+               parsedMessages[parsedMessages.length - 1]?.id !== messages[messages.length - 1]?.id)) {
+            setMessages(parsedMessages);
+          }
+        } catch (e) {
+          console.error('Error parsing messages:', e);
         }
       }
-    }, 500); // Check every 500ms for instant updates
+    }, 300); // Check every 300ms for instant updates
     
-    // Listen for storage changes from other tabs/devices
+    // Listen for storage changes from other tabs/devices - INSTANT
     const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === 'chat_messages' && e.newValue) {
-        const newMessages = JSON.parse(e.newValue);
-        setMessages(newMessages);
+      if (e.key === 'chat_messages') {
+        if (e.newValue) {
+          try {
+            const newMessages = JSON.parse(e.newValue);
+            setMessages(newMessages);
+          } catch (err) {
+            console.error('Error parsing storage event:', err);
+          }
+        } else {
+          // If newValue is null, messages were cleared
+          setMessages([]);
+        }
       }
     };
     
@@ -313,8 +329,8 @@ export const ChatSystem: React.FC<ChatSystemProps> = ({ currentUser, videos, onN
       <div 
         className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-1 scrollbar-hide pt-16" 
         style={{ 
-          backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'300\' height=\'300\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cdefs%3E%3Cpattern id=\'pattern\' x=\'0\' y=\'0\' width=\'100\' height=\'100\' patternUnits=\'userSpaceOnUse\'%3E%3Cpath d=\'M20 20h60v60H20z\' fill=\'none\' stroke=\'%23d9d9d9\' stroke-width=\'0.5\' opacity=\'0.3\'/%3E%3C/pattern%3E%3C/defs%3E%3Crect width=\'300\' height=\'300\' fill=\'%23efeae2\'/%3E%3Crect width=\'300\' height=\'300\' fill=\'url(%23pattern)\'/%3E%3C/svg%3E")',
-          backgroundColor: '#efeae2'
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3Cpattern id='bubble' x='0' y='0' width='60' height='60' patternUnits='userSpaceOnUse'%3E%3Ccircle cx='10' cy='10' r='1.5' fill='%23d1d7db' opacity='0.4'/%3E%3Ccircle cx='30' cy='25' r='1' fill='%23d1d7db' opacity='0.3'/%3E%3Ccircle cx='50' cy='15' r='1.2' fill='%23d1d7db' opacity='0.35'/%3E%3Ccircle cx='20' cy='40' r='0.8' fill='%23d1d7db' opacity='0.3'/%3E%3Ccircle cx='45' cy='50' r='1.3' fill='%23d1d7db' opacity='0.4'/%3E%3C/pattern%3E%3C/defs%3E%3Crect width='60' height='60' fill='%23e5ddd5'/%3E%3Crect width='60' height='60' fill='url(%23bubble)'/%3E%3C/svg%3E")`,
+          backgroundColor: '#e5ddd5'
         }}
       >
         {messages.map((msg) => {
