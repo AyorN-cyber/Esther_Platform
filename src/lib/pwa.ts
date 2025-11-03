@@ -142,27 +142,35 @@ function showUpdateNotification() {
  * Setup install prompt listener
  */
 export function setupInstallPrompt() {
+  console.log('[PWA] Setting up install prompt...');
+  
   // Check if already installed
-  if (window.matchMedia('(display-mode: standalone)').matches || 
-      (window.navigator as any).standalone === true) {
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || 
+                       (window.navigator as any).standalone === true;
+  
+  if (isStandalone) {
     isInstalled = true;
-    console.log('[PWA] App is installed');
+    console.log('[PWA] App is already installed (running in standalone mode)');
     return;
   }
 
+  console.log('[PWA] App not installed, waiting for install prompt...');
+
   // Listen for install prompt
   window.addEventListener('beforeinstallprompt', (e) => {
-    console.log('[PWA] Install prompt available');
+    console.log('[PWA] ✅ Install prompt available! App can be installed.');
     e.preventDefault();
     deferredPrompt = e as BeforeInstallPromptEvent;
     
-    // Show custom install button
-    showInstallButton();
+    // Show custom install button after a short delay
+    setTimeout(() => {
+      showInstallButton();
+    }, 1000);
   });
 
   // Listen for app installed
   window.addEventListener('appinstalled', () => {
-    console.log('[PWA] App installed successfully');
+    console.log('[PWA] ✅ App installed successfully!');
     isInstalled = true;
     deferredPrompt = null;
     hideInstallButton();
@@ -170,6 +178,18 @@ export function setupInstallPrompt() {
     // Show success message
     showInstallSuccessMessage();
   });
+
+  // Debug: Check after 5 seconds if prompt was received
+  setTimeout(() => {
+    if (!deferredPrompt && !isInstalled) {
+      console.log('[PWA] ⚠️ Install prompt not received after 5 seconds');
+      console.log('[PWA] This could mean:');
+      console.log('  - App is already installed');
+      console.log('  - Browser doesn\'t support PWA install');
+      console.log('  - PWA requirements not met');
+      console.log('  - User previously dismissed install prompt');
+    }
+  }, 5000);
 }
 
 /**
@@ -179,10 +199,21 @@ function showInstallButton() {
   // Check if button already exists
   if (document.getElementById('pwa-install-btn')) return;
 
-  const installButton = document.createElement('button');
-  installButton.id = 'pwa-install-btn';
-  installButton.innerHTML = `
-    <div style="
+  // Create style element for animation
+  const style = document.createElement('style');
+  style.textContent = `
+    @keyframes pwa-pulse {
+      0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+      }
+      50% {
+        transform: scale(1.05);
+        box-shadow: 0 6px 16px rgba(102, 126, 234, 0.6);
+      }
+    }
+    
+    #pwa-install-btn {
       position: fixed;
       bottom: 80px;
       right: 20px;
@@ -199,23 +230,36 @@ function showInstallButton() {
       border: none;
       font-weight: 600;
       font-size: 14px;
-      animation: pulse 2s infinite;
-    ">
-      <span style="font-size: 20px;">📱</span>
-      <span>Install App</span>
-    </div>
-    <style>
-      @keyframes pulse {
-        0%, 100% {
-          transform: scale(1);
-          box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-        }
-        50% {
-          transform: scale(1.05);
-          box-shadow: 0 6px 16px rgba(102, 126, 234, 0.6);
-        }
+      animation: pwa-pulse 2s ease-in-out infinite;
+      transition: all 0.3s ease;
+    }
+    
+    #pwa-install-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+    }
+    
+    #pwa-install-btn:active {
+      transform: scale(0.95);
+    }
+    
+    @media (max-width: 768px) {
+      #pwa-install-btn {
+        bottom: 20px;
+        right: 20px;
+        padding: 10px 16px;
+        font-size: 13px;
       }
-    </style>
+    }
+  `;
+  document.head.appendChild(style);
+
+  // Create button
+  const installButton = document.createElement('button');
+  installButton.id = 'pwa-install-btn';
+  installButton.innerHTML = `
+    <span style="font-size: 20px;">📱</span>
+    <span>Install App</span>
   `;
 
   installButton.addEventListener('click', promptInstall);
@@ -237,13 +281,17 @@ function hideInstallButton() {
  * Prompt user to install app
  */
 export async function promptInstall(): Promise<boolean> {
+  console.log('[PWA] Install button clicked');
+  
   if (!deferredPrompt) {
-    console.log('[PWA] Install prompt not available');
+    console.log('[PWA] ⚠️ Install prompt not available, showing instructions');
     showInstallInstructions();
     return false;
   }
 
   try {
+    console.log('[PWA] Showing install prompt...');
+    
     // Show install prompt
     await deferredPrompt.prompt();
     
@@ -252,13 +300,17 @@ export async function promptInstall(): Promise<boolean> {
     console.log('[PWA] Install prompt outcome:', outcome);
     
     if (outcome === 'accepted') {
+      console.log('[PWA] ✅ User accepted installation');
       hideInstallButton();
       return true;
+    } else {
+      console.log('[PWA] ❌ User dismissed installation');
     }
     
     return false;
   } catch (error) {
-    console.error('[PWA] Install prompt error:', error);
+    console.error('[PWA] ❌ Install prompt error:', error);
+    showInstallInstructions();
     return false;
   }
 }

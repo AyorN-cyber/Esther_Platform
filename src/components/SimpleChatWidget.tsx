@@ -10,9 +10,9 @@
  */
 
 import React, { useState, useEffect, useRef } from 'react';
-import { MessageCircle, X, Send, Smile, Mic, Trash2, Paperclip, Video as VideoIcon } from 'lucide-react';
+import { MessageCircle, X, Send, Smile, Mic, Trash2 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
-import type { User, Video } from '../types';
+import type { User } from '../types';
 
 interface Message {
   id: string;
@@ -36,9 +36,6 @@ export const SimpleChatWidget: React.FC<SimpleChatWidgetProps> = ({ currentUser 
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const [showEmoji, setShowEmoji] = useState(false);
-  const [showVideoSelector, setShowVideoSelector] = useState(false);
-  const [selectedVideo, setSelectedVideo] = useState<string>('');
-  const [videos, setVideos] = useState<Video[]>([]);
   const [isRecording, setIsRecording] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
   const [playingAudio, setPlayingAudio] = useState<string | null>(null);
@@ -54,24 +51,11 @@ export const SimpleChatWidget: React.FC<SimpleChatWidgetProps> = ({ currentUser 
 
   const otherUser = currentUser.role === 'artist' ? 'Manager' : 'Esther Reign';
 
-  // Load messages and videos from Supabase on mount
+  // Load messages from Supabase on mount
   useEffect(() => {
     loadMessages();
-    loadVideos();
     setupRealtimeSubscription();
   }, []);
-
-  const loadVideos = () => {
-    const savedVideos = localStorage.getItem('videos');
-    if (savedVideos) {
-      const allVideos: Video[] = JSON.parse(savedVideos);
-      setVideos(allVideos);
-    }
-  };
-
-  const getReferencedVideo = (videoId: string) => {
-    return videos.find(v => v.id === videoId);
-  };
 
   // Auto-scroll only when near bottom
   useEffect(() => {
@@ -153,15 +137,14 @@ export const SimpleChatWidget: React.FC<SimpleChatWidgetProps> = ({ currentUser 
   };
 
   const sendMessage = async () => {
-    if (!newMessage.trim() && !selectedVideo) return;
+    if (!newMessage.trim()) return;
 
     const message: Message = {
       id: `${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       sender_id: currentUser.id,
       sender_name: currentUser.name,
-      message: newMessage.trim() || '📹 Video reference',
-      timestamp: new Date().toISOString(),
-      video_reference: selectedVideo || undefined
+      message: newMessage.trim(),
+      timestamp: new Date().toISOString()
     };
 
     try {
@@ -172,8 +155,6 @@ export const SimpleChatWidget: React.FC<SimpleChatWidgetProps> = ({ currentUser 
       if (error) throw error;
 
       setNewMessage('');
-      setSelectedVideo('');
-      setShowVideoSelector(false);
       playNotificationSound();
     } catch (error) {
       console.error('Error sending message:', error);
@@ -429,6 +410,7 @@ export const SimpleChatWidget: React.FC<SimpleChatWidgetProps> = ({ currentUser 
                         ? 'bg-gradient-to-br from-purple-600 via-purple-500 to-pink-500 text-white' 
                         : 'bg-white text-gray-900'
                     }`}>
+                      {/* Voice Message */}
                       {msg.voice_data ? (
                         <div className="flex items-center gap-3 py-1">
                           <button
