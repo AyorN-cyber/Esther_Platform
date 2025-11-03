@@ -1,0 +1,12 @@
+<svg width="1920" height="1080" viewBox="0 0 1920 1080" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<defs>
+<linearGradient id="gradientAndroidLand" x1="0%" y1="0%" x2="100%" y2="100%">
+<stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+<stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+</linearGradient>
+</defs>
+<rect width="1920" height="1080" fill="url(#gradientAndroidLand)"/>
+<image x="860" y="440" width="200" height="200" href="/Esther_Platform/icons/android/android-launchericon-512-512.png" />
+<text x="960" y="690" font-family="Roboto, sans-serif" font-size="32" font-weight="600" fill="white" text-anchor="middle">Esther Reign</text>
+<text x="960" y="730" font-family="Roboto, sans-serif" font-size="18" font-weight="400" fill="white" fill-opacity="0.8" text-anchor="middle">Admin Panel</text>
+</svg>
