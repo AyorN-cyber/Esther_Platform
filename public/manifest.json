@@ -2,8 +2,8 @@
   "name": "Esther Reign Admin",
   "short_name": "ER Admin",
   "description": "Admin panel for Esther Reign platform - Manage videos, chat, and site settings",
-  "start_url": "/#admin",
-  "scope": "/",
+  "start_url": "/Esther_Platform/#admin",
+  "scope": "/Esther_Platform/",
   "display": "standalone",
   "orientation": "portrait-primary",
   "theme_color": "#9333ea",
@@ -13,61 +13,55 @@
   "dir": "ltr",
   "icons": [
     {
-      "src": "/icons/icon-72x72.png",
+      "src": "/Esther_Platform/icons/android/android-launchericon-72-72.png",
       "sizes": "72x72",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/icons/icon-96x96.png",
+      "src": "/Esther_Platform/icons/android/android-launchericon-96-96.png",
       "sizes": "96x96",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/icons/icon-128x128.png",
+      "src": "/Esther_Platform/icons/ios/128.png",
       "sizes": "128x128",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/icons/icon-144x144.png",
+      "src": "/Esther_Platform/icons/android/android-launchericon-144-144.png",
       "sizes": "144x144",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/icons/icon-152x152.png",
+      "src": "/Esther_Platform/icons/ios/152.png",
       "sizes": "152x152",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/icons/icon-192x192.png",
+      "src": "/Esther_Platform/icons/android/android-launchericon-192-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/icons/icon-384x384.png",
-      "sizes": "384x384",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/icons/icon-512x512.png",
+      "src": "/Esther_Platform/icons/ios/512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/icons/icon-maskable-192x192.png",
+      "src": "/Esther_Platform/icons/android/android-launchericon-192-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "maskable"
     },
     {
-      "src": "/icons/icon-maskable-512x512.png",
+      "src": "/Esther_Platform/icons/android/android-launchericon-512-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"

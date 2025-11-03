@@ -14,11 +14,11 @@ const IMAGE_CACHE = `${CACHE_NAME}-images`;
 
 // Assets to cache immediately on install
 const STATIC_ASSETS = [
-  '/',
-  '/index.html',
-  '/#admin',
-  '/manifest.json',
-  '/offline.html', // Fallback page for offline
+  '/Esther_Platform/',
+  '/Esther_Platform/index.html',
+  '/Esther_Platform/#admin',
+  '/Esther_Platform/manifest.json',
+  '/Esther_Platform/offline.html', // Fallback page for offline
 ];
 
 // Routes that should always fetch from network first
