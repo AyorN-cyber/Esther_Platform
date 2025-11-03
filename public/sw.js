@@ -160,7 +160,7 @@ async function cacheFirst(request, cacheName, maxSize = null) {
     // Try to return offline page for navigation requests
     if (request.mode === 'navigate') {
       const cache = await caches.open(STATIC_CACHE);
-      return cache.match('/offline.html');
+      return cache.match('/Esther_Platform/offline.html');
     }
     
     return new Response('Offline', { status: 503, statusText: 'Service Unavailable' });
@@ -203,7 +203,7 @@ async function networkFirst(request, cacheName) {
     // No cache available, return offline page for navigation
     if (request.mode === 'navigate') {
       const staticCache = await caches.open(STATIC_CACHE);
-      return staticCache.match('/offline.html');
+      return staticCache.match('/Esther_Platform/offline.html');
     }
 
     return new Response('Offline', { status: 503, statusText: 'Service Unavailable' });

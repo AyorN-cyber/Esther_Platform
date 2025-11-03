@@ -19,8 +19,8 @@ export async function registerServiceWorker(): Promise<ServiceWorkerRegistration
     try {
       console.log('[PWA] Registering service worker...');
       
-      const registration = await navigator.serviceWorker.register('/sw.js', {
-        scope: '/'
+      const registration = await navigator.serviceWorker.register('/Esther_Platform/sw.js', {
+        scope: '/Esther_Platform/'
       });
 
       console.log('[PWA] Service worker registered:', registration.scope);

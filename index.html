@@ -17,7 +17,7 @@
     <meta name="theme-color" media="(prefers-color-scheme: light)" content="#9333ea">
     
     <!-- PWA Manifest -->
-    <link rel="manifest" href="/manifest.json">
+    <link rel="manifest" href="/Esther_Platform/manifest.json">
     
     <!-- Favicon -->
     <link rel="icon" type="image/png" sizes="32x32" href="/Esther_Platform/icons/ios/32.png">
@@ -122,18 +122,8 @@
     
     <!-- PWA Installation Script -->
     <script>
-      // Register service worker
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/sw.js')
-            .then(registration => {
-              console.log('SW registered:', registration);
-            })
-            .catch(error => {
-              console.log('SW registration failed:', error);
-            });
-        });
-      }
+      // Service worker is registered by src/lib/pwa.ts
+      // This ensures proper initialization with the React app
     </script>
   </body>
 </html>
