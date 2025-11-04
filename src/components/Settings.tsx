@@ -21,45 +21,58 @@ export const Settings: React.FC = () => {
   const [heroDescription, setHeroDescription] = useState('');
 
   useEffect(() => {
-    const saved = localStorage.getItem('site_settings');
-    if (saved) {
-      setSettings(JSON.parse(saved));
-    }
-    const savedHeroDesc = localStorage.getItem('hero_description');
-    if (savedHeroDesc) {
-      setHeroDescription(savedHeroDesc);
-    } else {
-      setHeroDescription('Lifting voices in worship through powerful gospel music. Experience the presence of God through every note.');
-    }
+    loadSettings();
   }, []);
 
-  const handleSave = async () => {
-    const updatedSettings = {
-      ...settings,
-      hero_description: heroDescription
-    };
+  const loadSettings = async () => {
+    const { getSettings } = await import('../lib/supabaseData');
+    const data = await getSettings();
     
-    localStorage.setItem('site_settings', JSON.stringify(updatedSettings));
-    localStorage.setItem('hero_description', heroDescription);
-    
-    // Sync to cloud automatically
-    try {
-      const { pushToCloud } = await import('../lib/cloudSync');
-      await pushToCloud();
-      console.log('✅ Settings synced to cloud');
-    } catch (error) {
-      console.error('Failed to sync to cloud:', error);
+    if (data) {
+      setSettings({
+        hero_image: data.hero_image || '/Estherreign.jpg',
+        about_image: data.about_image || '/IMG-20250915-WA0023.jpg',
+        about_text: data.about_text || 'I am an emerging gospel artist with a deep passion for worship and praise...',
+        phone: data.contact_phone || '+234 818 019 4269',
+        email: data.contact_email || 'contact@estherreign.com',
+        location: 'Lagos, Nigeria',
+        social_links: data.social_links || {
+          instagram: 'https://instagram.com/estherreign',
+          youtube: 'https://youtube.com/@estherreign',
+          tiktok: 'https://tiktok.com/@estherreign',
+          facebook: 'https://facebook.com/estherreign',
+          twitter: 'https://twitter.com/estherreign'
+        }
+      });
+      setHeroDescription(data.hero_description || 'Lifting voices in worship through powerful gospel music. Experience the presence of God through every note.');
     }
-    
-    // Trigger a storage event to notify other components
-    window.dispatchEvent(new Event('storage'));
-    
-    // Force reload to show changes
-    setTimeout(() => {
-      window.location.reload();
-    }, 500);
-    
-    alert('Settings saved and synced across all devices! The page will reload to show changes.');
+  };
+
+  const handleSave = async () => {
+    try {
+      const { updateSettings } = await import('../lib/supabaseData');
+      
+      const success = await updateSettings({
+        hero_image: settings.hero_image,
+        hero_description: heroDescription,
+        about_image: settings.about_image,
+        about_text: settings.about_text,
+        contact_email: settings.email,
+        contact_phone: settings.phone,
+        social_links: settings.social_links
+      });
+      
+      if (success) {
+        alert('Settings saved successfully! Changes will appear immediately.');
+        // Trigger a storage event to notify other components
+        window.dispatchEvent(new Event('storage'));
+      } else {
+        alert('Failed to save settings. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error saving settings:', error);
+      alert('Error saving settings. Please check console for details.');
+    }
   };
 
   const handleImageUpload = (type: 'hero' | 'about', event: React.ChangeEvent<HTMLInputElement>) => {

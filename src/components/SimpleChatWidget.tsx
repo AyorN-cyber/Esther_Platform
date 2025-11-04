@@ -352,15 +352,15 @@ export const SimpleChatWidget: React.FC<SimpleChatWidgetProps> = ({ currentUser 
         )}
       </button>
 
-      {/* Chat Widget */}
+      {/* Chat Widget - Fixed on Mobile */}
       <div
-        className={`fixed bottom-0 right-0 md:bottom-6 md:right-6 w-full md:w-[400px] h-full md:h-[600px] md:max-h-[90vh] bg-white md:rounded-2xl shadow-2xl flex flex-col transition-all duration-300 z-[100] ${
+        className={`fixed inset-0 md:bottom-6 md:right-6 md:left-auto md:top-auto w-full md:w-[400px] h-full md:h-[600px] md:max-h-[90vh] bg-white md:rounded-2xl shadow-2xl flex flex-col transition-all duration-300 z-[100] ${
           isOpen ? 'scale-100 opacity-100' : 'scale-0 opacity-0 pointer-events-none'
         }`}
         style={{ transformOrigin: 'bottom right' }}
       >
-        {/* Header - Fixed on Mobile, Sticky on Desktop */}
-        <div className="fixed md:sticky top-0 left-0 right-0 md:relative z-10 bg-gradient-to-r from-purple-600 to-pink-600 p-4 md:rounded-t-2xl flex items-center justify-between shadow-md">
+        {/* Header - Sticky */}
+        <div className="sticky top-0 z-10 bg-gradient-to-r from-purple-600 to-pink-600 p-4 md:rounded-t-2xl flex items-center justify-between shadow-md">
           <div className="flex items-center gap-3 flex-1">
             <div className="w-11 h-11 bg-white rounded-full flex items-center justify-center text-purple-600 font-bold text-lg shadow-md">
               {otherUser[0]}
@@ -390,7 +390,7 @@ export const SimpleChatWidget: React.FC<SimpleChatWidgetProps> = ({ currentUser 
         {/* Messages Area with WhatsApp Wallpaper */}
         <div 
           ref={messagesContainerRef}
-          className="flex-1 overflow-y-auto p-4 pt-20 md:pt-4 space-y-3 scrollbar-hide relative"
+          className="flex-1 overflow-y-auto p-4 space-y-3 scrollbar-hide relative"
           style={{
             backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3Cpattern id='bubble' x='0' y='0' width='60' height='60' patternUnits='userSpaceOnUse'%3E%3Ccircle cx='10' cy='10' r='1.5' fill='%23d1d7db' opacity='0.4'/%3E%3Ccircle cx='30' cy='25' r='1' fill='%23d1d7db' opacity='0.3'/%3E%3Ccircle cx='50' cy='15' r='1.2' fill='%23d1d7db' opacity='0.35'/%3E%3Ccircle cx='20' cy='40' r='0.8' fill='%23d1d7db' opacity='0.3'/%3E%3Ccircle cx='45' cy='50' r='1.3' fill='%23d1d7db' opacity='0.4'/%3E%3C/pattern%3E%3C/defs%3E%3Crect width='60' height='60' fill='%23e5ddd5'/%3E%3Crect width='60' height='60' fill='url(%23bubble)'/%3E%3C/svg%3E")`,
             backgroundColor: '#e5ddd5'

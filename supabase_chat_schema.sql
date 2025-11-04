@@ -38,6 +38,7 @@ CREATE TABLE IF NOT EXISTS site_settings (
   contact_phone TEXT,
   social_links JSONB,
   total_visits INTEGER DEFAULT 0,
+  artist_logins INTEGER DEFAULT 0,
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 

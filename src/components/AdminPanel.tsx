@@ -50,15 +50,22 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
       setCurrentUser(session.user);
       setIsLoggedIn(true);
     }
-    loadVideos();
-    loadAnalytics();
+    loadData();
   }, []);
 
-  const loadVideos = () => {
-    const saved = localStorage.getItem('videos');
-    if (saved) {
-      setVideos(JSON.parse(saved));
+  const loadData = async () => {
+    await loadVideos();
+    await loadAnalytics();
+  };
+
+  const loadVideos = async () => {
+    const { getVideos } = await import('../lib/supabaseData');
+    const videosData = await getVideos();
+    
+    if (videosData.length > 0) {
+      setVideos(videosData);
     } else {
+      // Initialize with default videos if database is empty
       const initialVideos: Video[] = INITIAL_VIDEOS.map((title, index) => ({
         id: `video-${index}`,
         title,
@@ -67,18 +74,24 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
         updated_at: new Date().toISOString(),
         order_index: index
       }));
+      
+      // Save to Supabase
+      const { addVideo } = await import('../lib/supabaseData');
+      for (const video of initialVideos) {
+        await addVideo(video);
+      }
       setVideos(initialVideos);
-      localStorage.setItem('videos', JSON.stringify(initialVideos));
     }
   };
 
-  const loadAnalytics = () => {
-    const visits = parseInt(localStorage.getItem('total_visits') || '0');
-    const artistLogins = parseInt(localStorage.getItem('artist_logins') || '0');
+  const loadAnalytics = async () => {
+    const { getSettings } = await import('../lib/supabaseData');
+    const settings = await getSettings();
+    
     setAnalytics({
-      total_visitors: visits,
-      page_visits: { home: visits },
-      artist_logins: artistLogins,
+      total_visitors: (settings as any)?.total_visits || 0,
+      page_visits: { home: (settings as any)?.total_visits || 0 },
+      artist_logins: (settings as any)?.artist_logins || 0,
       last_updated: new Date().toISOString()
     });
   };
@@ -96,8 +109,15 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
         phone: '+234 818 019 4269',
         name: 'Esther Reign'
       };
-      const logins = parseInt(localStorage.getItem('artist_logins') || '0');
-      localStorage.setItem('artist_logins', (logins + 1).toString());
+      
+      // Track login in Supabase
+      (async () => {
+        const { getSettings, updateSettings } = await import('../lib/supabaseData');
+        const settings = await getSettings();
+        const currentLogins = (settings as any)?.artist_logins || 0;
+        await updateSettings({ artist_logins: currentLogins + 1 });
+      })();
+      
       sendNotification('+234 805 596 4955', 'Artist has logged into the system');
     } else if (email === 'editor@estherreign.com' && password === 'editor2024') {
       user = {
