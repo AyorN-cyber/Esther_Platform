@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
 import './index.css';
 import { initPWA } from './lib/pwa';
+import { ThemeProvider } from './contexts/ThemeContext';
 
 // Initialize PWA features
 initPWA().then(() => {
@@ -13,6 +14,8 @@ initPWA().then(() => {
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <App />
+    <ThemeProvider>
+      <App />
+    </ThemeProvider>
   </StrictMode>
 );

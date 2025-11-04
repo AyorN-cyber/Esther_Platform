@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { X, LogOut, Save, BarChart3, Video as VideoIcon, User, Eye, TrendingUp, Users, Clock, CheckCircle, Edit2, Settings as SettingsIcon, Key, Upload } from 'lucide-react';
+import { X, LogOut, Save, BarChart3, Video as VideoIcon, User, Eye, TrendingUp, Users, Clock, CheckCircle, Edit2, Settings as SettingsIcon, Key, Upload, FileText } from 'lucide-react';
 import { SupabaseChat } from './SupabaseChat';
 import { Settings } from './Settings';
 import { NotificationCenter, addNotification } from './NotificationCenter';
 import { VideoChart } from './VideoChart';
 import { WebGLBackground } from './WebGLBackground';
+import { VideoManager } from './VideoManager';
+import { ContentEditor } from './ContentEditor';
 import type { Video, User as UserType, Analytics } from '../types';
 
 interface AdminPanelProps {
@@ -32,7 +34,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
   const [password, setPassword] = useState('');
   const [showPasswordReset, setShowPasswordReset] = useState(false);
   const [resetEmail, setResetEmail] = useState('');
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'videos' | 'analytics' | 'chat' | 'settings'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'videos' | 'analytics' | 'chat' | 'settings' | 'content' | 'manage'>('dashboard');
   const [videos, setVideos] = useState<Video[]>([]);
   const [editingVideo, setEditingVideo] = useState<Video | null>(null);
   const [analytics, setAnalytics] = useState<Analytics>({
@@ -484,6 +486,30 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
             </span>
           </button>
 
+          <button
+            onClick={() => setActiveTab('manage')}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-white ${
+              activeTab === 'manage'
+                ? 'bg-gradient-to-r from-purple-600 to-pink-600 shadow-lg'
+                : 'hover:bg-gray-800/50'
+            }`}
+          >
+            <Edit2 size={20} />
+            <span className="font-medium">Manage Videos</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('content')}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-white ${
+              activeTab === 'content'
+                ? 'bg-gradient-to-r from-purple-600 to-pink-600 shadow-lg'
+                : 'hover:bg-gray-800/50'
+            }`}
+          >
+            <FileText size={20} />
+            <span className="font-medium">Content Editor</span>
+          </button>
+
           {currentUser?.role === 'editor' && (
             <button
               onClick={() => setActiveTab('analytics')}
@@ -555,36 +581,45 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
         <div className="flex justify-around">
           <button
             onClick={() => setActiveTab('dashboard')}
-            className={`flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition-all ${
+            className={`flex flex-col items-center gap-1 px-2 py-2 rounded-xl transition-all ${
               activeTab === 'dashboard' ? 'text-purple-400' : 'text-gray-400'
             }`}
           >
-            <BarChart3 size={20} />
-            <span className="text-xs">Dashboard</span>
+            <BarChart3 size={18} />
+            <span className="text-xs">Home</span>
           </button>
           <button
-            onClick={() => setActiveTab('videos')}
-            className={`flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition-all ${
-              activeTab === 'videos' ? 'text-purple-400' : 'text-gray-400'
+            onClick={() => setActiveTab('manage')}
+            className={`flex flex-col items-center gap-1 px-2 py-2 rounded-xl transition-all ${
+              activeTab === 'manage' ? 'text-purple-400' : 'text-gray-400'
             }`}
           >
-            <VideoIcon size={20} />
+            <VideoIcon size={18} />
             <span className="text-xs">Videos</span>
           </button>
           <button
+            onClick={() => setActiveTab('content')}
+            className={`flex flex-col items-center gap-1 px-2 py-2 rounded-xl transition-all ${
+              activeTab === 'content' ? 'text-purple-400' : 'text-gray-400'
+            }`}
+          >
+            <FileText size={18} />
+            <span className="text-xs">Content</span>
+          </button>
+          <button
             onClick={() => setActiveTab('settings')}
-            className={`flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition-all ${
+            className={`flex flex-col items-center gap-1 px-2 py-2 rounded-xl transition-all ${
               activeTab === 'settings' ? 'text-purple-400' : 'text-gray-400'
             }`}
           >
-            <SettingsIcon size={20} />
+            <SettingsIcon size={18} />
             <span className="text-xs">Settings</span>
           </button>
           <button
             onClick={handleLogout}
-            className="flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition-all text-red-400"
+            className="flex flex-col items-center gap-1 px-2 py-2 rounded-xl transition-all text-red-400"
           >
-            <LogOut size={20} />
+            <LogOut size={18} />
             <span className="text-xs">Logout</span>
           </button>
         </div>
@@ -888,6 +923,28 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
                 ))}
               </div>
             </div>
+          </div>
+        )}
+
+        {/* Video Management Tab */}
+        {activeTab === 'manage' && (
+          <div className="space-y-6">
+            <div>
+              <h2 className="text-3xl font-black mb-2 text-white">Video Management</h2>
+              <p className="text-gray-400">Add, edit, delete, and reorder videos</p>
+            </div>
+            <VideoManager onVideoChange={loadData} />
+          </div>
+        )}
+
+        {/* Content Editor Tab */}
+        {activeTab === 'content' && (
+          <div className="space-y-6">
+            <div>
+              <h2 className="text-3xl font-black mb-2 text-white">Content Editor</h2>
+              <p className="text-gray-400">Manage hero section, about section, and site content</p>
+            </div>
+            <ContentEditor onContentChange={loadData} />
           </div>
         )}
 

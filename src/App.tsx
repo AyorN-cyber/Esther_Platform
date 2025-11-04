@@ -3,12 +3,16 @@ import { Menu, X, Instagram, Youtube, Mail, Play, ChevronRight, Sparkles } from 
 import { FaTiktok, FaFacebook } from 'react-icons/fa';
 import { Loader } from './components/Loader';
 import { WebGLBackground } from './components/WebGLBackground';
+import { FullScreenChat } from './components/FullScreenChat';
+import { ThemeSwitcher } from './components/ThemeSwitcher';
+import { useTheme } from './contexts/ThemeContext';
 import type { Video } from './types';
 
 // Lazy load AdminPanel for better performance
 const AdminPanel = lazy(() => import('./components/AdminPanel'));
 
 const EstherPlatform = () => {
+  const { theme } = useTheme();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
   const [loading, setLoading] = useState(true);
