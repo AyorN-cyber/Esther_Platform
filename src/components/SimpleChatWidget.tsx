@@ -14,6 +14,7 @@ import { MessageCircle, X, Send, Smile, Mic, Trash2, Video as VideoIcon } from '
 import { supabase } from '../lib/supabase';
 import { getVideos } from '../lib/supabaseData';
 import type { User, Video } from '../types';
+import './ChatWidgetStyles.css';
 
 interface Message {
   id: string;
@@ -407,17 +408,8 @@ export const SimpleChatWidget: React.FC<SimpleChatWidgetProps> = ({ currentUser 
           })
         }}
       >
-        {/* Header - Sticky with Safe Area */}
-        <div 
-          className="bg-gradient-to-r from-purple-600 to-pink-600 p-4 md:rounded-t-2xl flex items-center justify-between shadow-md"
-          style={{
-            position: 'sticky',
-            top: 0,
-            zIndex: 10,
-            flexShrink: 0,
-            paddingTop: 'max(1rem, env(safe-area-inset-top))',
-          }}
-        >
+        {/* Header - Fixed for PWA */}
+        <div className="chat-widget-fixed-header md:rounded-t-2xl">
           <div className="flex items-center gap-3 flex-1">
             <div className="w-11 h-11 bg-white rounded-full flex items-center justify-center text-purple-600 font-bold text-lg shadow-md">
               {otherUser[0]}
@@ -444,17 +436,14 @@ export const SimpleChatWidget: React.FC<SimpleChatWidgetProps> = ({ currentUser 
           </div>
         </div>
 
-        {/* Messages Area - Flexible with Scroll */}
+        {/* Messages Area - With Fixed Header Space */}
         <div 
           ref={messagesContainerRef}
-          className="p-4 space-y-3 scrollbar-hide relative"
+          className="chat-widget-messages-area chat-widget-body-with-fixed-header p-4 space-y-3 scrollbar-hide relative"
           style={{
-            flex: '1 1 auto',
-            overflowY: 'auto',
-            overflowX: 'hidden',
-            WebkitOverflowScrolling: 'touch',
             backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3Cpattern id='bubble' x='0' y='0' width='60' height='60' patternUnits='userSpaceOnUse'%3E%3Ccircle cx='10' cy='10' r='1.5' fill='%23d1d7db' opacity='0.4'/%3E%3Ccircle cx='30' cy='25' r='1' fill='%23d1d7db' opacity='0.3'/%3E%3Ccircle cx='50' cy='15' r='1.2' fill='%23d1d7db' opacity='0.35'/%3E%3Ccircle cx='20' cy='40' r='0.8' fill='%23d1d7db' opacity='0.3'/%3E%3Ccircle cx='45' cy='50' r='1.3' fill='%23d1d7db' opacity='0.4'/%3E%3C/pattern%3E%3C/defs%3E%3Crect width='60' height='60' fill='%23e5ddd5'/%3E%3Crect width='60' height='60' fill='url(%23bubble)'/%3E%3C/svg%3E")`,
-            backgroundColor: '#e5ddd5'
+            backgroundColor: '#e5ddd5',
+            paddingBottom: '80px' /* Space for fixed input */
           }}
         >
           {messages.map((msg, index) => {
@@ -522,18 +511,8 @@ export const SimpleChatWidget: React.FC<SimpleChatWidgetProps> = ({ currentUser 
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Input Area - Sticky with Safe Area */}
-        <div 
-          className="bg-white border-t border-gray-200 md:rounded-b-2xl"
-          style={{
-            position: 'sticky',
-            bottom: 0,
-            zIndex: 10,
-            flexShrink: 0,
-            padding: '1rem',
-            paddingBottom: 'max(1rem, env(safe-area-inset-bottom))',
-          }}
-        >
+        {/* Input Area - Fixed for PWA */}
+        <div className="chat-widget-input-area md:rounded-b-2xl">
           <div className="flex items-center gap-2">
             {/* Emoji Picker */}
             <div className="relative" ref={emojiRef}>

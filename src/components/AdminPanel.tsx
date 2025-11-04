@@ -250,39 +250,66 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
     reader.readAsDataURL(file);
   };
 
-  const handleSaveVideo = () => {
+  const handleSaveVideo = async () => {
     if (!editingVideo) return;
 
-    // Check if this is a new video or existing one
-    const existingIndex = videos.findIndex(v => v.id === editingVideo.id);
-    let updatedVideos;
-    
-    if (existingIndex >= 0) {
-      // Update existing video
-      updatedVideos = videos.map(v => 
-        v.id === editingVideo.id ? { ...editingVideo, updated_at: new Date().toISOString() } : v
-      );
-    } else {
-      // Add new video
-      updatedVideos = [...videos, { ...editingVideo, created_at: new Date().toISOString(), updated_at: new Date().toISOString() }];
+    try {
+      const { updateVideo, addVideo } = await import('../lib/supabaseData');
+      
+      // Check if this is a new video or existing one
+      const existingIndex = videos.findIndex(v => v.id === editingVideo.id);
+      
+      if (existingIndex >= 0) {
+        // Update existing video in Supabase
+        const success = await updateVideo(editingVideo.id, editingVideo);
+        
+        if (success) {
+          // Update local state
+          const updatedVideos = videos.map(v => 
+            v.id === editingVideo.id ? { ...editingVideo, updated_at: new Date().toISOString() } : v
+          );
+          setVideos(updatedVideos);
+          
+          if (currentUser?.role === 'editor') {
+            sendNotification('+234 818 019 4269', `Video "${editingVideo.title}" has been updated`);
+            addNotification('video_update', 'Video Updated', `"${editingVideo.title}" updated in the gallery`);
+          }
+          
+          alert('Video updated successfully!');
+        } else {
+          alert('Failed to update video. Please try again.');
+        }
+      } else {
+        // Add new video to Supabase
+        const newVideo = await addVideo({
+          ...editingVideo,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        });
+        
+        if (newVideo) {
+          // Update local state
+          setVideos([...videos, newVideo]);
+          
+          if (currentUser?.role === 'editor') {
+            sendNotification('+234 818 019 4269', `Video "${editingVideo.title}" has been added`);
+            addNotification('video_update', 'Video Added', `"${editingVideo.title}" added to the gallery`);
+          }
+          
+          alert('Video added successfully!');
+        } else {
+          alert('Failed to add video. Please try again.');
+        }
+      }
+      
+      setEditingVideo(null);
+      
+      // Reload videos from Supabase
+      await loadVideos();
+    } catch (error) {
+      console.error('Error saving video:', error);
+      alert('Error saving video. Please check console for details.');
     }
-    
-    setVideos(updatedVideos);
-    localStorage.setItem('videos', JSON.stringify(updatedVideos));
-    
-    // Sync to cloud automatically
-    import('../lib/cloudSync').then(({ pushToCloud }) => {
-      pushToCloud().catch(console.error);
-    });
-    
-    if (currentUser?.role === 'editor') {
-      const action = existingIndex >= 0 ? 'updated' : 'added';
-      sendNotification('+234 818 019 4269', `Video "${editingVideo.title}" has been ${action}`);
-      addNotification('video_update', `Video ${action === 'added' ? 'Added' : 'Updated'}`, `"${editingVideo.title}" ${action === 'added' ? 'added to' : 'updated in'} the gallery`);
-    }
-    
-    setEditingVideo(null);
-    alert(`Video ${existingIndex >= 0 ? 'updated' : 'added'} and synced across all devices!`);
   };
 
   const handleLogout = () => {
