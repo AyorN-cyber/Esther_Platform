@@ -17,7 +17,8 @@ CREATE TABLE IF NOT EXISTS public.videos (
 -- Enable Row Level Security
 ALTER TABLE public.videos ENABLE ROW LEVEL SECURITY;
 
--- Create policy to allow all operations
+-- Create policy to allow all operations (drop if exists)
+DROP POLICY IF EXISTS "Allow all operations on videos" ON public.videos;
 CREATE POLICY "Allow all operations on videos" ON public.videos
     FOR ALL
     USING (true)
@@ -28,8 +29,14 @@ CREATE INDEX IF NOT EXISTS idx_videos_order ON public.videos(order_index ASC);
 CREATE INDEX IF NOT EXISTS idx_videos_status ON public.videos(status);
 CREATE INDEX IF NOT EXISTS idx_videos_updated_at ON public.videos(updated_at DESC);
 
--- Enable realtime
-ALTER PUBLICATION supabase_realtime ADD TABLE public.videos;
+-- Enable realtime (skip if already added)
+DO $$
+BEGIN
+    ALTER PUBLICATION supabase_realtime ADD TABLE public.videos;
+EXCEPTION
+    WHEN duplicate_object THEN
+        NULL; -- Table already in publication, skip
+END $$;
 
 -- ==================== SITE SETTINGS TABLE ====================
 CREATE TABLE IF NOT EXISTS public.site_settings (
@@ -50,14 +57,21 @@ CREATE TABLE IF NOT EXISTS public.site_settings (
 -- Enable Row Level Security
 ALTER TABLE public.site_settings ENABLE ROW LEVEL SECURITY;
 
--- Create policy to allow all operations
+-- Create policy to allow all operations (drop if exists)
+DROP POLICY IF EXISTS "Allow all operations on site_settings" ON public.site_settings;
 CREATE POLICY "Allow all operations on site_settings" ON public.site_settings
     FOR ALL
     USING (true)
     WITH CHECK (true);
 
--- Enable realtime
-ALTER PUBLICATION supabase_realtime ADD TABLE public.site_settings;
+-- Enable realtime (skip if already added)
+DO $$
+BEGIN
+    ALTER PUBLICATION supabase_realtime ADD TABLE public.site_settings;
+EXCEPTION
+    WHEN duplicate_object THEN
+        NULL; -- Table already in publication, skip
+END $$;
 
 -- Insert default settings if not exists
 INSERT INTO public.site_settings (id, hero_description, about_text, contact_email, contact_phone)
