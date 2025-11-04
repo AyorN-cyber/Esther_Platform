@@ -128,6 +128,8 @@ export interface SiteSettings {
     tiktok?: string;
     facebook?: string;
   };
+  total_visits?: number;
+  artist_logins?: number;
   updated_at?: string;
 }
 

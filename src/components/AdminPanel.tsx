@@ -281,11 +281,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
         }
       } else {
         // Add new video to Supabase
-        const newVideo = await addVideo({
-          ...editingVideo,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        });
+        const { created_at, updated_at, id, ...videoData } = editingVideo;
+        const newVideo = await addVideo(videoData);
         
         if (newVideo) {
           // Update local state
