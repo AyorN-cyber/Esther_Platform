@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, LogOut, Save, BarChart3, Video as VideoIcon, User, Eye, TrendingUp, Users, Clock, CheckCircle, Edit2, Settings as SettingsIcon, Key, Upload, FileText, Target, DollarSign } from 'lucide-react';
+import { X, LogOut, Save, BarChart3, Video as VideoIcon, User, Eye, TrendingUp, Users, Clock, CheckCircle, Edit2, Settings as SettingsIcon, Key, Upload, FileText, Target, DollarSign, Calendar, Music, Mail } from 'lucide-react';
 import { SupabaseChat } from './SupabaseChat';
 import { Settings } from './Settings';
 import { addNotification } from './NotificationCenter';
@@ -11,6 +11,9 @@ import { AnalyticsDashboard } from './AnalyticsDashboard';
 import { GoalsTracker } from './GoalsTracker';
 import { FinancialDashboard } from './FinancialDashboard';
 import { EnhancedNotificationCenter } from './EnhancedNotificationCenter';
+import { ContentCalendar } from './ContentCalendar';
+import { SongRequestsManager } from './SongRequestsManager';
+import { FanMessagesCenter } from './FanMessagesCenter';
 import type { Video, User as UserType, Analytics } from '../types';
 
 interface AdminPanelProps {
@@ -38,7 +41,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
   const [password, setPassword] = useState('');
   const [showPasswordReset, setShowPasswordReset] = useState(false);
   const [resetEmail, setResetEmail] = useState('');
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'videos' | 'analytics' | 'goals' | 'financial' | 'chat' | 'settings' | 'content' | 'manage'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'videos' | 'analytics' | 'goals' | 'financial' | 'calendar' | 'songs' | 'messages' | 'chat' | 'settings' | 'content'>('dashboard');
   const [videos, setVideos] = useState<Video[]>([]);
   const [editingVideo, setEditingVideo] = useState<Video | null>(null);
   const [analytics, setAnalytics] = useState<Analytics>({
@@ -449,134 +452,180 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
   return (
     <div className="fixed inset-0 bg-gradient-to-br from-gray-950 via-purple-950/20 to-gray-950 overflow-y-auto z-50">
       <WebGLBackground />
-      {/* Sidebar */}
-      <div className="fixed left-0 top-0 h-full w-64 bg-gray-900/80 backdrop-blur-xl border-r border-purple-500/20 p-6 hidden lg:block z-50">
-        <div className="mb-8">
-          <h1 className="text-2xl font-black bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent mb-2">
-            Admin Panel
+      {/* Sidebar - Redesigned */}
+      <div className="fixed left-0 top-0 h-full w-72 bg-gradient-to-b from-gray-900 via-gray-900 to-gray-950 border-r border-purple-500/30 hidden lg:flex flex-col z-50 shadow-2xl">
+        {/* Header */}
+        <div className="p-6 border-b border-purple-500/20">
+          <h1 className="text-2xl font-black bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400 bg-clip-text text-transparent mb-3">
+            Esther Reign
           </h1>
-          <div className="flex items-center gap-2 text-sm text-gray-400">
-            <User size={14} />
-            <span className="text-white">{currentUser?.name}</span>
+          <div className="flex items-center gap-3 p-3 bg-purple-500/10 rounded-xl border border-purple-500/20">
+            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold">
+              {currentUser?.name?.charAt(0) || 'E'}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-white font-semibold text-sm truncate">{currentUser?.name}</p>
+              <p className="text-purple-400 text-xs capitalize">{currentUser?.role}</p>
+            </div>
           </div>
-          <div className="text-xs text-purple-400 capitalize">{currentUser?.role}</div>
         </div>
 
-        <nav className="space-y-2">
-          <button
-            onClick={() => setActiveTab('dashboard')}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-white ${
-              activeTab === 'dashboard'
-                ? 'bg-gradient-to-r from-purple-600 to-pink-600 shadow-lg'
-                : 'hover:bg-gray-800/50'
-            }`}
-          >
-            <BarChart3 size={20} />
-            <span className="font-medium">Dashboard</span>
-          </button>
+        {/* Navigation - Scrollable */}
+        <nav className="flex-1 overflow-y-auto p-4 space-y-1 scrollbar-thin scrollbar-thumb-purple-500/20 scrollbar-track-transparent">
+          {/* Overview Section */}
+          <div className="mb-4">
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider px-3 mb-2">Overview</p>
+            <button
+              onClick={() => setActiveTab('dashboard')}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
+                activeTab === 'dashboard'
+                  ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-500/50'
+                  : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
+              }`}
+            >
+              <BarChart3 size={20} />
+              <span className="font-medium">Dashboard</span>
+            </button>
+          </div>
 
-          <button
-            onClick={() => setActiveTab('videos')}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-white ${
-              activeTab === 'videos'
-                ? 'bg-gradient-to-r from-purple-600 to-pink-600 shadow-lg'
-                : 'hover:bg-gray-800/50'
-            }`}
-          >
-            <VideoIcon size={20} />
-            <span className="font-medium">Videos</span>
-            <span className="ml-auto bg-purple-500/20 px-2 py-1 rounded-full text-xs">
-              {videos.length}
-            </span>
-          </button>
+          {/* Content Section */}
+          <div className="mb-4">
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider px-3 mb-2">Content</p>
+            <button
+              onClick={() => setActiveTab('videos')}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
+                activeTab === 'videos'
+                  ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-500/50'
+                  : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
+              }`}
+            >
+              <VideoIcon size={20} />
+              <span className="font-medium">Videos</span>
+              <span className="ml-auto bg-purple-500/30 px-2 py-0.5 rounded-full text-xs">
+                {videos.length}
+              </span>
+            </button>
+            <button
+              onClick={() => setActiveTab('calendar')}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
+                activeTab === 'calendar'
+                  ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-500/50'
+                  : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
+              }`}
+            >
+              <Calendar size={20} />
+              <span className="font-medium">Calendar</span>
+            </button>
+            <button
+              onClick={() => setActiveTab('content')}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
+                activeTab === 'content'
+                  ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-500/50'
+                  : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
+              }`}
+            >
+              <FileText size={20} />
+              <span className="font-medium">Site Content</span>
+            </button>
+          </div>
 
-          <button
-            onClick={() => setActiveTab('manage')}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-white ${
-              activeTab === 'manage'
-                ? 'bg-gradient-to-r from-purple-600 to-pink-600 shadow-lg'
-                : 'hover:bg-gray-800/50'
-            }`}
-          >
-            <Edit2 size={20} />
-            <span className="font-medium">Manage Videos</span>
-          </button>
+          {/* Analytics Section */}
+          <div className="mb-4">
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider px-3 mb-2">Analytics</p>
+            <button
+              onClick={() => setActiveTab('analytics')}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
+                activeTab === 'analytics'
+                  ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-500/50'
+                  : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
+              }`}
+            >
+              <TrendingUp size={20} />
+              <span className="font-medium">Analytics</span>
+            </button>
+            <button
+              onClick={() => setActiveTab('goals')}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
+                activeTab === 'goals'
+                  ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-500/50'
+                  : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
+              }`}
+            >
+              <Target size={20} />
+              <span className="font-medium">Goals</span>
+            </button>
+            <button
+              onClick={() => setActiveTab('financial')}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
+                activeTab === 'financial'
+                  ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-500/50'
+                  : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
+              }`}
+            >
+              <DollarSign size={20} />
+              <span className="font-medium">Financial</span>
+            </button>
+          </div>
 
-          <button
-            onClick={() => setActiveTab('content')}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-white ${
-              activeTab === 'content'
-                ? 'bg-gradient-to-r from-purple-600 to-pink-600 shadow-lg'
-                : 'hover:bg-gray-800/50'
-            }`}
-          >
-            <FileText size={20} />
-            <span className="font-medium">Content Editor</span>
-          </button>
+          {/* Community Section */}
+          <div className="mb-4">
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider px-3 mb-2">Community</p>
+            <button
+              onClick={() => setActiveTab('songs')}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
+                activeTab === 'songs'
+                  ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-500/50'
+                  : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
+              }`}
+            >
+              <Music size={20} />
+              <span className="font-medium">Song Requests</span>
+            </button>
+            <button
+              onClick={() => setActiveTab('messages')}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
+                activeTab === 'messages'
+                  ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-500/50'
+                  : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
+              }`}
+            >
+              <Mail size={20} />
+              <span className="font-medium">Fan Messages</span>
+            </button>
+          </div>
 
-          <button
-            onClick={() => setActiveTab('analytics')}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-white ${
-              activeTab === 'analytics'
-                ? 'bg-gradient-to-r from-purple-600 to-pink-600 shadow-lg'
-                : 'hover:bg-gray-800/50'
-            }`}
-          >
-            <TrendingUp size={20} />
-            <span className="font-medium">Analytics</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('goals')}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-white ${
-              activeTab === 'goals'
-                ? 'bg-gradient-to-r from-purple-600 to-pink-600 shadow-lg'
-                : 'hover:bg-gray-800/50'
-            }`}
-          >
-            <Target size={20} />
-            <span className="font-medium">Goals</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('financial')}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-white ${
-              activeTab === 'financial'
-                ? 'bg-gradient-to-r from-purple-600 to-pink-600 shadow-lg'
-                : 'hover:bg-gray-800/50'
-            }`}
-          >
-            <DollarSign size={20} />
-            <span className="font-medium">Financial</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('settings')}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-white ${
-              activeTab === 'settings'
-                ? 'bg-gradient-to-r from-purple-600 to-pink-600 shadow-lg'
-                : 'hover:bg-gray-800/50'
-            }`}
-          >
-            <SettingsIcon size={20} />
-            <span className="font-medium">Settings</span>
-          </button>
+          {/* Settings Section */}
+          <div>
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider px-3 mb-2">System</p>
+            <button
+              onClick={() => setActiveTab('settings')}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
+                activeTab === 'settings'
+                  ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-500/50'
+                  : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
+              }`}
+            >
+              <SettingsIcon size={20} />
+              <span className="font-medium">Settings</span>
+            </button>
+          </div>
         </nav>
 
-        <div className="absolute bottom-6 left-6 right-6 space-y-2">
+        {/* Footer Actions */}
+        <div className="p-4 border-t border-purple-500/20 space-y-2">
           <button
             onClick={onClose}
-            className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gray-800/50 hover:bg-gray-800 rounded-xl transition-all text-white"
+            className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-purple-600/20 to-pink-600/20 hover:from-purple-600/30 hover:to-pink-600/30 rounded-xl transition-all text-purple-300 hover:text-white border border-purple-500/30"
           >
-            <Eye size={20} />
-            <span>View Site</span>
+            <Eye size={18} />
+            <span className="font-medium">View Site</span>
           </button>
           <button
             onClick={handleLogout}
-            className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-red-600/20 hover:bg-red-600 rounded-xl transition-all text-red-400 hover:text-white"
+            className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-red-600/20 hover:bg-red-600 rounded-xl transition-all text-red-400 hover:text-white border border-red-500/30"
           >
-            <LogOut size={20} />
-            <span>Logout</span>
+            <LogOut size={18} />
+            <span className="font-medium">Logout</span>
           </button>
         </div>
       </div>
@@ -598,72 +647,73 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
       </div>
 
       {/* Desktop Top Bar with Notifications */}
-      <div className="hidden lg:block fixed top-0 right-0 left-64 bg-gray-900/80 backdrop-blur-xl border-b border-purple-500/20 p-4 flex justify-end z-40">
+      <div className="hidden lg:block fixed top-0 right-0 left-72 bg-gradient-to-r from-gray-900/95 to-gray-950/95 backdrop-blur-xl border-b border-purple-500/20 p-4 flex justify-end z-40 shadow-lg">
         <EnhancedNotificationCenter userId={currentUser?.id || '1'} />
       </div>
 
-      {/* Mobile Bottom Navigation */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-gray-900/95 backdrop-blur-xl border-t border-purple-500/20 p-2 z-40">
-        <div className="grid grid-cols-6 gap-1">
+      {/* Mobile Bottom Navigation - Redesigned */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-gradient-to-t from-gray-900 to-gray-900/95 backdrop-blur-xl border-t border-purple-500/30 p-2 z-40 shadow-2xl">
+        <div className="grid grid-cols-5 gap-1">
           <button
             onClick={() => setActiveTab('dashboard')}
-            className={`flex flex-col items-center gap-1 px-1 py-2 rounded-xl transition-all ${
-              activeTab === 'dashboard' ? 'text-purple-400' : 'text-gray-400'
+            className={`flex flex-col items-center gap-1 px-2 py-2 rounded-xl transition-all ${
+              activeTab === 'dashboard' 
+                ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white' 
+                : 'text-gray-400 hover:text-white'
             }`}
           >
-            <BarChart3 size={16} />
-            <span className="text-xs">Home</span>
+            <BarChart3 size={18} />
+            <span className="text-xs font-medium">Home</span>
           </button>
           <button
-            onClick={() => setActiveTab('manage')}
-            className={`flex flex-col items-center gap-1 px-1 py-2 rounded-xl transition-all ${
-              activeTab === 'manage' ? 'text-purple-400' : 'text-gray-400'
+            onClick={() => setActiveTab('videos')}
+            className={`flex flex-col items-center gap-1 px-2 py-2 rounded-xl transition-all ${
+              activeTab === 'videos' 
+                ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white' 
+                : 'text-gray-400 hover:text-white'
             }`}
           >
-            <VideoIcon size={16} />
-            <span className="text-xs">Videos</span>
+            <VideoIcon size={18} />
+            <span className="text-xs font-medium">Videos</span>
           </button>
           <button
             onClick={() => setActiveTab('analytics')}
-            className={`flex flex-col items-center gap-1 px-1 py-2 rounded-xl transition-all ${
-              activeTab === 'analytics' ? 'text-purple-400' : 'text-gray-400'
+            className={`flex flex-col items-center gap-1 px-2 py-2 rounded-xl transition-all ${
+              activeTab === 'analytics' 
+                ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white' 
+                : 'text-gray-400 hover:text-white'
             }`}
           >
-            <TrendingUp size={16} />
-            <span className="text-xs">Stats</span>
+            <TrendingUp size={18} />
+            <span className="text-xs font-medium">Stats</span>
           </button>
           <button
-            onClick={() => setActiveTab('goals')}
-            className={`flex flex-col items-center gap-1 px-1 py-2 rounded-xl transition-all ${
-              activeTab === 'goals' ? 'text-purple-400' : 'text-gray-400'
+            onClick={() => setActiveTab('messages')}
+            className={`flex flex-col items-center gap-1 px-2 py-2 rounded-xl transition-all ${
+              activeTab === 'messages' 
+                ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white' 
+                : 'text-gray-400 hover:text-white'
             }`}
           >
-            <Target size={16} />
-            <span className="text-xs">Goals</span>
-          </button>
-          <button
-            onClick={() => setActiveTab('financial')}
-            className={`flex flex-col items-center gap-1 px-1 py-2 rounded-xl transition-all ${
-              activeTab === 'financial' ? 'text-purple-400' : 'text-gray-400'
-            }`}
-          >
-            <DollarSign size={16} />
-            <span className="text-xs">Money</span>
+            <Mail size={18} />
+            <span className="text-xs font-medium">Messages</span>
           </button>
           <button
             onClick={() => setActiveTab('settings')}
-            className={`flex flex-col items-center gap-1 px-1 py-2 rounded-xl transition-all ${
-              activeTab === 'settings' ? 'text-purple-400' : 'text-gray-400'
+            className={`flex flex-col items-center gap-1 px-2 py-2 rounded-xl transition-all ${
+              activeTab === 'settings' 
+                ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white' 
+                : 'text-gray-400 hover:text-white'
             }`}
           >
-            <SettingsIcon size={16} />
-            <span className="text-xs">More</span>
+            <SettingsIcon size={18} />
+            <span className="text-xs font-medium">More</span>
           </button>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="lg:ml-64 p-4 md:p-8 pt-20 lg:pt-20 pb-24 lg:pb-8">
+      <div className="lg:ml-72 p-4 md:p-8 pt-20 lg:pt-8 pb-24 lg:pb-8">
 
         {/* Dashboard Tab */}
         {activeTab === 'dashboard' && (
@@ -964,23 +1014,20 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
         )}
 
         {/* Video Management Tab */}
-        {activeTab === 'manage' && (
+        {activeTab === 'videos' && (
           <div className="space-y-6">
-            <div>
-              <h2 className="text-3xl font-black mb-2 text-white">Video Management</h2>
-              <p className="text-gray-400">Add, edit, delete, and reorder videos</p>
-            </div>
             <VideoManager onVideoChange={loadData} />
           </div>
         )}
 
-        {/* Content Editor Tab */}
+        {/* Content Calendar Tab */}
+        {activeTab === 'calendar' && (
+          <ContentCalendar />
+        )}
+
+        {/* Site Content Editor Tab */}
         {activeTab === 'content' && (
           <div className="space-y-6">
-            <div>
-              <h2 className="text-3xl font-black mb-2 text-white">Content Editor</h2>
-              <p className="text-gray-400">Manage hero section, about section, and site content</p>
-            </div>
             <ContentEditor onContentChange={loadData} />
           </div>
         )}
@@ -998,6 +1045,16 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
         {/* Financial Dashboard Tab */}
         {activeTab === 'financial' && (
           <FinancialDashboard />
+        )}
+
+        {/* Song Requests Tab */}
+        {activeTab === 'songs' && (
+          <SongRequestsManager />
+        )}
+
+        {/* Fan Messages Tab */}
+        {activeTab === 'messages' && (
+          <FanMessagesCenter />
         )}
 
         {/* Settings Tab */}
