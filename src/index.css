@@ -29,6 +29,28 @@
     -webkit-overflow-scrolling: touch;
   }
 
+  /* Support for dynamic viewport units (dvh, lvh, svh) */
+  @supports (height: 100dvh) {
+    .chat-widget-container {
+      height: 100dvh !important;
+    }
+  }
+
+  /* Fallback for browsers without dvh support */
+  @supports not (height: 100dvh) {
+    .chat-widget-container {
+      height: 100vh !important;
+      height: -webkit-fill-available !important;
+    }
+  }
+
+  /* iOS specific fixes */
+  @supports (-webkit-touch-callout: none) {
+    .chat-widget-container {
+      height: -webkit-fill-available !important;
+    }
+  }
+
   /* Hide all scrollbars globally */
   * {
     -ms-overflow-style: none;  /* IE and Edge */
