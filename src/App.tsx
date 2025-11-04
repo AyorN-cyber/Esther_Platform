@@ -18,44 +18,36 @@ const EstherPlatform = () => {
   const [playingVideo, setPlayingVideo] = useState<Video | null>(null);
 
   useEffect(() => {
-    trackVisit();
-    loadVideos();
-    loadSettings();
+    loadData();
     setTimeout(() => setLoading(false), 400);
 
-    // Initialize cloud sync for automatic data syncing across devices
-    import('./lib/cloudSync').then(({ initCloudSync }) => {
-      initCloudSync().catch(console.error);
+    // Subscribe to real-time changes
+    import('./lib/supabaseData').then(({ subscribeToVideos, subscribeToSettings, trackVisit }) => {
+      trackVisit();
+      
+      const unsubVideos = subscribeToVideos((videos) => {
+        setVideos(videos.filter(v => v.status === 'completed'));
+      });
+      
+      const unsubSettings = subscribeToSettings((settings) => {
+        setSettings(settings);
+      });
+
+      return () => {
+        unsubVideos();
+        unsubSettings();
+      };
     });
-
-    // Listen for settings changes
-    const handleStorageChange = () => {
-      loadSettings();
-      loadVideos();
-    };
-
-    window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
 
-  const loadSettings = () => {
-    const saved = localStorage.getItem('site_settings');
-    if (saved) {
-      setSettings(JSON.parse(saved));
-    }
-  };
-
-  const trackVisit = () => {
-    const visits = parseInt(localStorage.getItem('total_visits') || '0');
-    localStorage.setItem('total_visits', (visits + 1).toString());
-  };
-
-  const loadVideos = () => {
-    const savedVideos = localStorage.getItem('videos');
-    if (savedVideos) {
-      const allVideos: Video[] = JSON.parse(savedVideos);
-      setVideos(allVideos.filter(v => v.status === 'completed'));
-    }
+  const loadData = async () => {
+    const { getCompletedVideos, getSettings } = await import('./lib/supabaseData');
+    const [videosData, settingsData] = await Promise.all([
+      getCompletedVideos(),
+      getSettings()
+    ]);
+    setVideos(videosData);
+    setSettings(settingsData);
   };
 
   const getVideoThumbnail = (url: string): string => {

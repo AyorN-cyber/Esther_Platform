@@ -215,21 +215,21 @@ function showInstallButton() {
     
     #pwa-install-btn {
       position: fixed;
-      bottom: 80px;
-      right: 20px;
+      top: 80px;
+      left: 20px;
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: white;
-      padding: 12px 20px;
+      padding: 10px 16px;
       border-radius: 50px;
       box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-      z-index: 9999;
+      z-index: 9998;
       display: flex;
       align-items: center;
       gap: 8px;
       cursor: pointer;
       border: none;
       font-weight: 600;
-      font-size: 14px;
+      font-size: 13px;
       animation: pwa-pulse 2s ease-in-out infinite;
       transition: all 0.3s ease;
     }
@@ -245,10 +245,15 @@ function showInstallButton() {
     
     @media (max-width: 768px) {
       #pwa-install-btn {
-        bottom: 20px;
-        right: 20px;
-        padding: 10px 16px;
-        font-size: 13px;
+        top: 70px;
+        left: 10px;
+        padding: 8px 12px;
+        font-size: 12px;
+        gap: 6px;
+      }
+      
+      #pwa-install-btn span:last-child {
+        display: none;
       }
     }
   `;

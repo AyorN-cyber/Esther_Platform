@@ -10,9 +10,10 @@
  */
 
 import React, { useState, useEffect, useRef } from 'react';
-import { MessageCircle, X, Send, Smile, Mic, Trash2 } from 'lucide-react';
+import { MessageCircle, X, Send, Smile, Mic, Trash2, Video as VideoIcon } from 'lucide-react';
 import { supabase } from '../lib/supabase';
-import type { User } from '../types';
+import { getVideos } from '../lib/supabaseData';
+import type { User, Video } from '../types';
 
 interface Message {
   id: string;
@@ -36,6 +37,9 @@ export const SimpleChatWidget: React.FC<SimpleChatWidgetProps> = ({ currentUser 
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const [showEmoji, setShowEmoji] = useState(false);
+  const [showVideoSelector, setShowVideoSelector] = useState(false);
+  const [selectedVideo, setSelectedVideo] = useState<string>('');
+  const [videos, setVideos] = useState<Video[]>([]);
   const [isRecording, setIsRecording] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
   const [playingAudio, setPlayingAudio] = useState<string | null>(null);
@@ -51,11 +55,17 @@ export const SimpleChatWidget: React.FC<SimpleChatWidgetProps> = ({ currentUser 
 
   const otherUser = currentUser.role === 'artist' ? 'Manager' : 'Esther Reign';
 
-  // Load messages from Supabase on mount
+  // Load messages and videos from Supabase on mount
   useEffect(() => {
     loadMessages();
+    loadVideos();
     setupRealtimeSubscription();
   }, []);
+
+  const loadVideos = async () => {
+    const videosData = await getVideos();
+    setVideos(videosData);
+  };
 
   // Auto-scroll only when near bottom
   useEffect(() => {
@@ -137,14 +147,15 @@ export const SimpleChatWidget: React.FC<SimpleChatWidgetProps> = ({ currentUser 
   };
 
   const sendMessage = async () => {
-    if (!newMessage.trim()) return;
+    if (!newMessage.trim() && !selectedVideo) return;
 
     const message: Message = {
       id: `${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       sender_id: currentUser.id,
       sender_name: currentUser.name,
-      message: newMessage.trim(),
-      timestamp: new Date().toISOString()
+      message: newMessage.trim() || '📹 Video reference',
+      timestamp: new Date().toISOString(),
+      video_reference: selectedVideo || undefined
     };
 
     try {
@@ -155,6 +166,8 @@ export const SimpleChatWidget: React.FC<SimpleChatWidgetProps> = ({ currentUser 
       if (error) throw error;
 
       setNewMessage('');
+      setSelectedVideo('');
+      setShowVideoSelector(false);
       playNotificationSound();
     } catch (error) {
       console.error('Error sending message:', error);
@@ -346,8 +359,8 @@ export const SimpleChatWidget: React.FC<SimpleChatWidgetProps> = ({ currentUser 
         }`}
         style={{ transformOrigin: 'bottom right' }}
       >
-        {/* Header - Sticky */}
-        <div className="sticky top-0 z-10 bg-gradient-to-r from-purple-600 to-pink-600 p-4 md:rounded-t-2xl flex items-center justify-between shadow-md">
+        {/* Header - Fixed on Mobile, Sticky on Desktop */}
+        <div className="fixed md:sticky top-0 left-0 right-0 md:relative z-10 bg-gradient-to-r from-purple-600 to-pink-600 p-4 md:rounded-t-2xl flex items-center justify-between shadow-md">
           <div className="flex items-center gap-3 flex-1">
             <div className="w-11 h-11 bg-white rounded-full flex items-center justify-center text-purple-600 font-bold text-lg shadow-md">
               {otherUser[0]}
@@ -377,7 +390,7 @@ export const SimpleChatWidget: React.FC<SimpleChatWidgetProps> = ({ currentUser 
         {/* Messages Area with WhatsApp Wallpaper */}
         <div 
           ref={messagesContainerRef}
-          className="flex-1 overflow-y-auto p-4 space-y-3 scrollbar-hide relative"
+          className="flex-1 overflow-y-auto p-4 pt-20 md:pt-4 space-y-3 scrollbar-hide relative"
           style={{
             backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3Cpattern id='bubble' x='0' y='0' width='60' height='60' patternUnits='userSpaceOnUse'%3E%3Ccircle cx='10' cy='10' r='1.5' fill='%23d1d7db' opacity='0.4'/%3E%3Ccircle cx='30' cy='25' r='1' fill='%23d1d7db' opacity='0.3'/%3E%3Ccircle cx='50' cy='15' r='1.2' fill='%23d1d7db' opacity='0.35'/%3E%3Ccircle cx='20' cy='40' r='0.8' fill='%23d1d7db' opacity='0.3'/%3E%3Ccircle cx='45' cy='50' r='1.3' fill='%23d1d7db' opacity='0.4'/%3E%3C/pattern%3E%3C/defs%3E%3Crect width='60' height='60' fill='%23e5ddd5'/%3E%3Crect width='60' height='60' fill='url(%23bubble)'/%3E%3C/svg%3E")`,
             backgroundColor: '#e5ddd5'
@@ -475,6 +488,48 @@ export const SimpleChatWidget: React.FC<SimpleChatWidgetProps> = ({ currentUser 
                         {emoji}
                       </button>
                     ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Video Attach Button */}
+            <div className="relative">
+              <button
+                onClick={() => setShowVideoSelector(!showVideoSelector)}
+                className={`p-2 rounded-full transition-colors ${
+                  selectedVideo ? 'bg-purple-100' : 'hover:bg-gray-100'
+                }`}
+              >
+                <VideoIcon size={22} className={selectedVideo ? 'text-purple-600' : 'text-gray-500 hover:text-purple-600'} />
+              </button>
+              
+              {showVideoSelector && (
+                <div className="absolute bottom-full mb-2 left-0 w-72 bg-white rounded-xl border border-gray-200 shadow-2xl animate-scale-in overflow-hidden max-h-64">
+                  <div className="p-3 space-y-2 overflow-y-auto scrollbar-hide">
+                    <div className="text-xs font-semibold text-gray-600 mb-2">Select Video</div>
+                    {videos.length === 0 ? (
+                      <div className="text-sm text-gray-500 text-center py-4">No videos available</div>
+                    ) : (
+                      videos.map((video) => (
+                        <button
+                          key={video.id}
+                          onClick={() => {
+                            setSelectedVideo(video.id);
+                            setShowVideoSelector(false);
+                            setNewMessage(`📹 ${video.title}`);
+                          }}
+                          className={`w-full text-left p-2 rounded-lg transition-colors ${
+                            selectedVideo === video.id 
+                              ? 'bg-purple-100 text-purple-700' 
+                              : 'hover:bg-gray-100 text-gray-700'
+                          }`}
+                        >
+                          <div className="text-sm font-medium truncate">{video.title}</div>
+                          <div className="text-xs text-gray-500 truncate">{video.status}</div>
+                        </button>
+                      ))
+                    )}
                   </div>
                 </div>
               )}
