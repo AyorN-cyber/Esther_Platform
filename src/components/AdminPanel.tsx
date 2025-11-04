@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, LogOut, Save, BarChart3, Video as VideoIcon, User, Eye, TrendingUp, Users, Clock, CheckCircle, Edit2, Settings as SettingsIcon, Key, Upload, FileText, Target, DollarSign, Calendar, Music, Mail } from 'lucide-react';
+import { X, LogOut, Save, BarChart3, Video as VideoIcon, User, Eye, TrendingUp, Users, Clock, CheckCircle, Edit2, Settings as SettingsIcon, Key, Upload, FileText, Target, DollarSign, Calendar, Music, Mail, Package, MapPin } from 'lucide-react';
 import { SupabaseChat } from './SupabaseChat';
 import { Settings } from './Settings';
 import { addNotification } from './NotificationCenter';
@@ -14,6 +14,10 @@ import { EnhancedNotificationCenter } from './EnhancedNotificationCenter';
 import { ContentCalendar } from './ContentCalendar';
 import { SongRequestsManager } from './SongRequestsManager';
 import { FanMessagesCenter } from './FanMessagesCenter';
+import AdvancedAnalytics from './AdvancedAnalytics';
+import EmailCampaignManager from './EmailCampaignManager';
+import MerchandiseManager from './MerchandiseManager';
+import TourManager from './TourManager';
 import type { Video, User as UserType, Analytics } from '../types';
 
 interface AdminPanelProps {
@@ -41,7 +45,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
   const [password, setPassword] = useState('');
   const [showPasswordReset, setShowPasswordReset] = useState(false);
   const [resetEmail, setResetEmail] = useState('');
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'videos' | 'analytics' | 'goals' | 'financial' | 'calendar' | 'songs' | 'messages' | 'chat' | 'settings' | 'content'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'videos' | 'analytics' | 'goals' | 'financial' | 'calendar' | 'songs' | 'messages' | 'chat' | 'settings' | 'content' | 'advanced-analytics' | 'email' | 'merch' | 'tour'>('dashboard');
   const [videos, setVideos] = useState<Video[]>([]);
   const [editingVideo, setEditingVideo] = useState<Video | null>(null);
   const [analytics, setAnalytics] = useState<Analytics>({
@@ -544,6 +548,17 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
               <span className="font-medium">Analytics</span>
             </button>
             <button
+              onClick={() => setActiveTab('advanced-analytics')}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
+                activeTab === 'advanced-analytics'
+                  ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-500/50'
+                  : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
+              }`}
+            >
+              <BarChart3 size={20} />
+              <span className="font-medium">Advanced</span>
+            </button>
+            <button
               onClick={() => setActiveTab('goals')}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
                 activeTab === 'goals'
@@ -591,6 +606,44 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
             >
               <Mail size={20} />
               <span className="font-medium">Fan Messages</span>
+            </button>
+            <button
+              onClick={() => setActiveTab('email')}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
+                activeTab === 'email'
+                  ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-500/50'
+                  : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
+              }`}
+            >
+              <Mail size={20} />
+              <span className="font-medium">Email Campaigns</span>
+            </button>
+          </div>
+
+          {/* Business Section */}
+          <div className="mb-4">
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider px-3 mb-2">Business</p>
+            <button
+              onClick={() => setActiveTab('merch')}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
+                activeTab === 'merch'
+                  ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-500/50'
+                  : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
+              }`}
+            >
+              <Package size={20} />
+              <span className="font-medium">Merchandise</span>
+            </button>
+            <button
+              onClick={() => setActiveTab('tour')}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
+                activeTab === 'tour'
+                  ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-500/50'
+                  : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
+              }`}
+            >
+              <MapPin size={20} />
+              <span className="font-medium">Tour Dates</span>
             </button>
           </div>
 
@@ -713,7 +766,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
       </div>
 
       {/* Main Content */}
-      <div className="lg:ml-72 p-4 md:p-8 pt-20 lg:pt-8 pb-24 lg:pb-8">
+      <div className="lg:ml-72 p-4 md:p-8 pt-20 lg:pt-24 pb-24 lg:pb-8">
 
         {/* Dashboard Tab */}
         {activeTab === 'dashboard' && (
@@ -1055,6 +1108,26 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
         {/* Fan Messages Tab */}
         {activeTab === 'messages' && (
           <FanMessagesCenter />
+        )}
+
+        {/* Advanced Analytics Tab */}
+        {activeTab === 'advanced-analytics' && (
+          <AdvancedAnalytics />
+        )}
+
+        {/* Email Campaigns Tab */}
+        {activeTab === 'email' && (
+          <EmailCampaignManager />
+        )}
+
+        {/* Merchandise Tab */}
+        {activeTab === 'merch' && (
+          <MerchandiseManager />
+        )}
+
+        {/* Tour Manager Tab */}
+        {activeTab === 'tour' && (
+          <TourManager />
         )}
 
         {/* Settings Tab */}

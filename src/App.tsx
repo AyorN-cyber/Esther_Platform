@@ -3,6 +3,7 @@ import { Menu, X, Instagram, Youtube, Mail, Play, ChevronRight, Sparkles } from 
 import { FaTiktok, FaFacebook } from 'react-icons/fa';
 import { Loader } from './components/Loader';
 import { WebGLBackground } from './components/WebGLBackground';
+import { FanMessageForm } from './components/FanMessageForm';
 import type { Video } from './types';
 
 // Lazy load AdminPanel for better performance
@@ -542,8 +543,13 @@ const EstherPlatform = () => {
               </p>
             </div>
 
+            {/* Fan Message Form */}
+            <div className="mb-12 md:mb-16">
+              <FanMessageForm />
+            </div>
+
             {/* Social Media Links */}
-            <div className="flex justify-center gap-6 animate-fade-in-up mb-12 md:mb-16">
+            <div className="flex justify-center gap-6 animate-fade-in-up">
               <a href={settings?.social_links?.instagram || "https://instagram.com/estherreign"} target="_blank" rel="noopener noreferrer"
                 className="w-14 h-14 bg-white/5 backdrop-blur-sm border border-white/10 rounded-full flex items-center justify-center hover:bg-gradient-to-br hover:from-purple-600 hover:to-pink-600 hover:border-transparent transition-all hover:scale-110">
                 <Instagram size={24} />

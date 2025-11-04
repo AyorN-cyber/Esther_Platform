@@ -407,6 +407,61 @@ CREATE TABLE IF NOT EXISTS site_settings (
 );
 
 -- ==========================================
+-- 20. EMAIL CAMPAIGNS TABLE
+-- ==========================================
+CREATE TABLE IF NOT EXISTS email_campaigns (
+    id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+    subject TEXT NOT NULL,
+    content TEXT NOT NULL,
+    status TEXT DEFAULT 'draft' CHECK (status IN ('draft', 'scheduled', 'sent', 'cancelled')),
+    target_audience TEXT DEFAULT 'all',
+    scheduled_for TIMESTAMP WITH TIME ZONE,
+    sent_at TIMESTAMP WITH TIME ZONE,
+    recipients_count INTEGER DEFAULT 0,
+    open_rate DECIMAL(5,2),
+    click_rate DECIMAL(5,2),
+    created_by TEXT REFERENCES users(id),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- ==========================================
+-- 21. MERCHANDISE TABLE
+-- ==========================================
+CREATE TABLE IF NOT EXISTS merchandise (
+    id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+    name TEXT NOT NULL,
+    description TEXT,
+    price DECIMAL(10,2) NOT NULL,
+    stock INTEGER DEFAULT 0,
+    sold INTEGER DEFAULT 0,
+    category TEXT CHECK (category IN ('apparel', 'accessories', 'music', 'posters', 'other')),
+    image_url TEXT,
+    status TEXT DEFAULT 'active' CHECK (status IN ('active', 'inactive', 'out_of_stock')),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- ==========================================
+-- 22. TOUR DATES TABLE
+-- ==========================================
+CREATE TABLE IF NOT EXISTS tour_dates (
+    id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+    venue TEXT NOT NULL,
+    city TEXT NOT NULL,
+    state TEXT,
+    country TEXT DEFAULT 'USA',
+    date DATE NOT NULL,
+    time TIME,
+    ticket_price DECIMAL(10,2),
+    capacity INTEGER,
+    tickets_sold INTEGER DEFAULT 0,
+    status TEXT DEFAULT 'upcoming' CHECK (status IN ('upcoming', 'sold_out', 'cancelled', 'completed')),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- ==========================================
 -- INDEXES FOR PERFORMANCE
 -- ==========================================
 
@@ -451,6 +506,21 @@ CREATE INDEX IF NOT EXISTS idx_revenue_expenses_category ON revenue_expenses(cat
 CREATE INDEX IF NOT EXISTS idx_goals_status ON goals(status);
 CREATE INDEX IF NOT EXISTS idx_goals_category ON goals(category);
 CREATE INDEX IF NOT EXISTS idx_goals_target_date ON goals(target_date);
+
+-- Email campaigns indexes
+CREATE INDEX IF NOT EXISTS idx_email_campaigns_status ON email_campaigns(status);
+CREATE INDEX IF NOT EXISTS idx_email_campaigns_scheduled ON email_campaigns(scheduled_for);
+CREATE INDEX IF NOT EXISTS idx_email_campaigns_created ON email_campaigns(created_at DESC);
+
+-- Merchandise indexes
+CREATE INDEX IF NOT EXISTS idx_merchandise_category ON merchandise(category);
+CREATE INDEX IF NOT EXISTS idx_merchandise_status ON merchandise(status);
+CREATE INDEX IF NOT EXISTS idx_merchandise_stock ON merchandise(stock);
+
+-- Tour dates indexes
+CREATE INDEX IF NOT EXISTS idx_tour_dates_date ON tour_dates(date);
+CREATE INDEX IF NOT EXISTS idx_tour_dates_status ON tour_dates(status);
+CREATE INDEX IF NOT EXISTS idx_tour_dates_city ON tour_dates(city);
 
 -- ==========================================
 -- AUTO-UPDATE TRIGGERS
@@ -502,6 +572,18 @@ DROP TRIGGER IF EXISTS update_site_settings_updated_at ON site_settings;
 CREATE TRIGGER update_site_settings_updated_at BEFORE UPDATE ON site_settings
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_email_campaigns_updated_at ON email_campaigns;
+CREATE TRIGGER update_email_campaigns_updated_at BEFORE UPDATE ON email_campaigns
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+DROP TRIGGER IF EXISTS update_merchandise_updated_at ON merchandise;
+CREATE TRIGGER update_merchandise_updated_at BEFORE UPDATE ON merchandise
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+DROP TRIGGER IF EXISTS update_tour_dates_updated_at ON tour_dates;
+CREATE TRIGGER update_tour_dates_updated_at BEFORE UPDATE ON tour_dates
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
 -- ==========================================
 -- ROW LEVEL SECURITY (RLS) POLICIES
 -- ==========================================
@@ -526,6 +608,9 @@ ALTER TABLE ministry_impact ENABLE ROW LEVEL SECURITY;
 ALTER TABLE bookings_events ENABLE ROW LEVEL SECURITY;
 ALTER TABLE goals ENABLE ROW LEVEL SECURITY;
 ALTER TABLE site_settings ENABLE ROW LEVEL SECURITY;
+ALTER TABLE email_campaigns ENABLE ROW LEVEL SECURITY;
+ALTER TABLE merchandise ENABLE ROW LEVEL SECURITY;
+ALTER TABLE tour_dates ENABLE ROW LEVEL SECURITY;
 
 -- For now, allow all operations (you can restrict later with Supabase Auth)
 DO $$
@@ -541,7 +626,8 @@ BEGIN
             'analytics_logins', 'content_calendar', 'song_requests',
             'fan_messages', 'notifications', 'milestones',
             'collaboration_contacts', 'revenue_expenses', 'ministry_impact',
-            'bookings_events', 'goals', 'site_settings'
+            'bookings_events', 'goals', 'site_settings', 'email_campaigns',
+            'merchandise', 'tour_dates'
         )
     LOOP
         EXECUTE format('DROP POLICY IF EXISTS "Allow all operations" ON %I', tbl);
