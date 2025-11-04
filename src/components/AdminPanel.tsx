@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { X, LogOut, Save, BarChart3, Video as VideoIcon, User, Eye, TrendingUp, Users, Clock, CheckCircle, Edit2, Settings as SettingsIcon, Key, Upload, FileText, Target, DollarSign, Calendar, Music, Mail, Package, MapPin } from 'lucide-react';
+import { X, LogOut, Save, BarChart3, Video as VideoIcon, User, Eye, TrendingUp, Users, Clock, CheckCircle, Edit2, Settings as SettingsIcon, Key, Upload, Target, DollarSign, Calendar, Music, Mail, Package, MapPin } from 'lucide-react';
 import { SupabaseChat } from './SupabaseChat';
 import { Settings } from './Settings';
 import { addNotification } from './NotificationCenter';
 import { VideoChart } from './VideoChart';
 import { WebGLBackground } from './WebGLBackground';
-import { VideoManager } from './VideoManager';
-import { ContentEditor } from './ContentEditor';
 import { AnalyticsDashboard } from './AnalyticsDashboard';
 import { GoalsTracker } from './GoalsTracker';
 import { FinancialDashboard } from './FinancialDashboard';
