@@ -1,5 +1,5 @@
-import React, { useState, useEffect, lazy, Suspense } from 'react';
-import { Menu, X, Instagram, Youtube, Mail, Phone, Play, ChevronRight, Sparkles } from 'lucide-react';
+import { useState, useEffect, lazy, Suspense } from 'react';
+import { Menu, X, Instagram, Youtube, Mail, Play, ChevronRight, Sparkles } from 'lucide-react';
 import { FaTiktok, FaFacebook } from 'react-icons/fa';
 import { Loader } from './components/Loader';
 import { WebGLBackground } from './components/WebGLBackground';
@@ -143,8 +143,7 @@ const EstherPlatform = () => {
           setShowAdmin(false);
           window.location.hash = '';
           // Reload all data when returning from admin
-          loadVideos();
-          loadSettings();
+          loadData();
           // Force re-render
           window.location.reload();
         }} />
@@ -177,7 +176,7 @@ const EstherPlatform = () => {
             {/* Logo - Triple tap to access admin */}
             <div 
               className="flex items-center gap-2 md:gap-4 flex-shrink-0 cursor-pointer"
-              onClick={(e) => {
+              onClick={() => {
                 const now = Date.now();
                 const lastTap = parseInt(localStorage.getItem('lastLogoTap') || '0');
                 const tapCount = parseInt(localStorage.getItem('logoTapCount') || '0');

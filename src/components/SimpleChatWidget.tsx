@@ -497,7 +497,19 @@ export const SimpleChatWidget: React.FC<SimpleChatWidgetProps> = ({ currentUser 
                           </div>
                         </div>
                       ) : (
-                        <p className="text-[15px] leading-relaxed whitespace-pre-wrap break-words">{msg.message}</p>
+                        <>
+                          {msg.video_reference && (
+                            <div className={`mb-2 p-2 rounded-lg ${isOwn ? 'bg-white/20' : 'bg-purple-50'}`}>
+                              <div className="flex items-center gap-2">
+                                <VideoIcon size={16} className={isOwn ? 'text-white' : 'text-purple-600'} />
+                                <span className={`text-xs font-medium ${isOwn ? 'text-white' : 'text-purple-600'}`}>
+                                  Video Reference
+                                </span>
+                              </div>
+                            </div>
+                          )}
+                          <p className="text-[15px] leading-relaxed whitespace-pre-wrap break-words">{msg.message}</p>
+                        </>
                       )}
                       <div className={`text-[11px] mt-1 ${isOwn ? 'text-white/70' : 'text-gray-400'}`}>
                         {formatTime(msg.timestamp)}
