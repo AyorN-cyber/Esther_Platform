@@ -344,8 +344,8 @@ export const SupabaseChat: React.FC<SupabaseChatProps> = ({ currentUser }) => {
       {/* Float Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={`fixed bottom-20 right-4 md:bottom-6 md:right-6 w-14 h-14 md:w-16 md:h-16 rounded-full shadow-2xl flex items-center justify-center transition-all z-[100] ${
-          isOpen ? 'scale-0' : 'bg-gradient-to-br from-purple-600 to-pink-600 hover:scale-110'
+        className={`fixed bottom-24 right-4 lg:bottom-6 lg:right-6 w-14 h-14 lg:w-16 lg:h-16 rounded-full shadow-2xl flex items-center justify-center transition-all z-[100] ${
+          isOpen ? 'scale-0' : 'bg-gradient-to-br from-cyan-600 to-blue-600 hover:scale-110'
         }`}
       >
         <MessageCircle size={28} className="text-white" />
@@ -358,15 +358,15 @@ export const SupabaseChat: React.FC<SupabaseChatProps> = ({ currentUser }) => {
 
       {/* Chat Window */}
       <div
-        className={`fixed bottom-0 right-0 md:bottom-6 md:right-6 w-full md:w-[400px] h-full md:h-[600px] bg-white rounded-t-2xl md:rounded-2xl shadow-2xl flex flex-col transition-all z-[100] ${
+        className={`fixed bottom-0 right-0 lg:bottom-6 lg:right-6 w-full lg:w-[420px] h-full lg:h-[650px] bg-white rounded-t-2xl lg:rounded-2xl shadow-2xl flex flex-col transition-all z-[100] ${
           isOpen ? 'scale-100' : 'scale-0 pointer-events-none'
         }`}
         style={{ transformOrigin: 'bottom right' }}
       >
         {/* Header */}
-        <div className="sticky top-0 z-10 bg-gradient-to-r from-purple-600 to-pink-600 p-4 rounded-t-2xl flex items-center justify-between shadow-md">
+        <div className="sticky top-0 z-10 bg-gradient-to-r from-cyan-600 to-blue-600 p-4 rounded-t-2xl flex items-center justify-between shadow-md">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-purple-600 font-bold">
+            <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-cyan-600 font-bold">
               {otherUser[0]}
             </div>
             <div>
@@ -434,7 +434,7 @@ export const SupabaseChat: React.FC<SupabaseChatProps> = ({ currentUser }) => {
                     )}
                     
                     <div className={`rounded-2xl px-4 py-3 shadow-lg ${
-                      isOwn ? 'bg-gradient-to-br from-purple-600 to-pink-500 text-white' : 'bg-white text-gray-900'
+                      isOwn ? 'bg-gradient-to-br from-cyan-600 to-blue-500 text-white' : 'bg-white text-gray-900'
                     }`}>
                       {msg.is_approval_request && !isOwn && (
                         <div className="mt-3 flex gap-2">
@@ -560,7 +560,7 @@ export const SupabaseChat: React.FC<SupabaseChatProps> = ({ currentUser }) => {
                 <div className="absolute bottom-full mb-2 left-0 w-64 bg-white rounded-xl border shadow-2xl p-3">
                   <div className="grid grid-cols-6 gap-2">
                     {EMOJIS.map(e => (
-                      <button key={e} onClick={() => { setInput(input + e); setShowEmoji(false); }} className="text-2xl hover:bg-purple-50 rounded p-2">
+                      <button key={e} onClick={() => { setInput(input + e); setShowEmoji(false); }} className="text-2xl hover:bg-cyan-50 rounded p-2 transition-colors">
                         {e}
                       </button>
                     ))}
@@ -575,13 +575,13 @@ export const SupabaseChat: React.FC<SupabaseChatProps> = ({ currentUser }) => {
               onChange={e => setInput(e.target.value)}
               onKeyPress={e => e.key === 'Enter' && sendMessage()}
               placeholder="Type a message..."
-              className="flex-1 px-3 py-2 bg-gray-100 rounded-full focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
+              className="flex-1 px-3 py-2 bg-gray-100 rounded-full focus:outline-none focus:ring-2 focus:ring-cyan-500 text-sm"
             />
 
             <button
               onClick={sendMessage}
               disabled={!input.trim() && !selectedVideo}
-              className="p-2 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full disabled:opacity-50 shadow-md"
+              className="p-2 bg-gradient-to-r from-cyan-600 to-blue-600 rounded-full disabled:opacity-50 shadow-md hover:shadow-lg transition-all"
             >
               <Send size={18} className="text-white" />
             </button>
