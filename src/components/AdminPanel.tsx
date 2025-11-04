@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { X, LogOut, Save, BarChart3, Video as VideoIcon, User, Eye, TrendingUp, Users, Clock, CheckCircle, Edit2, Settings as SettingsIcon, Key, Upload, FileText } from 'lucide-react';
+import { X, LogOut, Save, BarChart3, Video as VideoIcon, User, Eye, TrendingUp, Users, Clock, CheckCircle, Edit2, Settings as SettingsIcon, Key, Upload, FileText, Target, DollarSign } from 'lucide-react';
 import { SupabaseChat } from './SupabaseChat';
 import { Settings } from './Settings';
-import { NotificationCenter, addNotification } from './NotificationCenter';
+import { addNotification } from './NotificationCenter';
 import { VideoChart } from './VideoChart';
 import { WebGLBackground } from './WebGLBackground';
 import { VideoManager } from './VideoManager';
 import { ContentEditor } from './ContentEditor';
+import { AnalyticsDashboard } from './AnalyticsDashboard';
+import { GoalsTracker } from './GoalsTracker';
+import { FinancialDashboard } from './FinancialDashboard';
+import { EnhancedNotificationCenter } from './EnhancedNotificationCenter';
 import type { Video, User as UserType, Analytics } from '../types';
 
 interface AdminPanelProps {
@@ -34,7 +38,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
   const [password, setPassword] = useState('');
   const [showPasswordReset, setShowPasswordReset] = useState(false);
   const [resetEmail, setResetEmail] = useState('');
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'videos' | 'analytics' | 'chat' | 'settings' | 'content' | 'manage'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'videos' | 'analytics' | 'goals' | 'financial' | 'chat' | 'settings' | 'content' | 'manage'>('dashboard');
   const [videos, setVideos] = useState<Video[]>([]);
   const [editingVideo, setEditingVideo] = useState<Video | null>(null);
   const [analytics, setAnalytics] = useState<Analytics>({
@@ -510,19 +514,41 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
             <span className="font-medium">Content Editor</span>
           </button>
 
-          {currentUser?.role === 'editor' && (
-            <button
-              onClick={() => setActiveTab('analytics')}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-white ${
-                activeTab === 'analytics'
-                  ? 'bg-gradient-to-r from-purple-600 to-pink-600 shadow-lg'
-                  : 'hover:bg-gray-800/50'
-              }`}
-            >
-              <TrendingUp size={20} />
-              <span className="font-medium">Analytics</span>
-            </button>
-          )}
+          <button
+            onClick={() => setActiveTab('analytics')}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-white ${
+              activeTab === 'analytics'
+                ? 'bg-gradient-to-r from-purple-600 to-pink-600 shadow-lg'
+                : 'hover:bg-gray-800/50'
+            }`}
+          >
+            <TrendingUp size={20} />
+            <span className="font-medium">Analytics</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('goals')}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-white ${
+              activeTab === 'goals'
+                ? 'bg-gradient-to-r from-purple-600 to-pink-600 shadow-lg'
+                : 'hover:bg-gray-800/50'
+            }`}
+          >
+            <Target size={20} />
+            <span className="font-medium">Goals</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('financial')}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-white ${
+              activeTab === 'financial'
+                ? 'bg-gradient-to-r from-purple-600 to-pink-600 shadow-lg'
+                : 'hover:bg-gray-800/50'
+            }`}
+          >
+            <DollarSign size={20} />
+            <span className="font-medium">Financial</span>
+          </button>
 
           <button
             onClick={() => setActiveTab('settings')}
@@ -561,7 +587,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
           Admin Panel
         </h1>
         <div className="flex items-center gap-1 flex-shrink-0">
-          <NotificationCenter />
+          <EnhancedNotificationCenter userId={currentUser?.id || '1'} />
           <button
             onClick={onClose}
             className="p-2 bg-gray-800/50 hover:bg-gray-800 rounded-lg transition-all text-white"
@@ -573,54 +599,65 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
 
       {/* Desktop Top Bar with Notifications */}
       <div className="hidden lg:block fixed top-0 right-0 left-64 bg-gray-900/80 backdrop-blur-xl border-b border-purple-500/20 p-4 flex justify-end z-40">
-        <NotificationCenter />
+        <EnhancedNotificationCenter userId={currentUser?.id || '1'} />
       </div>
 
       {/* Mobile Bottom Navigation */}
       <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-gray-900/95 backdrop-blur-xl border-t border-purple-500/20 p-2 z-40">
-        <div className="flex justify-around">
+        <div className="grid grid-cols-6 gap-1">
           <button
             onClick={() => setActiveTab('dashboard')}
-            className={`flex flex-col items-center gap-1 px-2 py-2 rounded-xl transition-all ${
+            className={`flex flex-col items-center gap-1 px-1 py-2 rounded-xl transition-all ${
               activeTab === 'dashboard' ? 'text-purple-400' : 'text-gray-400'
             }`}
           >
-            <BarChart3 size={18} />
+            <BarChart3 size={16} />
             <span className="text-xs">Home</span>
           </button>
           <button
             onClick={() => setActiveTab('manage')}
-            className={`flex flex-col items-center gap-1 px-2 py-2 rounded-xl transition-all ${
+            className={`flex flex-col items-center gap-1 px-1 py-2 rounded-xl transition-all ${
               activeTab === 'manage' ? 'text-purple-400' : 'text-gray-400'
             }`}
           >
-            <VideoIcon size={18} />
+            <VideoIcon size={16} />
             <span className="text-xs">Videos</span>
           </button>
           <button
-            onClick={() => setActiveTab('content')}
-            className={`flex flex-col items-center gap-1 px-2 py-2 rounded-xl transition-all ${
-              activeTab === 'content' ? 'text-purple-400' : 'text-gray-400'
+            onClick={() => setActiveTab('analytics')}
+            className={`flex flex-col items-center gap-1 px-1 py-2 rounded-xl transition-all ${
+              activeTab === 'analytics' ? 'text-purple-400' : 'text-gray-400'
             }`}
           >
-            <FileText size={18} />
-            <span className="text-xs">Content</span>
+            <TrendingUp size={16} />
+            <span className="text-xs">Stats</span>
+          </button>
+          <button
+            onClick={() => setActiveTab('goals')}
+            className={`flex flex-col items-center gap-1 px-1 py-2 rounded-xl transition-all ${
+              activeTab === 'goals' ? 'text-purple-400' : 'text-gray-400'
+            }`}
+          >
+            <Target size={16} />
+            <span className="text-xs">Goals</span>
+          </button>
+          <button
+            onClick={() => setActiveTab('financial')}
+            className={`flex flex-col items-center gap-1 px-1 py-2 rounded-xl transition-all ${
+              activeTab === 'financial' ? 'text-purple-400' : 'text-gray-400'
+            }`}
+          >
+            <DollarSign size={16} />
+            <span className="text-xs">Money</span>
           </button>
           <button
             onClick={() => setActiveTab('settings')}
-            className={`flex flex-col items-center gap-1 px-2 py-2 rounded-xl transition-all ${
+            className={`flex flex-col items-center gap-1 px-1 py-2 rounded-xl transition-all ${
               activeTab === 'settings' ? 'text-purple-400' : 'text-gray-400'
             }`}
           >
-            <SettingsIcon size={18} />
-            <span className="text-xs">Settings</span>
-          </button>
-          <button
-            onClick={handleLogout}
-            className="flex flex-col items-center gap-1 px-2 py-2 rounded-xl transition-all text-red-400"
-          >
-            <LogOut size={18} />
-            <span className="text-xs">Logout</span>
+            <SettingsIcon size={16} />
+            <span className="text-xs">More</span>
           </button>
         </div>
       </div>
@@ -946,6 +983,21 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
             </div>
             <ContentEditor onContentChange={loadData} />
           </div>
+        )}
+
+        {/* Analytics Dashboard Tab */}
+        {activeTab === 'analytics' && (
+          <AnalyticsDashboard />
+        )}
+
+        {/* Goals Tracker Tab */}
+        {activeTab === 'goals' && (
+          <GoalsTracker />
+        )}
+
+        {/* Financial Dashboard Tab */}
+        {activeTab === 'financial' && (
+          <FinancialDashboard />
         )}
 
         {/* Settings Tab */}
