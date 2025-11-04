@@ -45,9 +45,11 @@ export const SimpleChatWidget: React.FC<SimpleChatWidgetProps> = ({ currentUser 
   const [playingAudio, setPlayingAudio] = useState<string | null>(null);
   const [showClearConfirm, setShowClearConfirm] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const emojiRef = useRef<HTMLDivElement>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
@@ -61,6 +63,52 @@ export const SimpleChatWidget: React.FC<SimpleChatWidgetProps> = ({ currentUser 
     loadVideos();
     setupRealtimeSubscription();
   }, []);
+
+  // Handle mobile keyboard - detect viewport changes
+  useEffect(() => {
+    if (!isOpen) return;
+
+    // Prevent body scroll on mobile when chat is open
+    if (window.innerWidth < 768) {
+      document.body.style.overflow = 'hidden';
+      document.body.style.position = 'fixed';
+      document.body.style.width = '100%';
+      document.body.style.height = '100%';
+    }
+
+    const handleResize = () => {
+      // On mobile, when keyboard opens, visualViewport height changes
+      if (window.visualViewport) {
+        const viewportHeight = window.visualViewport.height;
+        const windowHeight = window.innerHeight;
+        const keyboardHeight = windowHeight - viewportHeight;
+        setKeyboardHeight(keyboardHeight);
+      }
+    };
+
+    // Listen to visualViewport changes (better for keyboard detection)
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', handleResize);
+      window.visualViewport.addEventListener('scroll', handleResize);
+    }
+
+    // Fallback to window resize
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      // Restore body scroll
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.width = '';
+      document.body.style.height = '';
+      
+      if (window.visualViewport) {
+        window.visualViewport.removeEventListener('resize', handleResize);
+        window.visualViewport.removeEventListener('scroll', handleResize);
+      }
+      window.removeEventListener('resize', handleResize);
+    };
+  }, [isOpen]);
 
   const loadVideos = async () => {
     const videosData = await getVideos();
@@ -352,12 +400,21 @@ export const SimpleChatWidget: React.FC<SimpleChatWidgetProps> = ({ currentUser 
         )}
       </button>
 
-      {/* Chat Widget - Fixed on Mobile */}
+      {/* Chat Widget - Fixed on Mobile with Keyboard Handling */}
       <div
-        className={`fixed inset-0 md:bottom-6 md:right-6 md:left-auto md:top-auto w-full md:w-[400px] h-full md:h-[600px] md:max-h-[90vh] bg-white md:rounded-2xl shadow-2xl flex flex-col transition-all duration-300 z-[100] ${
+        className={`fixed md:bottom-6 md:right-6 md:left-auto md:top-auto w-full md:w-[400px] bg-white md:rounded-2xl shadow-2xl flex flex-col transition-all duration-300 z-[100] ${
           isOpen ? 'scale-100 opacity-100' : 'scale-0 opacity-0 pointer-events-none'
         }`}
-        style={{ transformOrigin: 'bottom right' }}
+        style={{
+          transformOrigin: 'bottom right',
+          // On mobile: full screen minus keyboard
+          top: window.innerWidth < 768 ? '0' : 'auto',
+          bottom: window.innerWidth < 768 ? `${keyboardHeight}px` : 'auto',
+          left: window.innerWidth < 768 ? '0' : 'auto',
+          right: window.innerWidth < 768 ? '0' : 'auto',
+          height: window.innerWidth < 768 ? `calc(100vh - ${keyboardHeight}px)` : '600px',
+          maxHeight: window.innerWidth >= 768 ? '90vh' : 'none'
+        }}
       >
         {/* Header - Sticky */}
         <div className="sticky top-0 z-10 bg-gradient-to-r from-purple-600 to-pink-600 p-4 md:rounded-t-2xl flex items-center justify-between shadow-md">
@@ -537,10 +594,17 @@ export const SimpleChatWidget: React.FC<SimpleChatWidgetProps> = ({ currentUser 
 
             {/* Message Input */}
             <input
+              ref={inputRef}
               type="text"
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
               onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
+              onFocus={() => {
+                // Scroll to bottom when input is focused
+                setTimeout(() => {
+                  messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+                }, 300);
+              }}
               placeholder="Type a message..."
               className="flex-1 min-w-0 px-3 py-2 bg-gray-100 border-none rounded-full focus:outline-none focus:ring-2 focus:ring-purple-500 text-gray-900 placeholder-gray-500 text-sm transition-all"
             />
