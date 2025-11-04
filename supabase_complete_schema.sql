@@ -7,10 +7,10 @@
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 -- ==========================================
--- 1. USERS TABLE
+-- 1. USERS TABLE (Compatible with existing structure)
 -- ==========================================
 CREATE TABLE IF NOT EXISTS users (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
     email TEXT UNIQUE NOT NULL,
     role TEXT NOT NULL CHECK (role IN ('artist', 'manager', 'admin', 'editor', 'prayer_team')),
     full_name TEXT NOT NULL,
@@ -23,41 +23,71 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 -- ==========================================
--- 2. VIDEOS TABLE
+-- 2. VIDEOS TABLE (Compatible with existing TEXT id)
 -- ==========================================
-CREATE TABLE IF NOT EXISTS videos (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    title TEXT NOT NULL,
-    category TEXT NOT NULL CHECK (category IN ('cover', 'cover_duet', 'original', 'feature', 'duet', 'worship_moment', 'testimony', 'bts')),
-    upload_method TEXT CHECK (upload_method IN ('file', 'link')),
-    video_url TEXT,
-    video_file_path TEXT,
-    video_size_mb DECIMAL,
-    video_duration_seconds INTEGER,
-    thumbnail_url TEXT,
-    editing_style TEXT,
-    description TEXT,
-    scripture_reference TEXT,
-    upload_date TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    published_date TIMESTAMP WITH TIME ZONE,
-    is_draft BOOLEAN DEFAULT FALSE,
-    tags TEXT[],
-    uploaded_by UUID REFERENCES users(id),
-    views_count INTEGER DEFAULT 0,
-    likes_count INTEGER DEFAULT 0,
-    order_index INTEGER DEFAULT 0,
-    status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'completed', 'archived')),
-    metadata JSONB DEFAULT '{}'::jsonb,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
+-- Note: If videos table already exists with TEXT id, we'll keep it
+-- and add new columns if they don't exist
+
+DO $$
+BEGIN
+    -- Check if videos table exists
+    IF NOT EXISTS (SELECT FROM pg_tables WHERE schemaname = 'public' AND tablename = 'videos') THEN
+        -- Create new table with TEXT id for compatibility
+        CREATE TABLE videos (
+            id TEXT PRIMARY KEY,
+            title TEXT NOT NULL,
+            category TEXT CHECK (category IN ('cover', 'cover_duet', 'original', 'feature', 'duet', 'worship_moment', 'testimony', 'bts')),
+            upload_method TEXT CHECK (upload_method IN ('file', 'link')),
+            video_url TEXT,
+            video_link TEXT, -- alias for compatibility
+            video_file_path TEXT,
+            video_size_mb DECIMAL,
+            video_duration_seconds INTEGER,
+            thumbnail_url TEXT,
+            editing_style TEXT,
+            template_type TEXT,
+            description TEXT,
+            scripture_reference TEXT,
+            upload_date TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+            published_date TIMESTAMP WITH TIME ZONE,
+            is_draft BOOLEAN DEFAULT FALSE,
+            tags TEXT[],
+            uploaded_by TEXT,
+            views_count INTEGER DEFAULT 0,
+            likes_count INTEGER DEFAULT 0,
+            order_index INTEGER DEFAULT 0,
+            status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'completed', 'archived')),
+            metadata JSONB DEFAULT '{}'::jsonb,
+            created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+            updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+        );
+    ELSE
+        -- Add new columns if they don't exist
+        ALTER TABLE videos ADD COLUMN IF NOT EXISTS category TEXT;
+        ALTER TABLE videos ADD COLUMN IF NOT EXISTS upload_method TEXT;
+        ALTER TABLE videos ADD COLUMN IF NOT EXISTS video_file_path TEXT;
+        ALTER TABLE videos ADD COLUMN IF NOT EXISTS video_size_mb DECIMAL;
+        ALTER TABLE videos ADD COLUMN IF NOT EXISTS video_duration_seconds INTEGER;
+        ALTER TABLE videos ADD COLUMN IF NOT EXISTS editing_style TEXT;
+        ALTER TABLE videos ADD COLUMN IF NOT EXISTS description TEXT;
+        ALTER TABLE videos ADD COLUMN IF NOT EXISTS scripture_reference TEXT;
+        ALTER TABLE videos ADD COLUMN IF NOT EXISTS upload_date TIMESTAMP WITH TIME ZONE;
+        ALTER TABLE videos ADD COLUMN IF NOT EXISTS published_date TIMESTAMP WITH TIME ZONE;
+        ALTER TABLE videos ADD COLUMN IF NOT EXISTS is_draft BOOLEAN DEFAULT FALSE;
+        ALTER TABLE videos ADD COLUMN IF NOT EXISTS tags TEXT[];
+        ALTER TABLE videos ADD COLUMN IF NOT EXISTS uploaded_by TEXT;
+        ALTER TABLE videos ADD COLUMN IF NOT EXISTS views_count INTEGER DEFAULT 0;
+        ALTER TABLE videos ADD COLUMN IF NOT EXISTS likes_count INTEGER DEFAULT 0;
+        ALTER TABLE videos ADD COLUMN IF NOT EXISTS metadata JSONB DEFAULT '{}'::jsonb;
+    END IF;
+END $$;
 
 -- ==========================================
--- 3. VIDEO PLATFORMS TABLE
+-- 3. VIDEO PLATFORMS TABLE (Compatible with TEXT video_id)
 -- ==========================================
 CREATE TABLE IF NOT EXISTS video_platforms (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    video_id UUID REFERENCES videos(id) ON DELETE CASCADE,
+    id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+    video_id TEXT REFERENCES videos(id) ON DELETE CASCADE,
     platform TEXT NOT NULL CHECK (platform IN ('youtube', 'instagram', 'tiktok', 'facebook', 'twitter')),
     platform_url TEXT NOT NULL,
     platform_video_id TEXT,
@@ -74,7 +104,7 @@ CREATE TABLE IF NOT EXISTS video_platforms (
 -- 4. CONVERSATIONS TABLE
 -- ==========================================
 CREATE TABLE IF NOT EXISTS conversations (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
     title TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
@@ -86,9 +116,9 @@ CREATE TABLE IF NOT EXISTS conversations (
 -- 5. CONVERSATION PARTICIPANTS TABLE
 -- ==========================================
 CREATE TABLE IF NOT EXISTS conversation_participants (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    conversation_id UUID REFERENCES conversations(id) ON DELETE CASCADE,
-    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+    id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+    conversation_id TEXT REFERENCES conversations(id) ON DELETE CASCADE,
+    user_id TEXT REFERENCES users(id) ON DELETE CASCADE,
     joined_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     last_read_at TIMESTAMP WITH TIME ZONE,
     is_muted BOOLEAN DEFAULT FALSE,
@@ -99,9 +129,9 @@ CREATE TABLE IF NOT EXISTS conversation_participants (
 -- 6. MESSAGES TABLE
 -- ==========================================
 CREATE TABLE IF NOT EXISTS messages (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    conversation_id UUID REFERENCES conversations(id) ON DELETE CASCADE,
-    sender_id UUID REFERENCES users(id),
+    id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+    conversation_id TEXT REFERENCES conversations(id) ON DELETE CASCADE,
+    sender_id TEXT REFERENCES users(id),
     message_type TEXT NOT NULL CHECK (message_type IN ('text', 'voice', 'image', 'file', 'video_reference', 'system')),
     content TEXT,
     voice_note_url TEXT,
@@ -109,12 +139,12 @@ CREATE TABLE IF NOT EXISTS messages (
     file_url TEXT,
     file_name TEXT,
     file_size_mb DECIMAL,
-    referenced_video_id UUID REFERENCES videos(id),
-    reply_to_message_id UUID REFERENCES messages(id),
+    referenced_video_id TEXT REFERENCES videos(id),
+    reply_to_message_id TEXT REFERENCES messages(id),
     reactions JSONB DEFAULT '[]'::jsonb,
     is_edited BOOLEAN DEFAULT FALSE,
     is_deleted BOOLEAN DEFAULT FALSE,
-    read_by UUID[],
+    read_by TEXT[],
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -123,7 +153,7 @@ CREATE TABLE IF NOT EXISTS messages (
 -- 7. ANALYTICS VISITORS TABLE
 -- ==========================================
 CREATE TABLE IF NOT EXISTS analytics_visitors (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
     visitor_date DATE NOT NULL,
     visitor_count INTEGER DEFAULT 1,
     unique_visitors INTEGER DEFAULT 1,
@@ -141,8 +171,8 @@ CREATE TABLE IF NOT EXISTS analytics_visitors (
 -- 8. ANALYTICS LOGINS TABLE
 -- ==========================================
 CREATE TABLE IF NOT EXISTS analytics_logins (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    user_id UUID REFERENCES users(id),
+    id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+    user_id TEXT REFERENCES users(id),
     login_timestamp TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     ip_address TEXT,
     device_info JSONB,
@@ -154,7 +184,7 @@ CREATE TABLE IF NOT EXISTS analytics_logins (
 -- 9. CONTENT CALENDAR TABLE
 -- ==========================================
 CREATE TABLE IF NOT EXISTS content_calendar (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
     title TEXT NOT NULL,
     content_type TEXT CHECK (content_type IN ('cover', 'original', 'worship_moment', 'testimony', 'bts', 'live', 'collaboration')),
     scripture_reference TEXT,
@@ -162,10 +192,10 @@ CREATE TABLE IF NOT EXISTS content_calendar (
     platforms TEXT[],
     status TEXT DEFAULT 'idea' CHECK (status IN ('idea', 'planning', 'recording', 'editing', 'review', 'scheduled', 'published', 'cancelled')),
     priority TEXT CHECK (priority IN ('low', 'medium', 'high', 'urgent')),
-    assigned_to UUID REFERENCES users(id),
+    assigned_to TEXT REFERENCES users(id),
     notes TEXT,
-    video_id UUID REFERENCES videos(id),
-    created_by UUID REFERENCES users(id),
+    video_id TEXT REFERENCES videos(id),
+    created_by TEXT REFERENCES users(id),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -174,7 +204,7 @@ CREATE TABLE IF NOT EXISTS content_calendar (
 -- 10. SONG REQUESTS TABLE
 -- ==========================================
 CREATE TABLE IF NOT EXISTS song_requests (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
     song_title TEXT NOT NULL,
     original_artist TEXT,
     requested_by_name TEXT,
@@ -188,7 +218,7 @@ CREATE TABLE IF NOT EXISTS song_requests (
     youtube_reference_url TEXT,
     estimated_production_days INTEGER,
     notes TEXT,
-    content_calendar_id UUID REFERENCES content_calendar(id),
+    content_calendar_id TEXT REFERENCES content_calendar(id),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -197,7 +227,7 @@ CREATE TABLE IF NOT EXISTS song_requests (
 -- 11. FAN MESSAGES TABLE
 -- ==========================================
 CREATE TABLE IF NOT EXISTS fan_messages (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
     from_name TEXT NOT NULL,
     from_email TEXT,
     message_type TEXT NOT NULL CHECK (message_type IN ('prayer_request', 'testimony', 'song_request', 'general', 'booking_inquiry')),
@@ -209,7 +239,7 @@ CREATE TABLE IF NOT EXISTS fan_messages (
     is_featured BOOLEAN DEFAULT FALSE,
     response TEXT,
     responded_at TIMESTAMP WITH TIME ZONE,
-    responded_by UUID REFERENCES users(id),
+    responded_by TEXT REFERENCES users(id),
     follow_up_date DATE,
     tags TEXT[],
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
@@ -219,8 +249,8 @@ CREATE TABLE IF NOT EXISTS fan_messages (
 -- 12. NOTIFICATIONS TABLE
 -- ==========================================
 CREATE TABLE IF NOT EXISTS notifications (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+    id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+    user_id TEXT REFERENCES users(id) ON DELETE CASCADE,
     type TEXT NOT NULL CHECK (type IN ('message', 'video_upload', 'milestone', 'deadline', 'system', 'prayer_request', 'comment', 'achievement')),
     title TEXT NOT NULL,
     body TEXT,
@@ -235,7 +265,7 @@ CREATE TABLE IF NOT EXISTS notifications (
 -- 13. MILESTONES TABLE
 -- ==========================================
 CREATE TABLE IF NOT EXISTS milestones (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
     milestone_type TEXT NOT NULL CHECK (milestone_type IN ('subscribers', 'views', 'videos', 'engagement', 'financial', 'ministry', 'custom')),
     title TEXT NOT NULL,
     description TEXT,
@@ -252,7 +282,7 @@ CREATE TABLE IF NOT EXISTS milestones (
 -- 14. COLLABORATION CONTACTS TABLE
 -- ==========================================
 CREATE TABLE IF NOT EXISTS collaboration_contacts (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
     contact_type TEXT CHECK (contact_type IN ('church', 'artist', 'producer', 'ministry', 'venue', 'media', 'sponsor')),
     name TEXT NOT NULL,
     organization TEXT,
@@ -273,7 +303,7 @@ CREATE TABLE IF NOT EXISTS collaboration_contacts (
 -- 15. REVENUE EXPENSES TABLE
 -- ==========================================
 CREATE TABLE IF NOT EXISTS revenue_expenses (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
     transaction_date DATE NOT NULL,
     type TEXT NOT NULL CHECK (type IN ('revenue', 'expense')),
     category TEXT NOT NULL,
@@ -282,11 +312,11 @@ CREATE TABLE IF NOT EXISTS revenue_expenses (
     description TEXT,
     payment_method TEXT,
     receipt_url TEXT,
-    related_video_id UUID REFERENCES videos(id),
+    related_video_id TEXT REFERENCES videos(id),
     is_recurring BOOLEAN DEFAULT FALSE,
     recurring_frequency TEXT CHECK (recurring_frequency IN ('weekly', 'monthly', 'quarterly', 'yearly')),
     tags TEXT[],
-    created_by UUID REFERENCES users(id),
+    created_by TEXT REFERENCES users(id),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
@@ -294,13 +324,13 @@ CREATE TABLE IF NOT EXISTS revenue_expenses (
 -- 16. MINISTRY IMPACT TABLE
 -- ==========================================
 CREATE TABLE IF NOT EXISTS ministry_impact (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
     impact_type TEXT CHECK (impact_type IN ('testimony', 'salvation', 'healing', 'deliverance', 'baptism', 'life_change', 'other')),
     story_title TEXT NOT NULL,
     story_text TEXT NOT NULL,
     person_name TEXT,
     location TEXT,
-    related_video_id UUID REFERENCES videos(id),
+    related_video_id TEXT REFERENCES videos(id),
     related_song TEXT,
     is_verified BOOLEAN DEFAULT FALSE,
     is_public BOOLEAN DEFAULT FALSE,
@@ -313,7 +343,7 @@ CREATE TABLE IF NOT EXISTS ministry_impact (
 -- 17. BOOKINGS EVENTS TABLE
 -- ==========================================
 CREATE TABLE IF NOT EXISTS bookings_events (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
     event_type TEXT CHECK (event_type IN ('church_service', 'concert', 'wedding', 'conference', 'workshop', 'recording_session', 'other')),
     event_name TEXT NOT NULL,
     venue_name TEXT,
@@ -328,7 +358,7 @@ CREATE TABLE IF NOT EXISTS bookings_events (
     fee_amount DECIMAL(10,2),
     deposit_paid DECIMAL(10,2),
     balance_due DECIMAL(10,2),
-    setlist_id UUID,
+    setlist_id TEXT,
     technical_requirements TEXT,
     notes TEXT,
     contract_url TEXT,
@@ -340,7 +370,7 @@ CREATE TABLE IF NOT EXISTS bookings_events (
 -- 18. GOALS TABLE
 -- ==========================================
 CREATE TABLE IF NOT EXISTS goals (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
     title TEXT NOT NULL,
     category TEXT CHECK (category IN ('content', 'growth', 'ministry', 'financial', 'engagement', 'learning', 'personal')),
     target_value DECIMAL,
@@ -352,7 +382,7 @@ CREATE TABLE IF NOT EXISTS goals (
     status TEXT DEFAULT 'active' CHECK (status IN ('active', 'completed', 'cancelled', 'paused')),
     notes TEXT,
     milestones JSONB DEFAULT '[]'::jsonb,
-    created_by UUID REFERENCES users(id),
+    created_by TEXT REFERENCES users(id),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
