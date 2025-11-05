@@ -339,13 +339,24 @@ export const SupabaseChat: React.FC<SupabaseChatProps> = ({ currentUser }) => {
     return null; // Or a loading spinner
   }
 
+  // Update PWA badge
+  useEffect(() => {
+    if ('setAppBadge' in navigator) {
+      if (unread > 0) {
+        (navigator as any).setAppBadge(unread);
+      } else {
+        (navigator as any).clearAppBadge();
+      }
+    }
+  }, [unread]);
+
   return (
     <>
-      {/* Float Button */}
+      {/* Float Button - Fixed positioning to avoid overlaps */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={`fixed bottom-24 right-4 lg:bottom-6 lg:right-6 w-14 h-14 lg:w-16 lg:h-16 rounded-full shadow-2xl flex items-center justify-center transition-all z-[100] ${
-          isOpen ? 'scale-0' : 'bg-gradient-to-br from-cyan-600 to-blue-600 hover:scale-110'
+        className={`fixed bottom-32 right-4 lg:bottom-6 lg:right-6 w-14 h-14 lg:w-16 lg:h-16 rounded-full shadow-2xl flex items-center justify-center transition-all z-[100] ${
+          isOpen ? 'scale-0' : 'bg-gradient-to-br from-cyan-500 via-royal-600 to-blue-500 hover:scale-110 hover:shadow-royal-500/50'
         }`}
       >
         <MessageCircle size={28} className="text-white" />
@@ -363,19 +374,19 @@ export const SupabaseChat: React.FC<SupabaseChatProps> = ({ currentUser }) => {
         }`}
         style={{ transformOrigin: 'bottom right' }}
       >
-        {/* Header */}
-        <div className="sticky top-0 z-10 bg-gradient-to-r from-cyan-600 to-blue-600 p-4 rounded-t-2xl flex items-center justify-between shadow-md">
+        {/* Header - Royal purple gradient */}
+        <div className="sticky top-0 z-10 bg-gradient-to-r from-cyan-500 via-royal-600 to-blue-500 p-4 rounded-t-2xl flex items-center justify-between shadow-md">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-cyan-600 font-bold">
+            <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-royal-600 font-bold">
               {otherUser[0]}
             </div>
             <div>
-              <h3 className="font-semibold text-white">{otherUser}</h3>
-              <p className="text-xs text-white/80">Online</p>
+              <h3 className="font-semibold text-white drop-shadow-md">{otherUser}</h3>
+              <p className="text-xs text-white/90">Online</p>
             </div>
           </div>
           <div className="flex gap-2">
-            <button onClick={() => setShowClearConfirm(true)} className="p-2 hover:bg-white/20 rounded-full" title="Clear chat">
+            <button onClick={() => setShowClearConfirm(true)} className="p-2 hover:bg-white/20 rounded-full transition-colors" title="Clear chat">
               <Trash2 size={18} className="text-white" />
             </button>
             <button onClick={() => setIsOpen(false)} className="p-2 hover:bg-white/20 rounded-full">
@@ -434,7 +445,7 @@ export const SupabaseChat: React.FC<SupabaseChatProps> = ({ currentUser }) => {
                     )}
                     
                     <div className={`rounded-2xl px-4 py-3 shadow-lg ${
-                      isOwn ? 'bg-gradient-to-br from-cyan-600 to-blue-500 text-white' : 'bg-white text-gray-900'
+                      isOwn ? 'bg-gradient-to-br from-royal-600 via-violet-600 to-royal-600 text-white' : 'bg-white text-gray-900'
                     }`}>
                       {msg.is_approval_request && !isOwn && (
                         <div className="mt-3 flex gap-2">
@@ -579,9 +590,9 @@ export const SupabaseChat: React.FC<SupabaseChatProps> = ({ currentUser }) => {
             />
 
             <button
-              onClick={sendMessage}
+              onClick=sendMessage}
               disabled={!input.trim() && !selectedVideo}
-              className="p-2 bg-gradient-to-r from-cyan-600 to-blue-600 rounded-full disabled:opacity-50 shadow-md hover:shadow-lg transition-all"
+              className="p-2 bg-gradient-to-r from-royal-600 via-violet-600 to-royal-600 rounded-full disabled:opacity-50 shadow-md hover:shadow-lg hover:shadow-royal-500/50 transition-all"
             >
               <Send size={18} className="text-white" />
             </button>
