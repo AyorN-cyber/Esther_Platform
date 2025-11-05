@@ -372,7 +372,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
 
                 <button
                   type="submit"
-                  className="w-full bg-gradient-to-r from-emerald-500 to-teal-500 text-gray-900 px-6 py-3 rounded-2xl font-black transition-all hover:shadow-lg hover:shadow-emerald-500/50 hover:scale-105"
+                  className="w-full bg-gradient-to-r from-royal-600 via-violet-600 to-royal-600 text-white px-6 py-3 rounded-2xl font-black transition-all hover:shadow-lg hover:shadow-royal-500/50 hover:scale-105"
                 >
                   Send Reset Link
                 </button>
@@ -437,7 +437,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
 
                 <button
                   type="submit"
-                  className="w-full bg-gradient-to-r from-emerald-500 to-teal-500 text-gray-900 px-6 py-3 rounded-2xl font-black transition-all hover:shadow-lg hover:shadow-emerald-500/50 hover:scale-105"
+                  className="w-full bg-gradient-to-r from-royal-600 via-violet-600 to-royal-600 text-white px-6 py-3 rounded-2xl font-black transition-all hover:shadow-lg hover:shadow-royal-500/50 hover:scale-105"
                 >
                   Login
                 </button>
