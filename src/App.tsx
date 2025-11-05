@@ -206,7 +206,7 @@ const EstherPlatform = () => {
                 className="h-12 md:h-16 lg:h-20 w-auto"
                 loading="eager"
               />
-              <span className="text-[10px] sm:text-xs md:text-base lg:text-lg font-bold bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400 bg-clip-text text-transparent animate-gradient bg-[length:200%_auto] whitespace-nowrap">
+              <span className="text-[10px] sm:text-xs md:text-base lg:text-lg font-bold bg-gradient-to-r from-royal-400 via-violet-400 to-royal-400 bg-clip-text text-transparent animate-gradient bg-[length:200%_auto] whitespace-nowrap drop-shadow-lg">
                 @officialEstherReign
               </span>
             </div>
@@ -223,12 +223,12 @@ const EstherPlatform = () => {
                   key={item.id}
                   onClick={() => scrollToSection(item.id)}
                   className={`text-sm font-medium transition-all relative group ${activeSection === item.id
-                    ? 'text-purple-400'
+                    ? 'text-royal-400'
                     : 'text-gray-300 hover:text-white'
                     }`}
                 >
                   {item.label}
-                  <span className={`absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-purple-500 to-pink-500 transition-all ${activeSection === item.id ? 'w-full' : 'w-0 group-hover:w-full'
+                  <span className={`absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-royal-500 via-violet-500 to-royal-500 transition-all ${activeSection === item.id ? 'w-full' : 'w-0 group-hover:w-full'
                     }`}></span>
                 </button>
               ))}
@@ -257,7 +257,7 @@ const EstherPlatform = () => {
                 <button
                   key={item.id}
                   onClick={() => scrollToSection(item.id)}
-                  className="block w-full text-left py-2 text-gray-300 hover:text-purple-400 transition-colors"
+                  className="block w-full text-left py-2 text-gray-300 hover:text-royal-400 transition-colors"
                 >
                   {item.label}
                 </button>
@@ -278,31 +278,31 @@ const EstherPlatform = () => {
                 <span className="text-sm text-purple-300">Gospel Singer • Worship Leader</span>
               </div>
 
-              <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black leading-tight">
+              <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black leading-tight drop-shadow-2xl">
                 <span className="bg-gradient-to-r from-white via-purple-200 to-pink-200 bg-clip-text text-transparent animate-text-reveal">
                   Esther
                 </span>
                 <br />
-                <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400 bg-clip-text text-transparent animate-gradient animate-text-reveal stagger-delay-2">
+                <span className="bg-gradient-to-r from-royal-400 via-violet-400 to-royal-400 bg-clip-text text-transparent animate-gradient animate-text-reveal stagger-delay-2">
                   Reign
                 </span>
               </h1>
 
-              <p className="text-base md:text-lg lg:text-xl text-white leading-relaxed max-w-xl animate-text-reveal stagger-delay-3">
+              <p className="text-base md:text-lg lg:text-xl text-white/95 leading-relaxed max-w-xl animate-text-reveal stagger-delay-3 drop-shadow-lg">
                 {settings?.hero_description || localStorage.getItem('hero_description') || 'Lifting voices in worship through powerful gospel music. Experience the presence of God through every note.'}
               </p>
 
               <div className="flex flex-wrap gap-4 justify-center lg:justify-start animate-bounce-in stagger-delay-4">
                 <button
                   onClick={() => scrollToSection('videos')}
-                  className="group px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full font-semibold transition-all hover:shadow-2xl hover:shadow-purple-500/50 hover:scale-110 flex items-center gap-2 animate-glow-pulse"
+                  className="group px-8 py-4 bg-gradient-to-r from-royal-600 via-violet-600 to-royal-600 rounded-full font-semibold transition-all hover:shadow-2xl hover:shadow-royal-500/50 hover:scale-110 flex items-center gap-2 animate-glow-pulse text-white"
                 >
                   Watch Videos
                   <ChevronRight size={20} className="group-hover:translate-x-1 transition-transform" />
                 </button>
                 <button
                   onClick={() => scrollToSection('contact')}
-                  className="px-8 py-4 bg-white/5 backdrop-blur-sm border border-white/10 rounded-full font-semibold hover:bg-white/10 hover:scale-105 transition-all"
+                  className="px-8 py-4 bg-white/5 backdrop-blur-sm border border-white/10 rounded-full font-semibold hover:bg-white/10 hover:scale-105 transition-all text-white"
                 >
                   Get In Touch
                 </button>
@@ -311,19 +311,19 @@ const EstherPlatform = () => {
               {/* Social Links */}
               <div className="flex gap-4 pt-6 pb-8 md:pb-0 justify-center lg:justify-start animate-slide-in-left stagger-delay-5">
                 <a href={settings?.social_links?.instagram || "https://instagram.com/estherreign"} target="_blank" rel="noopener noreferrer"
-                  className="w-12 h-12 bg-white/5 backdrop-blur-sm border border-white/10 rounded-full flex items-center justify-center hover:bg-purple-600 hover:border-purple-600 transition-all hover:scale-110">
+                  className="w-12 h-12 bg-white/5 backdrop-blur-sm border border-white/10 rounded-full flex items-center justify-center hover:bg-royal-600 hover:border-royal-600 hover:shadow-lg hover:shadow-royal-500/50 transition-all hover:scale-110 text-white">
                   <Instagram size={20} />
                 </a>
                 <a href={settings?.social_links?.youtube || "https://youtube.com/@estherreign"} target="_blank" rel="noopener noreferrer"
-                  className="w-12 h-12 bg-white/5 backdrop-blur-sm border border-white/10 rounded-full flex items-center justify-center hover:bg-purple-600 hover:border-purple-600 transition-all hover:scale-110">
+                  className="w-12 h-12 bg-white/5 backdrop-blur-sm border border-white/10 rounded-full flex items-center justify-center hover:bg-royal-600 hover:border-royal-600 hover:shadow-lg hover:shadow-royal-500/50 transition-all hover:scale-110 text-white">
                   <Youtube size={20} />
                 </a>
                 <a href={settings?.social_links?.tiktok || "https://tiktok.com/@estherreign"} target="_blank" rel="noopener noreferrer"
-                  className="w-12 h-12 bg-white/5 backdrop-blur-sm border border-white/10 rounded-full flex items-center justify-center hover:bg-purple-600 hover:border-purple-600 transition-all hover:scale-110">
+                  className="w-12 h-12 bg-white/5 backdrop-blur-sm border border-white/10 rounded-full flex items-center justify-center hover:bg-royal-600 hover:border-royal-600 hover:shadow-lg hover:shadow-royal-500/50 transition-all hover:scale-110 text-white">
                   <FaTiktok size={20} />
                 </a>
                 <a href={settings?.social_links?.facebook || "https://facebook.com/estherreign"} target="_blank" rel="noopener noreferrer"
-                  className="w-12 h-12 bg-white/5 backdrop-blur-sm border border-white/10 rounded-full flex items-center justify-center hover:bg-purple-600 hover:border-purple-600 transition-all hover:scale-110">
+                  className="w-12 h-12 bg-white/5 backdrop-blur-sm border border-white/10 rounded-full flex items-center justify-center hover:bg-royal-600 hover:border-royal-600 hover:shadow-lg hover:shadow-royal-500/50 transition-all hover:scale-110 text-white">
                   <FaFacebook size={20} />
                 </a>
               </div>
