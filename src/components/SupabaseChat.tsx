@@ -590,7 +590,7 @@ export const SupabaseChat: React.FC<SupabaseChatProps> = ({ currentUser }) => {
             />
 
             <button
-              onClick=sendMessage}
+              onClick={sendMessage}
               disabled={!input.trim() && !selectedVideo}
               className="p-2 bg-gradient-to-r from-royal-600 via-violet-600 to-royal-600 rounded-full disabled:opacity-50 shadow-md hover:shadow-lg hover:shadow-royal-500/50 transition-all"
             >
