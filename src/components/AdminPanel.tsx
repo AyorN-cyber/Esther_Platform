@@ -4,7 +4,7 @@ import { ModernChat } from './ModernChat';
 import { Settings } from './Settings';
 import { addNotification } from './NotificationCenter';
 import { VideoChart } from './VideoChart';
-import { WebGLBackground } from './WebGLBackground';
+import ModernPurpleBackground from './ModernPurpleBackground';
 import { AnalyticsDashboard } from './AnalyticsDashboard';
 import { GoalsTracker } from './GoalsTracker';
 import { FinancialDashboard } from './FinancialDashboard';
@@ -304,38 +304,38 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
 
   if (!isLoggedIn) {
     return (
-      <div className="fixed inset-0 bg-gradient-to-br from-gray-950 via-purple-950/20 to-gray-950 flex items-center justify-center z-50">
-        <WebGLBackground />
+      <div className="fixed inset-0 bg-gradient-to-br from-purple-50 via-white to-purple-100 flex items-center justify-center z-50">
+        <ModernPurpleBackground />
         <button
           onClick={onClose}
-          className="absolute top-6 right-6 text-gray-400 hover:text-white transition-colors z-10"
+          className="absolute top-6 right-6 text-gray-400 hover:text-gray-900 transition-colors z-10"
         >
           <X size={32} />
         </button>
 
         {showPasswordReset ? (
           <div className="max-w-md w-full mx-4">
-            <div className="bg-gradient-to-br from-gray-900/95 via-emerald-950/90 to-gray-900/95 backdrop-blur-2xl rounded-3xl p-8 border-2 border-emerald-400/30 shadow-2xl shadow-emerald-500/20">
+            <div className="bg-white rounded-3xl p-8 border-2 border-purple-200 shadow-2xl">
               <div className="text-center mb-8">
-                <div className="w-20 h-20 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-emerald-500/50">
+                <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
                   <Key size={40} className="text-gray-900" />
                 </div>
                 <h2 className="text-3xl font-black mb-2">
-                  <span className="bg-gradient-to-r from-emerald-400 via-teal-300 to-emerald-400 bg-clip-text text-transparent drop-shadow-lg">
+                  <span className="bg-gradient-to-r from-purple-600 to-purple-500 bg-clip-text text-transparent">
                     Reset Password
                   </span>
                 </h2>
-                <p className="text-gray-300 font-medium">Enter your email to receive reset link</p>
+                <p className="text-gray-700 font-medium">Enter your email to receive reset link</p>
               </div>
               
               <form onSubmit={handlePasswordReset} className="space-y-6">
                 <div>
-                  <label className="block text-sm font-bold mb-2 text-emerald-300">Email</label>
+                  <label className="block text-sm font-bold mb-2 text-purple-600">Email</label>
                   <input
                     type="email"
                     value={resetEmail}
                     onChange={(e) => setResetEmail(e.target.value)}
-                    className="w-full px-4 py-3 bg-white/10 backdrop-blur-sm border-2 border-emerald-400/30 rounded-2xl focus:outline-none focus:border-emerald-400 transition-all text-white font-medium placeholder-gray-400"
+                    className="w-full px-4 py-3 bg-white text-gray-900 border-2 border-purple-300 rounded-2xl focus:outline-none focus:border-purple-500 transition-all font-medium placeholder-gray-400"
                     placeholder="your@email.com"
                     required
                   />
@@ -343,7 +343,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
 
                 <button
                   type="submit"
-                  className="w-full bg-gradient-to-r from-royal-600 via-violet-600 to-royal-600 text-white px-6 py-3 rounded-2xl font-black transition-all hover:shadow-lg hover:shadow-royal-500/50 hover:scale-105"
+                  className="w-full bg-gradient-to-r from-purple-600 to-purple-500 text-gray-900 px-6 py-3 rounded-2xl font-black transition-all hover:shadow-lg hover:scale-105"
                 >
                   Send Reset Link
                 </button>
@@ -351,7 +351,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
                 <button
                   type="button"
                   onClick={() => setShowPasswordReset(false)}
-                  className="w-full text-gray-300 hover:text-white transition-colors font-medium"
+                  className="w-full text-gray-700 hover:text-gray-900 transition-colors font-medium"
                 >
                   Back to Login
                 </button>
@@ -360,39 +360,39 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
           </div>
         ) : (
           <div className="max-w-md w-full mx-4">
-            <div className="bg-gradient-to-br from-gray-900/95 via-emerald-950/90 to-gray-900/95 backdrop-blur-2xl rounded-3xl p-8 border-2 border-emerald-400/30 shadow-2xl shadow-emerald-500/20">
+            <div className="bg-white rounded-3xl p-8 border-2 border-purple-200 shadow-2xl">
               <div className="text-center mb-8">
-                <div className="w-20 h-20 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-emerald-500/50">
+                <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
                   <User size={40} className="text-gray-900" />
                 </div>
                 <h2 className="text-3xl font-black mb-2">
-                  <span className="bg-gradient-to-r from-emerald-400 via-teal-300 to-emerald-400 bg-clip-text text-transparent drop-shadow-lg">
+                  <span className="bg-gradient-to-r from-purple-600 to-purple-500 bg-clip-text text-transparent">
                     Admin Login
                   </span>
                 </h2>
-                <p className="text-gray-300 font-medium">Content Management System</p>
+                <p className="text-gray-700 font-medium">Content Management System</p>
               </div>
               
               <form onSubmit={handleLogin} className="space-y-6">
                 <div>
-                  <label className="block text-sm font-bold mb-2 text-emerald-300">Email</label>
+                  <label className="block text-sm font-bold mb-2 text-purple-600">Email</label>
                   <input
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full px-4 py-3 bg-white/10 backdrop-blur-sm border-2 border-emerald-400/30 rounded-2xl focus:outline-none focus:border-emerald-400 transition-all text-white font-medium placeholder-gray-400"
+                    className="w-full px-4 py-3 bg-white text-gray-900 border-2 border-purple-300 rounded-2xl focus:outline-none focus:border-purple-500 transition-all font-medium placeholder-gray-400"
                     placeholder="your@email.com"
                     required
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-bold mb-2 text-emerald-300">Password</label>
+                  <label className="block text-sm font-bold mb-2 text-purple-600">Password</label>
                   <input
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full px-4 py-3 bg-white/10 backdrop-blur-sm border-2 border-emerald-400/30 rounded-2xl focus:outline-none focus:border-emerald-400 transition-all text-white font-medium placeholder-gray-400"
+                    className="w-full px-4 py-3 bg-white text-gray-900 border-2 border-purple-300 rounded-2xl focus:outline-none focus:border-purple-500 transition-all font-medium placeholder-gray-400"
                     placeholder="••••••••"
                     required
                   />
@@ -401,14 +401,14 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
                 <button
                   type="button"
                   onClick={() => setShowPasswordReset(true)}
-                  className="text-sm text-emerald-300 hover:text-emerald-200 transition-colors font-medium"
+                  className="text-sm text-purple-600 hover:text-emerald-200 transition-colors font-medium"
                 >
                   Forgot password?
                 </button>
 
                 <button
                   type="submit"
-                  className="w-full bg-gradient-to-r from-royal-600 via-violet-600 to-royal-600 text-white px-6 py-3 rounded-2xl font-black transition-all hover:shadow-lg hover:shadow-royal-500/50 hover:scale-105"
+                  className="w-full bg-gradient-to-r from-purple-600 to-purple-500 text-gray-900 px-6 py-3 rounded-2xl font-black transition-all hover:shadow-lg hover:scale-105"
                 >
                   Login
                 </button>
@@ -423,37 +423,37 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
   }
 
   return (
-    <div className="fixed inset-0 bg-gradient-to-br from-gray-950 via-purple-950/20 to-gray-950 overflow-y-auto z-50">
-      <WebGLBackground />
-      {/* Sidebar - Modern Glassmorphism Design */}
-      <div className="fixed left-0 top-0 h-full w-72 bg-gradient-to-br from-gray-900/95 via-emerald-950/90 to-gray-900/95 backdrop-blur-xl border-r border-emerald-400/20 hidden lg:flex flex-col z-50 shadow-[0_8px_32px_0_rgba(16,185,129,0.2)]">
+    <div className="fixed inset-0 bg-gradient-to-br from-purple-50 via-white to-purple-100 overflow-y-auto z-50">
+      <ModernPurpleBackground />
+      {/* Sidebar - Modern Light Design */}
+      <div className="fixed left-0 top-0 h-full w-72 bg-white/95 backdrop-blur-xl border-r border-purple-200 hidden lg:flex flex-col z-50 shadow-xl">
         {/* Header */}
-        <div className="p-6 border-b border-emerald-400/20 bg-gradient-to-r from-emerald-500/10 to-teal-500/10">
-          <h1 className="text-2xl font-black bg-gradient-to-r from-emerald-400 via-teal-300 to-emerald-400 bg-clip-text text-transparent mb-3 drop-shadow-lg">
+        <div className="p-6 border-b border-purple-200 bg-gradient-to-r from-purple-50 to-purple-100">
+          <h1 className="text-2xl font-black bg-gradient-to-r from-purple-600 to-purple-500 bg-clip-text text-transparent mb-3">
             Esther Reign
           </h1>
-          <div className="flex items-center gap-3 p-3 bg-gradient-to-br from-emerald-500/20 to-teal-500/20 rounded-2xl border border-emerald-400/30 backdrop-blur-sm shadow-lg">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center text-gray-900 font-bold shadow-lg">
+          <div className="flex items-center gap-3 p-3 bg-gradient-to-br from-purple-100 to-purple-50 rounded-2xl border border-purple-200 shadow-md">
+            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center text-gray-900 font-bold shadow-lg">
               {currentUser?.name?.charAt(0) || 'E'}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-white font-bold text-sm truncate drop-shadow-md">{currentUser?.name}</p>
-              <p className="text-emerald-300 text-xs capitalize font-medium">{currentUser?.role}</p>
+              <p className="text-gray-900 font-bold text-sm truncate">{currentUser?.name}</p>
+              <p className="text-purple-600 text-xs capitalize font-medium">{currentUser?.role}</p>
             </div>
           </div>
         </div>
 
         {/* Navigation - Scrollable */}
-        <nav className="flex-1 overflow-y-auto p-4 space-y-1 scrollbar-thin scrollbar-thumb-emerald-500/30 scrollbar-track-transparent">
+        <nav className="flex-1 overflow-y-auto p-4 space-y-1 scrollbar-thin scrollbar-thumb-purple-300 scrollbar-track-transparent">
           {/* Overview Section */}
           <div className="mb-4">
-            <p className="text-xs font-bold text-emerald-300/80 uppercase tracking-wider px-3 mb-2 drop-shadow">Overview</p>
+            <p className="text-xs font-bold text-purple-600 uppercase tracking-wider px-3 mb-2">Overview</p>
             <button
               onClick={() => setActiveTab('dashboard')}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl transition-all duration-300 ${
                 activeTab === 'dashboard'
-                  ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-gray-900 shadow-lg shadow-emerald-500/50 font-bold scale-105'
-                  : 'text-gray-300 hover:text-white hover:bg-gradient-to-r hover:from-emerald-500/20 hover:to-teal-500/20 hover:scale-102 font-medium'
+                  ? 'bg-gradient-to-r from-purple-500 to-purple-600 text-gray-900 shadow-lg font-bold'
+                  : 'text-gray-700 hover:text-gray-900 hover:bg-purple-50 font-medium'
               }`}
             >
               <BarChart3 size={20} />
@@ -463,18 +463,18 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
 
           {/* Content Section */}
           <div className="mb-4">
-            <p className="text-xs font-bold text-emerald-300/80 uppercase tracking-wider px-3 mb-2 drop-shadow">Content</p>
+            <p className="text-xs font-bold text-purple-600 uppercase tracking-wider px-3 mb-2">Content</p>
             <button
               onClick={() => setActiveTab('videos')}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl transition-all duration-300 ${
                 activeTab === 'videos'
-                  ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-gray-900 shadow-lg shadow-emerald-500/50 font-bold scale-105'
-                  : 'text-gray-300 hover:text-white hover:bg-gradient-to-r hover:from-emerald-500/20 hover:to-teal-500/20 hover:scale-102 font-medium'
+                  ? 'bg-gradient-to-r from-purple-500 to-purple-600 text-gray-900 shadow-lg font-bold'
+                  : 'text-gray-700 hover:text-gray-900 hover:bg-purple-50 font-medium'
               }`}
             >
               <VideoIcon size={20} />
               <span>Videos</span>
-              <span className="ml-auto bg-amber-400/90 text-gray-900 px-2 py-0.5 rounded-full text-xs font-bold">
+              <span className="ml-auto bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full text-xs font-bold">
                 {videos.length}
               </span>
             </button>
@@ -482,8 +482,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
               onClick={() => setActiveTab('calendar')}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl transition-all duration-300 ${
                 activeTab === 'calendar'
-                  ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-gray-900 shadow-lg shadow-emerald-500/50 font-bold scale-105'
-                  : 'text-gray-300 hover:text-white hover:bg-gradient-to-r hover:from-emerald-500/20 hover:to-teal-500/20 hover:scale-102 font-medium'
+                  ? 'bg-gradient-to-r from-purple-500 to-purple-600 text-gray-900 shadow-lg shadow-purple-500/50 font-bold scale-105'
+                  : 'text-gray-700 hover:text-gray-900 hover:bg-gradient-to-r hover:from-emerald-500/20 hover:to-teal-500/20 hover:scale-102 font-medium'
               }`}
             >
               <Calendar size={20} />
@@ -493,13 +493,13 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
 
           {/* Analytics Section */}
           <div className="mb-4">
-            <p className="text-xs font-bold text-emerald-300/80 uppercase tracking-wider px-3 mb-2 drop-shadow">Analytics</p>
+            <p className="text-xs font-bold text-purple-600/80 uppercase tracking-wider px-3 mb-2 drop-shadow">Analytics</p>
             <button
               onClick={() => setActiveTab('analytics')}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl transition-all duration-300 ${
                 activeTab === 'analytics'
-                  ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-gray-900 shadow-lg shadow-emerald-500/50 font-bold scale-105'
-                  : 'text-gray-300 hover:text-white hover:bg-gradient-to-r hover:from-emerald-500/20 hover:to-teal-500/20 hover:scale-102 font-medium'
+                  ? 'bg-gradient-to-r from-purple-500 to-purple-600 text-gray-900 shadow-lg shadow-purple-500/50 font-bold scale-105'
+                  : 'text-gray-700 hover:text-gray-900 hover:bg-gradient-to-r hover:from-emerald-500/20 hover:to-teal-500/20 hover:scale-102 font-medium'
               }`}
             >
               <TrendingUp size={20} />
@@ -509,8 +509,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
               onClick={() => setActiveTab('advanced-analytics')}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
                 activeTab === 'advanced-analytics'
-                  ? 'bg-gradient-to-r from-cyan-600 to-blue-600 text-white shadow-lg shadow-cyan-500/50'
-                  : 'text-gray-400 hover:text-white hover:bg-slate-800/50'
+                  ? 'bg-gradient-to-r from-purple-500 to-purple-600 text-gray-900 shadow-lg shadow-cyan-500/50'
+                  : 'text-gray-400 hover:text-gray-900 hover:bg-slate-800/50'
               }`}
             >
               <BarChart3 size={20} />
@@ -520,8 +520,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
               onClick={() => setActiveTab('goals')}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
                 activeTab === 'goals'
-                  ? 'bg-gradient-to-r from-cyan-600 to-blue-600 text-white shadow-lg shadow-cyan-500/50'
-                  : 'text-gray-400 hover:text-white hover:bg-slate-800/50'
+                  ? 'bg-gradient-to-r from-purple-500 to-purple-600 text-gray-900 shadow-lg shadow-cyan-500/50'
+                  : 'text-gray-400 hover:text-gray-900 hover:bg-slate-800/50'
               }`}
             >
               <Target size={20} />
@@ -531,8 +531,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
               onClick={() => setActiveTab('financial')}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
                 activeTab === 'financial'
-                  ? 'bg-gradient-to-r from-cyan-600 to-blue-600 text-white shadow-lg shadow-cyan-500/50'
-                  : 'text-gray-400 hover:text-white hover:bg-slate-800/50'
+                  ? 'bg-gradient-to-r from-purple-500 to-purple-600 text-gray-900 shadow-lg shadow-cyan-500/50'
+                  : 'text-gray-400 hover:text-gray-900 hover:bg-slate-800/50'
               }`}
             >
               <DollarSign size={20} />
@@ -542,13 +542,13 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
 
           {/* Community Section */}
           <div className="mb-4">
-            <p className="text-xs font-bold text-emerald-300/80 uppercase tracking-wider px-3 mb-2 drop-shadow">Community</p>
+            <p className="text-xs font-bold text-purple-600/80 uppercase tracking-wider px-3 mb-2 drop-shadow">Community</p>
             <button
               onClick={() => setActiveTab('songs')}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
                 activeTab === 'songs'
-                  ? 'bg-gradient-to-r from-cyan-600 to-blue-600 text-white shadow-lg shadow-cyan-500/50'
-                  : 'text-gray-400 hover:text-white hover:bg-slate-800/50'
+                  ? 'bg-gradient-to-r from-purple-500 to-purple-600 text-gray-900 shadow-lg shadow-cyan-500/50'
+                  : 'text-gray-400 hover:text-gray-900 hover:bg-slate-800/50'
               }`}
             >
               <Music size={20} />
@@ -558,8 +558,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
               onClick={() => setActiveTab('messages')}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
                 activeTab === 'messages'
-                  ? 'bg-gradient-to-r from-cyan-600 to-blue-600 text-white shadow-lg shadow-cyan-500/50'
-                  : 'text-gray-400 hover:text-white hover:bg-slate-800/50'
+                  ? 'bg-gradient-to-r from-purple-500 to-purple-600 text-gray-900 shadow-lg shadow-cyan-500/50'
+                  : 'text-gray-400 hover:text-gray-900 hover:bg-slate-800/50'
               }`}
             >
               <Mail size={20} />
@@ -569,8 +569,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
               onClick={() => setActiveTab('email')}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
                 activeTab === 'email'
-                  ? 'bg-gradient-to-r from-cyan-600 to-blue-600 text-white shadow-lg shadow-cyan-500/50'
-                  : 'text-gray-400 hover:text-white hover:bg-slate-800/50'
+                  ? 'bg-gradient-to-r from-purple-500 to-purple-600 text-gray-900 shadow-lg shadow-cyan-500/50'
+                  : 'text-gray-400 hover:text-gray-900 hover:bg-slate-800/50'
               }`}
             >
               <Mail size={20} />
@@ -580,13 +580,13 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
 
           {/* Business Section */}
           <div className="mb-4">
-            <p className="text-xs font-bold text-emerald-300/80 uppercase tracking-wider px-3 mb-2 drop-shadow">Business</p>
+            <p className="text-xs font-bold text-purple-600/80 uppercase tracking-wider px-3 mb-2 drop-shadow">Business</p>
             <button
               onClick={() => setActiveTab('merch')}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
                 activeTab === 'merch'
-                  ? 'bg-gradient-to-r from-cyan-600 to-blue-600 text-white shadow-lg shadow-cyan-500/50'
-                  : 'text-gray-400 hover:text-white hover:bg-slate-800/50'
+                  ? 'bg-gradient-to-r from-purple-500 to-purple-600 text-gray-900 shadow-lg shadow-cyan-500/50'
+                  : 'text-gray-400 hover:text-gray-900 hover:bg-slate-800/50'
               }`}
             >
               <Package size={20} />
@@ -596,8 +596,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
               onClick={() => setActiveTab('tour')}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
                 activeTab === 'tour'
-                  ? 'bg-gradient-to-r from-cyan-600 to-blue-600 text-white shadow-lg shadow-cyan-500/50'
-                  : 'text-gray-400 hover:text-white hover:bg-slate-800/50'
+                  ? 'bg-gradient-to-r from-purple-500 to-purple-600 text-gray-900 shadow-lg shadow-cyan-500/50'
+                  : 'text-gray-400 hover:text-gray-900 hover:bg-slate-800/50'
               }`}
             >
               <MapPin size={20} />
@@ -607,13 +607,13 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
 
           {/* Settings Section */}
           <div>
-            <p className="text-xs font-bold text-emerald-300/80 uppercase tracking-wider px-3 mb-2 drop-shadow">System</p>
+            <p className="text-xs font-bold text-purple-600/80 uppercase tracking-wider px-3 mb-2 drop-shadow">System</p>
             <button
               onClick={() => setActiveTab('settings')}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
                 activeTab === 'settings'
-                  ? 'bg-gradient-to-r from-cyan-600 to-blue-600 text-white shadow-lg shadow-cyan-500/50'
-                  : 'text-gray-400 hover:text-white hover:bg-slate-800/50'
+                  ? 'bg-gradient-to-r from-purple-500 to-purple-600 text-gray-900 shadow-lg shadow-cyan-500/50'
+                  : 'text-gray-400 hover:text-gray-900 hover:bg-slate-800/50'
               }`}
             >
               <SettingsIcon size={20} />
@@ -623,17 +623,17 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
         </nav>
 
         {/* Footer Actions */}
-        <div className="p-4 border-t border-cyan-500/20 space-y-2">
+        <div className="p-4 border-t border-purple-200 space-y-2">
           <button
             onClick={onClose}
-            className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-cyan-600/20 to-blue-600/20 hover:from-cyan-600/30 hover:to-blue-600/30 rounded-xl transition-all text-cyan-300 hover:text-white border border-cyan-500/30"
+            className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-purple-100 to-purple-50 hover:from-purple-200 hover:to-purple-100 rounded-xl transition-all text-purple-600 hover:text-gray-900 border border-purple-300"
           >
             <Eye size={18} />
             <span className="font-medium">View Site</span>
           </button>
           <button
             onClick={handleLogout}
-            className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-red-600/20 hover:bg-red-600 rounded-xl transition-all text-red-400 hover:text-white border border-red-500/30"
+            className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-red-600/20 hover:bg-red-600 rounded-xl transition-all text-red-400 hover:text-gray-900 border border-red-500/30"
           >
             <LogOut size={18} />
             <span className="font-medium">Logout</span>
@@ -642,7 +642,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
       </div>
 
       {/* Mobile Top Bar */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 bg-slate-900/95 backdrop-blur-xl border-b border-cyan-500/20 p-3 flex justify-between items-center z-50">
+      <div className="lg:hidden fixed top-0 left-0 right-0 bg-white/95 backdrop-blur-xl border-b border-purple-200 p-3 flex justify-between items-center z-50">
         <h1 className="text-base font-black bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent flex-shrink-0">
           Admin Panel
         </h1>
@@ -650,7 +650,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
           <EnhancedNotificationCenter userId={currentUser?.id || '1'} />
           <button
             onClick={onClose}
-            className="p-2 bg-slate-800/50 hover:bg-slate-800 rounded-lg transition-all text-white"
+            className="p-2 bg-slate-800/50 hover:bg-slate-800 rounded-lg transition-all text-gray-900"
           >
             <Eye size={18} />
           </button>
@@ -658,19 +658,19 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
       </div>
 
       {/* Desktop Top Bar with Notifications */}
-      <div className="hidden lg:block fixed top-0 right-0 left-72 bg-gradient-to-r from-slate-900/95 to-slate-950/95 backdrop-blur-xl border-b border-cyan-500/20 p-4 flex justify-end z-40 shadow-lg">
+      <div className="hidden lg:block fixed top-0 right-0 left-72 bg-gradient-to-r from-white/95 to-white/95 backdrop-blur-xl border-b border-purple-200 p-4 flex justify-end z-40 shadow-lg">
         <EnhancedNotificationCenter userId={currentUser?.id || '1'} />
       </div>
 
       {/* Mobile Bottom Navigation - Redesigned */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-gradient-to-t from-slate-900 to-slate-900/95 backdrop-blur-xl border-t border-cyan-500/30 p-2 z-40 shadow-2xl">
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-gradient-to-t from-white to-white/95 backdrop-blur-xl border-t border-purple-300 p-2 z-40 shadow-2xl">
         <div className="grid grid-cols-5 gap-1">
           <button
             onClick={() => setActiveTab('dashboard')}
             className={`flex flex-col items-center gap-1 px-2 py-2 rounded-xl transition-all ${
               activeTab === 'dashboard' 
-                ? 'bg-gradient-to-r from-cyan-600 to-blue-600 text-white' 
-                : 'text-gray-400 hover:text-white'
+                ? 'bg-gradient-to-r from-purple-500 to-purple-600 text-gray-900' 
+                : 'text-gray-400 hover:text-gray-900'
             }`}
           >
             <BarChart3 size={18} />
@@ -680,8 +680,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
             onClick={() => setActiveTab('videos')}
             className={`flex flex-col items-center gap-1 px-2 py-2 rounded-xl transition-all ${
               activeTab === 'videos' 
-                ? 'bg-gradient-to-r from-cyan-600 to-blue-600 text-white' 
-                : 'text-gray-400 hover:text-white'
+                ? 'bg-gradient-to-r from-purple-500 to-purple-600 text-gray-900' 
+                : 'text-gray-400 hover:text-gray-900'
             }`}
           >
             <VideoIcon size={18} />
@@ -691,8 +691,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
             onClick={() => setActiveTab('analytics')}
             className={`flex flex-col items-center gap-1 px-2 py-2 rounded-xl transition-all ${
               activeTab === 'analytics' 
-                ? 'bg-gradient-to-r from-cyan-600 to-blue-600 text-white' 
-                : 'text-gray-400 hover:text-white'
+                ? 'bg-gradient-to-r from-purple-500 to-purple-600 text-gray-900' 
+                : 'text-gray-400 hover:text-gray-900'
             }`}
           >
             <TrendingUp size={18} />
@@ -702,8 +702,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
             onClick={() => setActiveTab('messages')}
             className={`flex flex-col items-center gap-1 px-2 py-2 rounded-xl transition-all ${
               activeTab === 'messages' 
-                ? 'bg-gradient-to-r from-cyan-600 to-blue-600 text-white' 
-                : 'text-gray-400 hover:text-white'
+                ? 'bg-gradient-to-r from-purple-500 to-purple-600 text-gray-900' 
+                : 'text-gray-400 hover:text-gray-900'
             }`}
           >
             <Mail size={18} />
@@ -713,8 +713,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
             onClick={() => setActiveTab('settings')}
             className={`flex flex-col items-center gap-1 px-2 py-2 rounded-xl transition-all ${
               activeTab === 'settings' 
-                ? 'bg-gradient-to-r from-cyan-600 to-blue-600 text-white' 
-                : 'text-gray-400 hover:text-white'
+                ? 'bg-gradient-to-r from-purple-500 to-purple-600 text-gray-900' 
+                : 'text-gray-400 hover:text-gray-900'
             }`}
           >
             <SettingsIcon size={18} />
@@ -730,53 +730,53 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
         {activeTab === 'dashboard' && (
           <div className="space-y-8">
             <div>
-              <h2 className="text-3xl font-black mb-2 text-white">Dashboard Overview</h2>
+              <h2 className="text-3xl font-black mb-2 text-gray-900">Dashboard Overview</h2>
               <p className="text-gray-400">Welcome back, {currentUser?.name}</p>
             </div>
 
             {/* Stats Grid */}
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <div className="bg-slate-900/50 backdrop-blur-sm border border-cyan-500/20 rounded-2xl p-6 hover:border-cyan-500/40 transition-all">
+              <div className="bg-white/90 backdrop-blur-sm border border-purple-200 rounded-2xl p-6 hover:border-cyan-500/40 transition-all">
                 <div className="flex items-center justify-between mb-4">
-                  <div className="w-12 h-12 bg-cyan-600/20 rounded-xl flex items-center justify-center">
-                    <VideoIcon size={24} className="text-cyan-400" />
+                  <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
+                    <VideoIcon size={24} className="text-purple-600" />
                   </div>
                   <span className="text-2xl">📹</span>
                 </div>
-                <div className="text-3xl font-black mb-1 text-white">{videos.length}</div>
+                <div className="text-3xl font-black mb-1 text-gray-900">{videos.length}</div>
                 <div className="text-sm text-gray-400">Total Videos</div>
               </div>
 
-              <div className="bg-slate-900/50 backdrop-blur-sm border border-emerald-500/20 rounded-2xl p-6 hover:border-emerald-500/40 transition-all">
+              <div className="bg-white/90 backdrop-blur-sm border border-purple-200 rounded-2xl p-6 hover:border-emerald-500/40 transition-all">
                 <div className="flex items-center justify-between mb-4">
-                  <div className="w-12 h-12 bg-emerald-600/20 rounded-xl flex items-center justify-center">
-                    <CheckCircle size={24} className="text-emerald-400" />
+                  <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
+                    <CheckCircle size={24} className="text-purple-600" />
                   </div>
                   <span className="text-2xl">✅</span>
                 </div>
-                <div className="text-3xl font-black mb-1 text-white">{completedCount}</div>
+                <div className="text-3xl font-black mb-1 text-gray-900">{completedCount}</div>
                 <div className="text-sm text-gray-400">Completed</div>
               </div>
 
-              <div className="bg-slate-900/50 backdrop-blur-sm border border-amber-500/20 rounded-2xl p-6 hover:border-amber-500/40 transition-all">
+              <div className="bg-white/90 backdrop-blur-sm border border-purple-200 rounded-2xl p-6 hover:border-amber-500/40 transition-all">
                 <div className="flex items-center justify-between mb-4">
-                  <div className="w-12 h-12 bg-amber-600/20 rounded-xl flex items-center justify-center">
-                    <Clock size={24} className="text-amber-400" />
+                  <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
+                    <Clock size={24} className="text-purple-600" />
                   </div>
                   <span className="text-2xl">⏳</span>
                 </div>
-                <div className="text-3xl font-black mb-1 text-white">{pendingCount}</div>
+                <div className="text-3xl font-black mb-1 text-gray-900">{pendingCount}</div>
                 <div className="text-sm text-gray-400">Pending</div>
               </div>
 
-              <div className="bg-slate-900/50 backdrop-blur-sm border border-blue-500/20 rounded-2xl p-6 hover:border-blue-500/40 transition-all">
+              <div className="bg-white/90 backdrop-blur-sm border border-purple-200 rounded-2xl p-6 hover:border-blue-500/40 transition-all">
                 <div className="flex items-center justify-between mb-4">
-                  <div className="w-12 h-12 bg-blue-600/20 rounded-xl flex items-center justify-center">
-                    <Users size={24} className="text-blue-400" />
+                  <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
+                    <Users size={24} className="text-purple-600" />
                   </div>
                   <span className="text-2xl">👥</span>
                 </div>
-                <div className="text-3xl font-black mb-1 text-white">{analytics.total_visitors}</div>
+                <div className="text-3xl font-black mb-1 text-gray-900">{analytics.total_visitors}</div>
                 <div className="text-sm text-gray-400">Visitors</div>
               </div>
             </div>
@@ -786,7 +786,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
 
             {/* Current Status - Donut Chart */}
             <div className="bg-gray-900/50 backdrop-blur-sm border border-purple-500/20 rounded-2xl p-6">
-              <h3 className="text-xl font-bold mb-6 text-white">Current Status Distribution</h3>
+              <h3 className="text-xl font-bold mb-6 text-gray-900">Current Status Distribution</h3>
               <div className="flex items-center justify-center">
                 <div className="relative w-48 h-48">
                   <svg className="transform -rotate-90 w-48 h-48">
@@ -823,7 +823,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
                     />
                   </svg>
                   <div className="absolute inset-0 flex items-center justify-center flex-col">
-                    <div className="text-3xl font-bold text-white">{videos.length}</div>
+                    <div className="text-3xl font-bold text-gray-900">{videos.length}</div>
                     <div className="text-sm text-gray-400">Total</div>
                   </div>
                 </div>
@@ -848,21 +848,21 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
 
             {/* Recent Activity */}
             <div className="bg-gray-900/50 backdrop-blur-sm border border-purple-500/20 rounded-2xl p-6">
-              <h3 className="text-xl font-bold mb-4 text-white">Recent Videos</h3>
+              <h3 className="text-xl font-bold mb-4 text-gray-900">Recent Videos</h3>
               <div className="space-y-3">
                 {videos.slice(0, 5).map((video) => (
                   <div key={video.id} className="flex items-center justify-between p-4 bg-gray-800/30 rounded-xl">
                     <div className="flex items-center gap-4">
                       <div className={`w-2 h-2 rounded-full ${video.status === 'completed' ? 'bg-green-400' : 'bg-yellow-400'}`}></div>
                       <div>
-                        <div className="font-medium text-white">{video.title}</div>
+                        <div className="font-medium text-gray-900">{video.title}</div>
                         <div className="text-sm text-gray-400 capitalize">{video.status}</div>
                       </div>
                     </div>
                     {currentUser?.role === 'editor' && (
                       <button
                         onClick={() => setEditingVideo(video)}
-                        className="px-4 py-2 bg-purple-600/20 hover:bg-purple-600 rounded-lg transition-all text-sm text-white"
+                        className="px-4 py-2 bg-purple-600/20 hover:bg-purple-600 rounded-lg transition-all text-sm text-gray-900"
                       >
                         Edit
                       </button>
@@ -879,7 +879,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
           <div className="space-y-6">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
               <div>
-                <h2 className="text-3xl font-black mb-2 text-white">Video Management</h2>
+                <h2 className="text-3xl font-black mb-2 text-gray-900">Video Management</h2>
                 <p className="text-gray-400">Manage all video content</p>
               </div>
               <div className="flex flex-wrap gap-4">
@@ -919,7 +919,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
                   <div className="flex flex-col md:flex-row items-start justify-between gap-4">
                     <div className="flex-1 w-full">
                       <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-3">
-                        <h3 className="text-base md:text-lg font-bold text-white break-words">{video.title}</h3>
+                        <h3 className="text-base md:text-lg font-bold text-gray-900 break-words">{video.title}</h3>
                         <span className={`px-2 md:px-3 py-1 rounded-full text-xs font-medium self-start ${
                           video.status === 'completed' 
                             ? 'bg-green-600/20 text-green-400' 
@@ -944,7 +944,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
                     {currentUser?.role === 'editor' && (
                       <button
                         onClick={() => setEditingVideo(video)}
-                        className="px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-xl transition-all flex items-center gap-2 text-white"
+                        className="px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-xl transition-all flex items-center gap-2 text-gray-900"
                       >
                         <Edit2 size={16} />
                         Edit
@@ -969,7 +969,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
         {activeTab === 'analytics' && currentUser?.role === 'editor' && (
           <div className="space-y-8">
             <div>
-              <h2 className="text-3xl font-black mb-2 text-white">Analytics</h2>
+              <h2 className="text-3xl font-black mb-2 text-gray-900">Analytics</h2>
               <p className="text-gray-400">Track performance and engagement</p>
             </div>
 
@@ -979,7 +979,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
                   <h3 className="text-sm text-gray-400">Total Visitors</h3>
                   <TrendingUp className="text-purple-400" size={20} />
                 </div>
-                <p className="text-4xl font-black mb-2 text-white">{analytics.total_visitors}</p>
+                <p className="text-4xl font-black mb-2 text-gray-900">{analytics.total_visitors}</p>
                 <p className="text-sm text-green-400">↑ Growing</p>
               </div>
 
@@ -988,7 +988,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
                   <h3 className="text-sm text-gray-400">Artist Logins</h3>
                   <User className="text-purple-400" size={20} />
                 </div>
-                <p className="text-4xl font-black mb-2 text-white">{analytics.artist_logins}</p>
+                <p className="text-4xl font-black mb-2 text-gray-900">{analytics.artist_logins}</p>
                 <p className="text-sm text-gray-400">Total sessions</p>
               </div>
 
@@ -997,7 +997,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
                   <h3 className="text-sm text-gray-400">Completion Rate</h3>
                   <CheckCircle className="text-purple-400" size={20} />
                 </div>
-                <p className="text-4xl font-black mb-2 text-white">
+                <p className="text-4xl font-black mb-2 text-gray-900">
                   {videos.length > 0 ? Math.round((completedCount / videos.length) * 100) : 0}%
                 </p>
                 <p className="text-sm text-gray-400">{completedCount} of {videos.length}</p>
@@ -1006,7 +1006,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
 
             {/* Visitor Trend Chart */}
             <div className="bg-gray-900/50 backdrop-blur-sm border border-purple-500/20 rounded-2xl p-6">
-              <h3 className="text-xl font-bold mb-6 text-white">Visitor Trend (Last 7 Days)</h3>
+              <h3 className="text-xl font-bold mb-6 text-gray-900">Visitor Trend (Last 7 Days)</h3>
               <div className="h-64 flex items-end justify-between gap-2">
                 {[65, 80, 75, 90, 85, 95, analytics.total_visitors % 100].map((value, index) => (
                   <div key={index} className="flex-1 flex flex-col items-center">
@@ -1094,10 +1094,10 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-20">
           <div className="bg-gray-900 rounded-3xl p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-purple-500/20">
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-black text-white">Edit Video</h2>
+              <h2 className="text-2xl font-black text-gray-900">Edit Video</h2>
               <button
                 onClick={() => setEditingVideo(null)}
-                className="text-gray-400 hover:text-white transition-colors"
+                className="text-gray-400 hover:text-gray-900 transition-colors"
               >
                 <X size={24} />
               </button>
@@ -1105,21 +1105,21 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
 
             <div className="space-y-6">
               <div>
-                <label className="block text-sm font-medium mb-2 text-white">Title</label>
+                <label className="block text-sm font-medium mb-2 text-gray-900">Title</label>
                 <input
                   type="text"
                   value={editingVideo.title}
                   onChange={(e) => setEditingVideo({ ...editingVideo, title: e.target.value })}
-                  className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl focus:outline-none focus:border-purple-500 text-white"
+                  className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl focus:outline-none focus:border-purple-500 text-gray-900"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-2 text-white">Status</label>
+                <label className="block text-sm font-medium mb-2 text-gray-900">Status</label>
                 <select
                   value={editingVideo.status}
                   onChange={(e) => setEditingVideo({ ...editingVideo, status: e.target.value as 'pending' | 'completed' })}
-                  className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl focus:outline-none focus:border-purple-500 text-white"
+                  className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl focus:outline-none focus:border-purple-500 text-gray-900"
                 >
                   <option value="pending">Pending</option>
                   <option value="completed">Completed</option>
@@ -1127,29 +1127,29 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-2 text-white">Template Type</label>
+                <label className="block text-sm font-medium mb-2 text-gray-900">Template Type</label>
                 <input
                   type="text"
                   value={editingVideo.template_type || ''}
                   onChange={(e) => setEditingVideo({ ...editingVideo, template_type: e.target.value })}
-                  className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl focus:outline-none focus:border-purple-500 text-white"
+                  className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl focus:outline-none focus:border-purple-500 text-gray-900"
                   placeholder="e.g., Cinematic, Lyric Video, Performance"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-2 text-white">Video Link</label>
+                <label className="block text-sm font-medium mb-2 text-gray-900">Video Link</label>
                 <input
                   type="url"
                   value={editingVideo.video_link || ''}
                   onChange={(e) => setEditingVideo({ ...editingVideo, video_link: e.target.value })}
-                  className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl focus:outline-none focus:border-purple-500 text-white"
+                  className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl focus:outline-none focus:border-purple-500 text-gray-900"
                   placeholder="https://youtube.com/..."
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-2 text-white">Thumbnail</label>
+                <label className="block text-sm font-medium mb-2 text-gray-900">Thumbnail</label>
                 <div className="space-y-3">
                   {/* Current Thumbnail Preview */}
                   {(editingVideo.thumbnail_url || editingVideo.video_link) && (
@@ -1170,14 +1170,14 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
                     type="url"
                     value={editingVideo.thumbnail_url || ''}
                     onChange={(e) => setEditingVideo({ ...editingVideo, thumbnail_url: e.target.value })}
-                    className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl focus:outline-none focus:border-purple-500 text-white"
+                    className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl focus:outline-none focus:border-purple-500 text-gray-900"
                     placeholder="Thumbnail URL (optional - auto-extracts from YouTube)"
                   />
                   
                   {/* Upload from Device */}
                   <div className="flex gap-2">
                     <label className="flex-1 cursor-pointer">
-                      <div className="w-full px-4 py-3 bg-purple-600 hover:bg-purple-700 border border-purple-500 rounded-xl transition-colors text-white text-center font-medium flex items-center justify-center gap-2">
+                      <div className="w-full px-4 py-3 bg-purple-600 hover:bg-purple-700 border border-purple-500 rounded-xl transition-colors text-gray-900 text-center font-medium flex items-center justify-center gap-2">
                         <Upload size={18} />
                         Upload from Device
                       </div>
@@ -1192,7 +1192,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
                     {editingVideo.thumbnail_url && (
                       <button
                         onClick={() => setEditingVideo({ ...editingVideo, thumbnail_url: '' })}
-                        className="px-4 py-3 bg-red-600 hover:bg-red-700 rounded-xl transition-colors text-white font-medium"
+                        className="px-4 py-3 bg-red-600 hover:bg-red-700 rounded-xl transition-colors text-gray-900 font-medium"
                         title="Remove custom thumbnail"
                       >
                         Remove
@@ -1208,7 +1208,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
 
               <button
                 onClick={handleSaveVideo}
-                className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-3 rounded-xl font-semibold transition-all hover:shadow-lg hover:shadow-purple-500/50 flex items-center justify-center gap-2"
+                className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-gray-900 px-6 py-3 rounded-xl font-semibold transition-all hover:shadow-lg hover:shadow-purple-500/50 flex items-center justify-center gap-2"
               >
                 <Save size={20} />
                 Save Changes

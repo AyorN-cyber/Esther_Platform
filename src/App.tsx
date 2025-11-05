@@ -4,8 +4,6 @@ import { FaTiktok, FaFacebook } from 'react-icons/fa';
 import { Loader } from './components/Loader';
 import ModernPurpleBackground from './components/ModernPurpleBackground';
 import { FanMessageForm } from './components/FanMessageForm';
-import { SimpleChatWidget } from './components/SimpleChatWidget';
-import { NotificationCenter } from './components/NotificationCenter';
 import type { Video } from './types';
 
 // Lazy load AdminPanel for better performance
@@ -208,8 +206,8 @@ const EstherPlatform = () => {
             <div className="hidden md:flex items-center space-x-8">
               {[
                 { id: 'home', label: 'Home' },
-                { id: 'about', label: 'About' },
                 { id: 'videos', label: 'Videos' },
+                { id: 'about', label: 'Contact' },
                 { id: 'contact', label: 'Messages' }
               ].map((item) => (
                 <button
@@ -243,8 +241,8 @@ const EstherPlatform = () => {
             <nav className="container mx-auto px-6 py-6 space-y-4">
               {[
                 { id: 'home', label: 'Home' },
-                { id: 'about', label: 'About' },
                 { id: 'videos', label: 'Videos' },
+                { id: 'about', label: 'Contact' },
                 { id: 'contact', label: 'Messages' }
               ].map((item) => (
                 <button
@@ -631,13 +629,7 @@ const EstherPlatform = () => {
         </div>
       )}
 
-      {/* Floating Chat Widget - Positioned bottom-right, won't obstruct buttons */}
-      <div className="fixed bottom-6 right-6 z-40">
-        <SimpleChatWidget currentUser={{ id: 'visitor', email: 'visitor@example.com', role: 'editor', name: 'Visitor', phone: '' }} />
-      </div>
 
-      {/* Notification Center */}
-      <NotificationCenter />
     </div>
   );
 };
