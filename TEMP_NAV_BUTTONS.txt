@@ -1,0 +1,7 @@
+const buttonClass = (isActive) => `w-full flex items-center gap-3 px-4 py-3 rounded-2xl transition-all duration-300 ${
+  isActive
+    ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-gray-900 shadow-lg shadow-emerald-500/50 font-bold scale-105'
+    : 'text-gray-300 hover:text-white hover:bg-gradient-to-r hover:from-emerald-500/20 hover:to-teal-500/20 hover:scale-102 font-medium'
+}`
+
+const sectionHeaderClass = "text-xs font-bold text-emerald-300/80 uppercase tracking-wider px-3 mb-2 drop-shadow"

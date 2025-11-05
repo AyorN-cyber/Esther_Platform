@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, LogOut, Save, BarChart3, Video as VideoIcon, User, Eye, TrendingUp, Users, Clock, CheckCircle, Edit2, Settings as SettingsIcon, Key, Upload, Target, DollarSign, Calendar, Music, Mail, Package, MapPin } from 'lucide-react';
-import { SupabaseChat } from './SupabaseChat';
+import { ModernChat } from './ModernChat';
 import { Settings } from './Settings';
 import { addNotification } from './NotificationCenter';
 import { VideoChart } from './VideoChart';
@@ -344,27 +344,27 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
 
         {showPasswordReset ? (
           <div className="max-w-md w-full mx-4">
-            <div className="bg-slate-900/80 backdrop-blur-xl rounded-3xl p-8 border border-cyan-500/20 shadow-2xl">
+            <div className="bg-gradient-to-br from-gray-900/95 via-emerald-950/90 to-gray-900/95 backdrop-blur-2xl rounded-3xl p-8 border-2 border-emerald-400/30 shadow-2xl shadow-emerald-500/20">
               <div className="text-center mb-8">
-                <div className="w-20 h-20 bg-gradient-to-br from-cyan-600 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                  <Key size={40} className="text-white" />
+                <div className="w-20 h-20 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-emerald-500/50">
+                  <Key size={40} className="text-gray-900" />
                 </div>
                 <h2 className="text-3xl font-black mb-2">
-                  <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
+                  <span className="bg-gradient-to-r from-emerald-400 via-teal-300 to-emerald-400 bg-clip-text text-transparent drop-shadow-lg">
                     Reset Password
                   </span>
                 </h2>
-                <p className="text-gray-400">Enter your email to receive reset link</p>
+                <p className="text-gray-300 font-medium">Enter your email to receive reset link</p>
               </div>
               
               <form onSubmit={handlePasswordReset} className="space-y-6">
                 <div>
-                  <label className="block text-sm font-medium mb-2 text-white">Email</label>
+                  <label className="block text-sm font-bold mb-2 text-emerald-300">Email</label>
                   <input
                     type="email"
                     value={resetEmail}
                     onChange={(e) => setResetEmail(e.target.value)}
-                    className="w-full px-4 py-3 bg-slate-800/50 border border-slate-700 rounded-xl focus:outline-none focus:border-cyan-500 transition-colors text-white"
+                    className="w-full px-4 py-3 bg-white/10 backdrop-blur-sm border-2 border-emerald-400/30 rounded-2xl focus:outline-none focus:border-emerald-400 transition-all text-white font-medium placeholder-gray-400"
                     placeholder="your@email.com"
                     required
                   />
@@ -372,7 +372,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
 
                 <button
                   type="submit"
-                  className="w-full bg-gradient-to-r from-cyan-600 to-blue-600 text-white px-6 py-3 rounded-xl font-semibold transition-all hover:shadow-lg hover:shadow-cyan-500/50 hover:scale-105"
+                  className="w-full bg-gradient-to-r from-emerald-500 to-teal-500 text-gray-900 px-6 py-3 rounded-2xl font-black transition-all hover:shadow-lg hover:shadow-emerald-500/50 hover:scale-105"
                 >
                   Send Reset Link
                 </button>
@@ -380,7 +380,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
                 <button
                   type="button"
                   onClick={() => setShowPasswordReset(false)}
-                  className="w-full text-gray-400 hover:text-white transition-colors"
+                  className="w-full text-gray-300 hover:text-white transition-colors font-medium"
                 >
                   Back to Login
                 </button>
@@ -389,39 +389,39 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
           </div>
         ) : (
           <div className="max-w-md w-full mx-4">
-            <div className="bg-slate-900/80 backdrop-blur-xl rounded-3xl p-8 border border-cyan-500/20 shadow-2xl">
+            <div className="bg-gradient-to-br from-gray-900/95 via-emerald-950/90 to-gray-900/95 backdrop-blur-2xl rounded-3xl p-8 border-2 border-emerald-400/30 shadow-2xl shadow-emerald-500/20">
               <div className="text-center mb-8">
-                <div className="w-20 h-20 bg-gradient-to-br from-cyan-600 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                  <User size={40} className="text-white" />
+                <div className="w-20 h-20 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-emerald-500/50">
+                  <User size={40} className="text-gray-900" />
                 </div>
                 <h2 className="text-3xl font-black mb-2">
-                  <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
+                  <span className="bg-gradient-to-r from-emerald-400 via-teal-300 to-emerald-400 bg-clip-text text-transparent drop-shadow-lg">
                     Admin Login
                   </span>
                 </h2>
-                <p className="text-gray-400">Content Management System</p>
+                <p className="text-gray-300 font-medium">Content Management System</p>
               </div>
               
               <form onSubmit={handleLogin} className="space-y-6">
                 <div>
-                  <label className="block text-sm font-medium mb-2 text-white">Email</label>
+                  <label className="block text-sm font-bold mb-2 text-emerald-300">Email</label>
                   <input
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full px-4 py-3 bg-slate-800/50 border border-slate-700 rounded-xl focus:outline-none focus:border-cyan-500 transition-colors text-white"
+                    className="w-full px-4 py-3 bg-white/10 backdrop-blur-sm border-2 border-emerald-400/30 rounded-2xl focus:outline-none focus:border-emerald-400 transition-all text-white font-medium placeholder-gray-400"
                     placeholder="your@email.com"
                     required
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium mb-2 text-white">Password</label>
+                  <label className="block text-sm font-bold mb-2 text-emerald-300">Password</label>
                   <input
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full px-4 py-3 bg-slate-800/50 border border-slate-700 rounded-xl focus:outline-none focus:border-cyan-500 transition-colors text-white"
+                    className="w-full px-4 py-3 bg-white/10 backdrop-blur-sm border-2 border-emerald-400/30 rounded-2xl focus:outline-none focus:border-emerald-400 transition-all text-white font-medium placeholder-gray-400"
                     placeholder="••••••••"
                     required
                   />
@@ -430,14 +430,14 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
                 <button
                   type="button"
                   onClick={() => setShowPasswordReset(true)}
-                  className="text-sm text-cyan-400 hover:text-cyan-300 transition-colors"
+                  className="text-sm text-emerald-300 hover:text-emerald-200 transition-colors font-medium"
                 >
                   Forgot password?
                 </button>
 
                 <button
                   type="submit"
-                  className="w-full bg-gradient-to-r from-cyan-600 to-blue-600 text-white px-6 py-3 rounded-xl font-semibold transition-all hover:shadow-lg hover:shadow-cyan-500/50 hover:scale-105"
+                  className="w-full bg-gradient-to-r from-emerald-500 to-teal-500 text-gray-900 px-6 py-3 rounded-2xl font-black transition-all hover:shadow-lg hover:shadow-emerald-500/50 hover:scale-105"
                 >
                   Login
                 </button>
@@ -454,81 +454,81 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
   return (
     <div className="fixed inset-0 bg-gradient-to-br from-gray-950 via-purple-950/20 to-gray-950 overflow-y-auto z-50">
       <WebGLBackground />
-      {/* Sidebar - Fresh Blue Design */}
-      <div className="fixed left-0 top-0 h-full w-72 bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 border-r border-cyan-500/30 hidden lg:flex flex-col z-50 shadow-2xl">
+      {/* Sidebar - Modern Glassmorphism Design */}
+      <div className="fixed left-0 top-0 h-full w-72 bg-gradient-to-br from-gray-900/95 via-emerald-950/90 to-gray-900/95 backdrop-blur-xl border-r border-emerald-400/20 hidden lg:flex flex-col z-50 shadow-[0_8px_32px_0_rgba(16,185,129,0.2)]">
         {/* Header */}
-        <div className="p-6 border-b border-cyan-500/20">
-          <h1 className="text-2xl font-black bg-gradient-to-r from-cyan-400 via-blue-400 to-cyan-400 bg-clip-text text-transparent mb-3">
+        <div className="p-6 border-b border-emerald-400/20 bg-gradient-to-r from-emerald-500/10 to-teal-500/10">
+          <h1 className="text-2xl font-black bg-gradient-to-r from-emerald-400 via-teal-300 to-emerald-400 bg-clip-text text-transparent mb-3 drop-shadow-lg">
             Esther Reign
           </h1>
-          <div className="flex items-center gap-3 p-3 bg-cyan-500/10 rounded-xl border border-cyan-500/20">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center text-white font-bold">
+          <div className="flex items-center gap-3 p-3 bg-gradient-to-br from-emerald-500/20 to-teal-500/20 rounded-2xl border border-emerald-400/30 backdrop-blur-sm shadow-lg">
+            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center text-gray-900 font-bold shadow-lg">
               {currentUser?.name?.charAt(0) || 'E'}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-white font-semibold text-sm truncate">{currentUser?.name}</p>
-              <p className="text-cyan-400 text-xs capitalize">{currentUser?.role}</p>
+              <p className="text-white font-bold text-sm truncate drop-shadow-md">{currentUser?.name}</p>
+              <p className="text-emerald-300 text-xs capitalize font-medium">{currentUser?.role}</p>
             </div>
           </div>
         </div>
 
         {/* Navigation - Scrollable */}
-        <nav className="flex-1 overflow-y-auto p-4 space-y-1 scrollbar-thin scrollbar-thumb-cyan-500/20 scrollbar-track-transparent">
+        <nav className="flex-1 overflow-y-auto p-4 space-y-1 scrollbar-thin scrollbar-thumb-emerald-500/30 scrollbar-track-transparent">
           {/* Overview Section */}
           <div className="mb-4">
-            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider px-3 mb-2">Overview</p>
+            <p className="text-xs font-bold text-emerald-300/80 uppercase tracking-wider px-3 mb-2 drop-shadow">Overview</p>
             <button
               onClick={() => setActiveTab('dashboard')}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl transition-all duration-300 ${
                 activeTab === 'dashboard'
-                  ? 'bg-gradient-to-r from-cyan-600 to-blue-600 text-white shadow-lg shadow-cyan-500/50'
-                  : 'text-gray-400 hover:text-white hover:bg-slate-800/50'
+                  ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-gray-900 shadow-lg shadow-emerald-500/50 font-bold scale-105'
+                  : 'text-gray-300 hover:text-white hover:bg-gradient-to-r hover:from-emerald-500/20 hover:to-teal-500/20 hover:scale-102 font-medium'
               }`}
             >
               <BarChart3 size={20} />
-              <span className="font-medium">Dashboard</span>
+              <span>Dashboard</span>
             </button>
           </div>
 
           {/* Content Section */}
           <div className="mb-4">
-            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider px-3 mb-2">Content</p>
+            <p className="text-xs font-bold text-emerald-300/80 uppercase tracking-wider px-3 mb-2 drop-shadow">Content</p>
             <button
               onClick={() => setActiveTab('videos')}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl transition-all duration-300 ${
                 activeTab === 'videos'
-                  ? 'bg-gradient-to-r from-cyan-600 to-blue-600 text-white shadow-lg shadow-cyan-500/50'
-                  : 'text-gray-400 hover:text-white hover:bg-slate-800/50'
+                  ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-gray-900 shadow-lg shadow-emerald-500/50 font-bold scale-105'
+                  : 'text-gray-300 hover:text-white hover:bg-gradient-to-r hover:from-emerald-500/20 hover:to-teal-500/20 hover:scale-102 font-medium'
               }`}
             >
               <VideoIcon size={20} />
-              <span className="font-medium">Videos</span>
-              <span className="ml-auto bg-cyan-500/30 px-2 py-0.5 rounded-full text-xs">
+              <span>Videos</span>
+              <span className="ml-auto bg-amber-400/90 text-gray-900 px-2 py-0.5 rounded-full text-xs font-bold">
                 {videos.length}
               </span>
             </button>
             <button
               onClick={() => setActiveTab('calendar')}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl transition-all duration-300 ${
                 activeTab === 'calendar'
-                  ? 'bg-gradient-to-r from-cyan-600 to-blue-600 text-white shadow-lg shadow-cyan-500/50'
-                  : 'text-gray-400 hover:text-white hover:bg-slate-800/50'
+                  ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-gray-900 shadow-lg shadow-emerald-500/50 font-bold scale-105'
+                  : 'text-gray-300 hover:text-white hover:bg-gradient-to-r hover:from-emerald-500/20 hover:to-teal-500/20 hover:scale-102 font-medium'
               }`}
             >
               <Calendar size={20} />
-              <span className="font-medium">Calendar</span>
+              <span>Calendar</span>
             </button>
           </div>
 
           {/* Analytics Section */}
           <div className="mb-4">
-            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider px-3 mb-2">Analytics</p>
+            <p className="text-xs font-bold text-emerald-300/80 uppercase tracking-wider px-3 mb-2 drop-shadow">Analytics</p>
             <button
               onClick={() => setActiveTab('analytics')}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl transition-all duration-300 ${
                 activeTab === 'analytics'
-                  ? 'bg-gradient-to-r from-cyan-600 to-blue-600 text-white shadow-lg shadow-cyan-500/50'
-                  : 'text-gray-400 hover:text-white hover:bg-slate-800/50'
+                  ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-gray-900 shadow-lg shadow-emerald-500/50 font-bold scale-105'
+                  : 'text-gray-300 hover:text-white hover:bg-gradient-to-r hover:from-emerald-500/20 hover:to-teal-500/20 hover:scale-102 font-medium'
               }`}
             >
               <TrendingUp size={20} />
@@ -571,7 +571,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
 
           {/* Community Section */}
           <div className="mb-4">
-            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider px-3 mb-2">Community</p>
+            <p className="text-xs font-bold text-emerald-300/80 uppercase tracking-wider px-3 mb-2 drop-shadow">Community</p>
             <button
               onClick={() => setActiveTab('songs')}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
@@ -609,7 +609,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
 
           {/* Business Section */}
           <div className="mb-4">
-            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider px-3 mb-2">Business</p>
+            <p className="text-xs font-bold text-emerald-300/80 uppercase tracking-wider px-3 mb-2 drop-shadow">Business</p>
             <button
               onClick={() => setActiveTab('merch')}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
@@ -636,7 +636,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
 
           {/* Settings Section */}
           <div>
-            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider px-3 mb-2">System</p>
+            <p className="text-xs font-bold text-emerald-300/80 uppercase tracking-wider px-3 mb-2 drop-shadow">System</p>
             <button
               onClick={() => setActiveTab('settings')}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
@@ -1247,9 +1247,9 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
         </div>
       )}
 
-      {/* Floating Chat Widget */}
+      {/* Modern Chat Widget */}
       {currentUser && (
-        <SupabaseChat currentUser={currentUser} />
+        <ModernChat currentUser={currentUser} />
       )}
     </div>
   );
