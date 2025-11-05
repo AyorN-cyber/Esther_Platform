@@ -2,8 +2,10 @@ import { useState, useEffect, lazy, Suspense } from 'react';
 import { Menu, X, Instagram, Youtube, Mail, Play, ChevronRight, Sparkles } from 'lucide-react';
 import { FaTiktok, FaFacebook } from 'react-icons/fa';
 import { Loader } from './components/Loader';
-import { WebGLBackground } from './components/WebGLBackground';
+import ModernPurpleBackground from './components/ModernPurpleBackground';
 import { FanMessageForm } from './components/FanMessageForm';
+import { SimpleChatWidget } from './components/SimpleChatWidget';
+import { NotificationCenter } from './components/NotificationCenter';
 import type { Video } from './types';
 
 // Lazy load AdminPanel for better performance
@@ -157,24 +159,12 @@ const EstherPlatform = () => {
   }
 
   return (
-    <div className="bg-gradient-to-br from-dark-900 via-dark-800 to-dark-900 text-white min-h-screen">
-      {/* WebGL Animated Background - Only on desktop for performance */}
-      <div className="hidden md:block">
-        <WebGLBackground />
-      </div>
+    <div className="bg-white text-gray-900 min-h-screen">
+      {/* Modern Purple Background with floating orbs */}
+      <ModernPurpleBackground />
 
-      {/* Gaming Dashboard Floating particles background */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
-        <div className="absolute w-[500px] h-[500px] bg-purple-600/20 rounded-full blur-3xl top-0 -left-20 animate-blob"></div>
-        <div className="absolute w-[400px] h-[400px] bg-pink-600/20 rounded-full blur-3xl top-20 right-20 animate-blob animation-delay-2000"></div>
-        <div className="absolute w-[450px] h-[450px] bg-cyan-600/15 rounded-full blur-3xl bottom-20 left-40 animate-blob animation-delay-4000"></div>
-        
-        {/* Grid overlay for gaming aesthetic */}
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(168,85,247,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(168,85,247,0.03)_1px,transparent_1px)] bg-[size:50px_50px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_50%,black,transparent)]"></div>
-      </div>
-
-      {/* Top Navigation - Gaming Style */}
-      <nav className="fixed top-0 w-full glass-card z-40 border-b border-purple-500/30">
+      {/* Top Navigation - Modern Style */}
+      <nav className="fixed top-0 w-full glass-card z-40 border-b border-purple-100">
         <div className="container mx-auto px-4 md:px-6 lg:px-12">
           <div className="flex justify-between items-center h-16 md:h-20">
             {/* Logo - Triple tap to access admin */}
@@ -209,7 +199,7 @@ const EstherPlatform = () => {
                 className="h-12 md:h-16 lg:h-20 w-auto"
                 loading="eager"
               />
-              <span className="text-[10px] sm:text-xs md:text-base lg:text-lg font-bold bg-gradient-to-r from-neon-purple via-neon-pink to-neon-purple bg-clip-text text-transparent animate-gradient bg-[length:200%_auto] whitespace-nowrap" style={{textShadow: '0 0 20px rgba(168, 85, 247, 0.5)'}}>
+              <span className="text-[10px] sm:text-xs md:text-base lg:text-lg font-bold text-purple-600 whitespace-nowrap">
                 @officialEstherReign
               </span>
             </div>
@@ -220,18 +210,18 @@ const EstherPlatform = () => {
                 { id: 'home', label: 'Home' },
                 { id: 'about', label: 'About' },
                 { id: 'videos', label: 'Videos' },
-                { id: 'contact', label: 'Contact' }
+                { id: 'contact', label: 'Messages' }
               ].map((item) => (
                 <button
                   key={item.id}
                   onClick={() => scrollToSection(item.id)}
                   className={`text-sm font-medium transition-all relative group ${activeSection === item.id
-                    ? 'text-neon-purple'
-                    : 'text-gray-300 hover:text-white'
+                    ? 'text-purple-600'
+                    : 'text-gray-600 hover:text-gray-900'
                     }`}
                 >
                   {item.label}
-                  <span className={`absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-neon-purple via-neon-pink to-neon-purple transition-all ${activeSection === item.id ? 'w-full shadow-neon-purple' : 'w-0 group-hover:w-full'
+                  <span className={`absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-purple-500 to-purple-600 transition-all ${activeSection === item.id ? 'w-full' : 'w-0 group-hover:w-full'
                     }`}></span>
                 </button>
               ))}
@@ -247,20 +237,20 @@ const EstherPlatform = () => {
           </div>
         </div>
 
-        {/* Mobile Menu - Gaming Style */}
+        {/* Mobile Menu - Modern Style */}
         {isMenuOpen && (
-          <div className="md:hidden glass-card border-t border-purple-500/30">
+          <div className="md:hidden glass-card border-t border-purple-100">
             <nav className="container mx-auto px-6 py-6 space-y-4">
               {[
                 { id: 'home', label: 'Home' },
                 { id: 'about', label: 'About' },
                 { id: 'videos', label: 'Videos' },
-                { id: 'contact', label: 'Contact' }
+                { id: 'contact', label: 'Messages' }
               ].map((item) => (
                 <button
                   key={item.id}
                   onClick={() => scrollToSection(item.id)}
-                  className="block w-full text-left py-2 text-gray-300 hover:text-neon-purple transition-colors"
+                  className="block w-full text-left py-2 text-gray-600 hover:text-purple-600 transition-colors"
                 >
                   {item.label}
                 </button>
@@ -276,22 +266,22 @@ const EstherPlatform = () => {
           <div className="grid lg:grid-cols-2 gap-8 md:gap-12 items-center">
             {/* Text Content - Order 2 on mobile, 1 on desktop */}
             <div className="space-y-6 md:space-y-8 animate-fade-in-left order-2 lg:order-1 text-center lg:text-left">
-              <div className="inline-flex items-center gap-2 px-4 py-2 glass-card rounded-full mx-auto lg:mx-0 shadow-neon-purple">
-                <Sparkles size={16} className="text-neon-purple animate-pulse" />
-                <span className="text-sm text-purple-300 font-medium">Gospel Singer • Worship Leader</span>
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-purple-100 rounded-full mx-auto lg:mx-0 border border-purple-200">
+                <Sparkles size={16} className="text-purple-600 animate-pulse" />
+                <span className="text-sm text-purple-700 font-medium">Gospel Singer • Worship Leader</span>
               </div>
 
               <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black leading-tight">
-                <span className="bg-gradient-to-r from-white via-purple-200 to-pink-200 bg-clip-text text-transparent animate-text-reveal" style={{textShadow: '0 0 40px rgba(255, 255, 255, 0.3)'}}>
+                <span className="text-gray-900 animate-text-reveal">
                   Esther
                 </span>
                 <br />
-                <span className="bg-gradient-to-r from-neon-purple via-neon-pink to-neon-purple bg-clip-text text-transparent animate-gradient animate-text-reveal stagger-delay-2" style={{textShadow: '0 0 60px rgba(168, 85, 247, 0.6)'}}>
+                <span className="bg-gradient-to-r from-purple-600 to-purple-500 bg-clip-text text-transparent animate-text-reveal stagger-delay-2">
                   Reign
                 </span>
               </h1>
 
-              <p className="text-base md:text-lg lg:text-xl text-white/95 leading-relaxed max-w-xl animate-text-reveal stagger-delay-3 drop-shadow-lg">
+              <p className="text-base md:text-lg lg:text-xl text-gray-700 leading-relaxed max-w-xl animate-text-reveal stagger-delay-3">
                 {settings?.hero_description || localStorage.getItem('hero_description') || 'Lifting voices in worship through powerful gospel music. Experience the presence of God through every note.'}
               </p>
 
@@ -305,7 +295,7 @@ const EstherPlatform = () => {
                 </button>
                 <button
                   onClick={() => scrollToSection('contact')}
-                  className="glass-card-hover px-8 py-4 rounded-full font-semibold text-white"
+                  className="btn-gaming-secondary px-8 py-4 rounded-full font-semibold"
                 >
                   Get In Touch
                 </button>
@@ -314,35 +304,34 @@ const EstherPlatform = () => {
               {/* Social Links */}
               <div className="flex gap-4 pt-6 pb-8 md:pb-0 justify-center lg:justify-start animate-slide-in-left stagger-delay-5">
                 <a href={settings?.social_links?.instagram || "https://instagram.com/estherreign"} target="_blank" rel="noopener noreferrer"
-                  className="w-12 h-12 glass-card-hover rounded-full flex items-center justify-center text-white">
+                  className="w-12 h-12 bg-white border border-purple-200 hover:border-purple-300 hover:shadow-medium rounded-full flex items-center justify-center text-purple-600 transition-all">
                   <Instagram size={20} />
                 </a>
                 <a href={settings?.social_links?.youtube || "https://youtube.com/@estherreign"} target="_blank" rel="noopener noreferrer"
-                  className="w-12 h-12 glass-card-hover rounded-full flex items-center justify-center text-white">
+                  className="w-12 h-12 bg-white border border-purple-200 hover:border-purple-300 hover:shadow-medium rounded-full flex items-center justify-center text-purple-600 transition-all">
                   <Youtube size={20} />
                 </a>
                 <a href={settings?.social_links?.tiktok || "https://tiktok.com/@estherreign"} target="_blank" rel="noopener noreferrer"
-                  className="w-12 h-12 glass-card-hover rounded-full flex items-center justify-center text-white">
+                  className="w-12 h-12 bg-white border border-purple-200 hover:border-purple-300 hover:shadow-medium rounded-full flex items-center justify-center text-purple-600 transition-all">
                   <FaTiktok size={20} />
                 </a>
                 <a href={settings?.social_links?.facebook || "https://facebook.com/estherreign"} target="_blank" rel="noopener noreferrer"
-                  className="w-12 h-12 glass-card-hover rounded-full flex items-center justify-center text-white">
+                  className="w-12 h-12 bg-white border border-purple-200 hover:border-purple-300 hover:shadow-medium rounded-full flex items-center justify-center text-purple-600 transition-all">
                   <FaFacebook size={20} />
                 </a>
               </div>
             </div>
 
-            {/* Image - Order 1 on mobile, 2 on desktop - Gaming Card Style */}
+            {/* Image - Order 1 on mobile, 2 on desktop - Modern Card Style */}
             <div className="relative animate-zoom-in order-1 lg:order-2 max-w-sm mx-auto lg:max-w-none">
-              <div className="absolute inset-0 bg-gradient-to-br from-neon-purple to-neon-pink rounded-full lg:rounded-3xl blur-3xl opacity-40 animate-pulse"></div>
-              <div className="relative gaming-border rounded-full lg:rounded-3xl overflow-hidden aspect-square lg:aspect-auto shadow-neon-purple">
+              <div className="absolute inset-0 bg-gradient-to-br from-purple-300 to-purple-400 rounded-full lg:rounded-3xl blur-3xl opacity-30 animate-pulse"></div>
+              <div className="relative border-4 border-white shadow-large rounded-full lg:rounded-3xl overflow-hidden aspect-square lg:aspect-auto">
                 <img
                   src={settings?.hero_image || "/Estherreign.jpg"}
                   alt="Esther Reign"
                   className="w-full h-full object-cover"
                   loading="eager"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-dark-900 via-transparent to-transparent"></div>
               </div>
             </div>
           </div>
@@ -352,12 +341,12 @@ const EstherPlatform = () => {
       </section>
 
       {/* About Section */}
-      <section id="about" className="py-16 md:py-24 lg:py-32 relative overflow-hidden bg-black/60">
+      <section id="about" className="py-16 md:py-24 lg:py-32 relative overflow-hidden">
         <div className="container mx-auto px-4 md:px-6 lg:px-12 relative z-10">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-12 md:mb-20 animate-fade-in-down">
               <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black mb-6">
-                <span className="bg-gradient-to-r from-white to-purple-200 bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-gray-900 to-purple-600 bg-clip-text text-transparent">
                   About Me
                 </span>
               </h2>
@@ -365,8 +354,8 @@ const EstherPlatform = () => {
 
             <div className="grid lg:grid-cols-2 gap-8 md:gap-12 lg:gap-16 items-center">
               <div className="relative animate-fade-in-left">
-                <div className="absolute inset-0 bg-gradient-to-br from-neon-purple to-neon-pink rounded-3xl blur-2xl opacity-30"></div>
-                <div className="relative gaming-border rounded-3xl overflow-hidden shadow-neon-purple">
+                <div className="absolute inset-0 bg-gradient-to-br from-purple-300 to-purple-400 rounded-3xl blur-2xl opacity-30"></div>
+                <div className="relative border-4 border-white shadow-large rounded-3xl overflow-hidden">
                   <img
                     src={settings?.about_image || "/IMG-20250915-WA0023.jpg"}
                     alt="About Esther"
@@ -378,32 +367,32 @@ const EstherPlatform = () => {
 
               <div className="space-y-4 md:space-y-6 animate-fade-in-right">
                 {(settings?.about_text || 'I am an emerging gospel artist with a deep passion for worship and praise. Through powerful cover songs, I aim to create an atmosphere where people can encounter God\'s presence.\n\nEvery song I sing is a testimony of God\'s faithfulness and love. My mission is to use my voice as an instrument of worship, touching hearts and transforming lives through gospel music.\n\nJoin me on this journey as I share my gift with the world, one song at a time, bringing glory to God through music.').split('\n\n').map((paragraph: string, index: number) => (
-                  <p key={index} className="text-base md:text-lg text-white leading-relaxed">
+                  <p key={index} className="text-base md:text-lg text-gray-700 leading-relaxed">
                     {paragraph}
                   </p>
                 ))}
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6 pt-6 md:pt-8">
-                  <div className="text-center p-4 md:p-6 glass-card-hover rounded-2xl group">
+                  <div className="text-center p-4 md:p-6 purple-card rounded-2xl group">
                     <div className="text-4xl md:text-5xl mb-2 md:mb-3 group-hover:scale-110 transition-transform duration-300">
                       🎤
                     </div>
-                    <div className="text-base md:text-lg font-bold text-white mb-1">Authentic Worship</div>
-                    <div className="text-xs md:text-sm text-gray-400">Spirit-led songs from the heart</div>
+                    <div className="text-base md:text-lg font-bold text-gray-900 mb-1">Authentic Worship</div>
+                    <div className="text-xs md:text-sm text-gray-600">Spirit-led songs from the heart</div>
                   </div>
-                  <div className="text-center p-4 md:p-6 glass-card-hover rounded-2xl group">
+                  <div className="text-center p-4 md:p-6 purple-card rounded-2xl group">
                     <div className="text-4xl md:text-5xl mb-2 md:mb-3 group-hover:scale-110 transition-transform duration-300">
                       ✨
                     </div>
-                    <div className="text-base md:text-lg font-bold text-white mb-1">Fresh Sound</div>
-                    <div className="text-xs md:text-sm text-gray-400">Contemporary gospel music</div>
+                    <div className="text-base md:text-lg font-bold text-gray-900 mb-1">Fresh Sound</div>
+                    <div className="text-xs md:text-sm text-gray-600">Contemporary gospel music</div>
                   </div>
-                  <div className="text-center p-4 md:p-6 glass-card-hover rounded-2xl group">
+                  <div className="text-center p-4 md:p-6 purple-card rounded-2xl group">
                     <div className="text-4xl md:text-5xl mb-2 md:mb-3 group-hover:scale-110 transition-transform duration-300">
                       🙏
                     </div>
-                    <div className="text-base md:text-lg font-bold text-white mb-1">Kingdom Impact</div>
-                    <div className="text-xs md:text-sm text-gray-400">Music that transforms lives</div>
+                    <div className="text-base md:text-lg font-bold text-gray-900 mb-1">Kingdom Impact</div>
+                    <div className="text-xs md:text-sm text-gray-600">Music that transforms lives</div>
                   </div>
                 </div>
               </div>
@@ -413,29 +402,29 @@ const EstherPlatform = () => {
       </section>
 
       {/* Videos Section */}
-      <section id="videos" className="py-16 md:py-24 lg:py-32 relative overflow-hidden bg-black/90">
+      <section id="videos" className="py-16 md:py-24 lg:py-32 relative overflow-hidden bg-gradient-to-b from-purple-50 to-white">
         <div className="container mx-auto px-4 md:px-6 lg:px-12 relative z-10">
           <div className="text-center mb-12 md:mb-20 animate-fade-in-down">
-            <div className="inline-flex items-center gap-2 px-4 py-2 glass-card rounded-full mb-6 shadow-neon-purple">
-              <Play size={16} className="text-neon-purple animate-pulse" />
-              <span className="text-sm text-purple-300 font-medium">Watch</span>
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-purple-100 border border-purple-200 rounded-full mb-6">
+              <Play size={16} className="text-purple-600 animate-pulse" />
+              <span className="text-sm text-purple-700 font-medium">Watch</span>
             </div>
             <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black mb-4 md:mb-6">
-              <span className="bg-gradient-to-r from-white to-purple-200 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-gray-900 to-purple-600 bg-clip-text text-transparent">
                 Videos
               </span>
             </h2>
-            <p className="text-white max-w-2xl mx-auto text-base md:text-lg px-4">
+            <p className="text-gray-700 max-w-2xl mx-auto text-base md:text-lg px-4">
               Experience powerful gospel worship that will uplift your spirit
             </p>
           </div>
 
           {videos.length === 0 ? (
             <div className="text-center py-20">
-              <div className="w-24 h-24 bg-purple-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Play size={48} className="text-purple-400" />
+              <div className="w-24 h-24 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <Play size={48} className="text-purple-600" />
               </div>
-              <p className="text-gray-400 text-xl">New videos coming soon...</p>
+              <p className="text-gray-600 text-xl">New videos coming soon...</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8 max-w-7xl mx-auto">
@@ -501,23 +490,23 @@ const EstherPlatform = () => {
                       />
                     )}
                     
-                    {/* Dark Overlay with Play Button */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent flex items-center justify-center transition-all duration-300 group-hover:bg-black/40">
+                    {/* Light Overlay with Play Button */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent flex items-center justify-center transition-all duration-300 group-hover:bg-black/30">
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           setPlayingVideo(video);
                         }}
-                        className="w-20 h-20 bg-white/95 hover:bg-white rounded-full flex items-center justify-center transform transition-all shadow-2xl group-hover:scale-125"
+                        className="w-20 h-20 bg-white hover:bg-purple-50 rounded-full flex items-center justify-center transform transition-all shadow-large group-hover:scale-125"
                       >
                         <Play size={32} className="text-purple-600 ml-1" fill="currentColor" />
                       </button>
                     </div>
                   </div>
-                  <div className="p-6">
-                    <h3 className="text-lg font-bold mb-2 line-clamp-2">{video.title}</h3>
+                  <div className="p-6 bg-white">
+                    <h3 className="text-lg font-bold mb-2 line-clamp-2 text-gray-900">{video.title}</h3>
                     {video.template_type && (
-                      <p className="text-sm text-purple-400 mb-2">{video.template_type}</p>
+                      <p className="text-sm text-purple-600 mb-2">{video.template_type}</p>
                     )}
                   </div>
                 </div>
@@ -528,20 +517,20 @@ const EstherPlatform = () => {
       </section>
 
       {/* Contact Section */}
-      <section id="contact" className="py-16 md:py-24 lg:py-32 relative overflow-hidden bg-black/60">
+      <section id="contact" className="py-16 md:py-24 lg:py-32 relative overflow-hidden">
         <div className="container mx-auto px-4 md:px-6 lg:px-12 relative z-10">
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-12 md:mb-20 animate-fade-in-down">
-              <div className="inline-flex items-center gap-2 px-4 py-2 glass-card rounded-full mb-6 shadow-neon-purple">
-                <Mail size={16} className="text-neon-purple animate-pulse" />
-                <span className="text-sm text-purple-300 font-medium">Contact</span>
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-purple-100 border border-purple-200 rounded-full mb-6">
+                <Mail size={16} className="text-purple-600 animate-pulse" />
+                <span className="text-sm text-purple-700 font-medium">Contact</span>
               </div>
               <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black mb-4 md:mb-6">
-                <span className="bg-gradient-to-r from-white to-purple-200 bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-gray-900 to-purple-600 bg-clip-text text-transparent">
                   Let's Connect
                 </span>
               </h2>
-              <p className="text-gray-400 max-w-2xl mx-auto text-base md:text-lg px-4">
+              <p className="text-gray-700 max-w-2xl mx-auto text-base md:text-lg px-4">
                 For bookings, collaborations, or inquiries
               </p>
             </div>
@@ -551,22 +540,22 @@ const EstherPlatform = () => {
               <FanMessageForm />
             </div>
 
-            {/* Social Media Links - Gaming Style */}
+            {/* Social Media Links - Modern Style */}
             <div className="flex justify-center gap-6 animate-fade-in-up">
               <a href={settings?.social_links?.instagram || "https://instagram.com/estherreign"} target="_blank" rel="noopener noreferrer"
-                className="w-14 h-14 glass-card-hover rounded-full flex items-center justify-center">
+                className="w-14 h-14 bg-white border border-purple-200 hover:border-purple-300 hover:shadow-medium rounded-full flex items-center justify-center text-purple-600 transition-all">
                 <Instagram size={24} />
               </a>
               <a href={settings?.social_links?.youtube || "https://youtube.com/@estherreign"} target="_blank" rel="noopener noreferrer"
-                className="w-14 h-14 glass-card-hover rounded-full flex items-center justify-center">
+                className="w-14 h-14 bg-white border border-purple-200 hover:border-purple-300 hover:shadow-medium rounded-full flex items-center justify-center text-purple-600 transition-all">
                 <Youtube size={24} />
               </a>
               <a href={settings?.social_links?.tiktok || "https://tiktok.com/@estherreign"} target="_blank" rel="noopener noreferrer"
-                className="w-14 h-14 glass-card-hover rounded-full flex items-center justify-center">
+                className="w-14 h-14 bg-white border border-purple-200 hover:border-purple-300 hover:shadow-medium rounded-full flex items-center justify-center text-purple-600 transition-all">
                 <FaTiktok size={24} />
               </a>
               <a href={settings?.social_links?.facebook || "https://facebook.com/estherreign"} target="_blank" rel="noopener noreferrer"
-                className="w-14 h-14 glass-card-hover rounded-full flex items-center justify-center">
+                className="w-14 h-14 bg-white border border-purple-200 hover:border-purple-300 hover:shadow-medium rounded-full flex items-center justify-center text-purple-600 transition-all">
                 <FaFacebook size={24} />
               </a>
             </div>
@@ -575,10 +564,10 @@ const EstherPlatform = () => {
       </section>
 
       {/* Footer */}
-      <footer className="py-8 border-t border-white/10 backdrop-blur-sm bg-black/90">
+      <footer className="py-8 border-t border-purple-100 bg-white">
         <div className="container mx-auto px-6 lg:px-12">
           <div className="text-center">
-            <p className="text-white text-sm font-medium">
+            <p className="text-gray-600 text-sm font-medium">
               © 2025 Esther Reign. All rights reserved.
             </p>
           </div>
@@ -599,7 +588,7 @@ const EstherPlatform = () => {
             <div className="mb-4">
               <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">{playingVideo.title}</h2>
               {playingVideo.template_type && (
-                <p className="text-purple-400 text-sm">{playingVideo.template_type}</p>
+                <p className="text-purple-300 text-sm">{playingVideo.template_type}</p>
               )}
             </div>
             
@@ -632,7 +621,7 @@ const EstherPlatform = () => {
                 href={playingVideo.video_link}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-6 py-3 bg-purple-600 hover:bg-purple-700 rounded-full text-white font-medium transition-colors flex items-center gap-2"
+                className="btn-gaming-primary px-6 py-3 rounded-full text-white font-medium flex items-center gap-2"
               >
                 Open in New Tab
                 <ChevronRight size={18} />
@@ -641,6 +630,14 @@ const EstherPlatform = () => {
           </div>
         </div>
       )}
+
+      {/* Floating Chat Widget - Positioned bottom-right, won't obstruct buttons */}
+      <div className="fixed bottom-6 right-6 z-40">
+        <SimpleChatWidget currentUser={{ id: 'visitor', email: 'visitor@example.com', role: 'editor', name: 'Visitor', phone: '' }} />
+      </div>
+
+      {/* Notification Center */}
+      <NotificationCenter />
     </div>
   );
 };

@@ -3,26 +3,32 @@
 @tailwind utilities;
 
 :root {
-  /* Gaming Dashboard Color Scheme */
-  --color-primary: #a855f7; /* Neon Purple */
-  --color-secondary: #ec4899; /* Neon Pink */
-  --color-accent: #06b6d4; /* Cyan */
-  --color-royal: #9333ea; /* Bright Royal Purple */
+  /* Modern Purple SaaS Theme */
+  --color-primary: #a855f7;
+  --color-secondary: #9333ea;
+  --color-accent: #8b5cf6;
   
-  /* Dark backgrounds */
-  --bg-dark-900: #0a0a0f;
-  --bg-dark-800: #13131a;
-  --bg-dark-700: #1a1a24;
+  /* Light backgrounds */
+  --bg-primary: #ffffff;
+  --bg-secondary: #fafafa;
+  --bg-tertiary: #f5f5f5;
+  --bg-purple-light: #faf5ff;
+  --bg-purple-lighter: #f3e8ff;
   
-  /* Glass effect */
-  --glass-bg: rgba(255, 255, 255, 0.05);
-  --glass-border: rgba(255, 255, 255, 0.1);
+  /* Card backgrounds */
+  --card-bg: #ffffff;
+  --card-purple: #f3e8ff;
   
-  /* Text colors for contrast */
-  --text-on-dark: #ffffff;
-  --text-on-light: #1f2937;
-  --text-shadow-dark: 0 2px 8px rgba(0,0,0,0.5);
-  --text-shadow-glow: 0 0 20px rgba(168, 85, 247, 0.5);
+  /* Text colors */
+  --text-primary: #1f2937;
+  --text-secondary: #6b7280;
+  --text-muted: #9ca3af;
+  --text-purple: #7e22ce;
+  
+  /* Shadows */
+  --shadow-sm: 0 2px 8px rgba(168, 85, 247, 0.08);
+  --shadow-md: 0 4px 16px rgba(168, 85, 247, 0.12);
+  --shadow-lg: 0 8px 32px rgba(168, 85, 247, 0.15);
 }
 
 @layer base {
@@ -113,48 +119,113 @@
 }
 
 @layer utilities {
-  /* Gaming Dashboard Glass Cards */
+  /* Modern Light Cards */
   .glass-card {
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+    border: 1px solid rgba(168, 85, 247, 0.1);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
   }
 
   .glass-card-hover {
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(168, 85, 247, 0.1);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .glass-card-hover:hover {
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(168, 85, 247, 0.5);
-    box-shadow: 0 0 30px rgba(168, 85, 247, 0.3);
+    background: rgba(255, 255, 255, 1);
+    border: 1px solid rgba(168, 85, 247, 0.2);
+    box-shadow: 0 8px 24px rgba(168, 85, 247, 0.2);
     transform: translateY(-4px);
   }
 
-  /* Neon Glow Button */
-  .neon-button {
-    background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%);
-    box-shadow: 0 0 20px rgba(168, 85, 247, 0.5);
+  /* Purple Feature Card */
+  .purple-card {
+    background: linear-gradient(135deg, #f3e8ff 0%, #faf5ff 100%);
+    border: 1px solid rgba(168, 85, 247, 0.15);
     transition: all 0.3s ease;
   }
 
-  .neon-button:hover {
-    box-shadow: 0 0 30px rgba(168, 85, 247, 0.8), 0 0 60px rgba(168, 85, 247, 0.5);
+  .purple-card:hover {
+    background: linear-gradient(135deg, #e9d5ff 0%, #f3e8ff 100%);
+    box-shadow: 0 8px 24px rgba(168, 85, 247, 0.2);
     transform: translateY(-2px);
   }
 
-  /* Gaming Card Border */
+  /* Modern Purple Button */
+  .neon-button {
+    background: linear-gradient(135deg, #a855f7 0%, #9333ea 100%);
+    box-shadow: 0 4px 16px rgba(168, 85, 247, 0.3);
+    transition: all 0.3s ease;
+    border: none;
+  }
+
+  .neon-button:hover {
+    box-shadow: 0 6px 24px rgba(168, 85, 247, 0.4);
+    transform: translateY(-2px);
+  }
+
+  .neon-button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 12px rgba(168, 85, 247, 0.3);
+  }
+
+  /* Purple Border */
   .gaming-border {
     position: relative;
-    border: 2px solid transparent;
-    background: linear-gradient(var(--bg-dark-800), var(--bg-dark-800)) padding-box,
-                linear-gradient(135deg, #a855f7, #ec4899) border-box;
+    border: 2px solid rgba(168, 85, 247, 0.2);
+    background: white;
+  }
+
+  /* Modern Button Styles */
+  .btn-gaming-primary {
+    background: linear-gradient(135deg, #a855f7, #9333ea);
+    border: none;
+    box-shadow: 0 4px 16px rgba(168, 85, 247, 0.3);
+    transition: all 0.3s ease;
+  }
+
+  .btn-gaming-primary:hover {
+    box-shadow: 0 6px 24px rgba(168, 85, 247, 0.4);
+    transform: translateY(-2px);
+  }
+
+  .btn-gaming-secondary {
+    background: white;
+    border: 2px solid rgba(168, 85, 247, 0.2);
+    color: #7e22ce;
+    transition: all 0.3s ease;
+  }
+
+  .btn-gaming-secondary:hover {
+    background: #faf5ff;
+    border-color: rgba(168, 85, 247, 0.3);
+    box-shadow: 0 4px 16px rgba(168, 85, 247, 0.15);
+  }
+
+  /* Modern Input Styles */
+  .input-gaming {
+    background: white;
+    border: 2px solid rgba(168, 85, 247, 0.15);
+    transition: all 0.3s ease;
+  }
+
+  .input-gaming:focus {
+    background: white;
+    border-color: rgba(168, 85, 247, 0.4);
+    box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.1);
+    outline: none;
+  }
+
+  /* Purple Badge */
+  .badge-gaming {
+    background: linear-gradient(135deg, #f3e8ff, #faf5ff);
+    border: 1px solid rgba(168, 85, 247, 0.2);
+    color: #7e22ce;
   }
 
   .scrollbar-thin::-webkit-scrollbar {

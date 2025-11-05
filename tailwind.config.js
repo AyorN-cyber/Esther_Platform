@@ -4,7 +4,30 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Gaming-inspired color palette
+        // Modern Purple SaaS Theme
+        brand: {
+          50: '#faf5ff',
+          100: '#f3e8ff',
+          200: '#e9d5ff',
+          300: '#d8b4fe',
+          400: '#c084fc',
+          500: '#a855f7',
+          600: '#9333ea',
+          700: '#7e22ce',
+          800: '#6b21a8',
+          900: '#581c87',
+          primary: '#8b5cf6',
+          secondary: '#a855f7',
+        },
+        light: {
+          50: '#ffffff',
+          100: '#fefefe',
+          200: '#fafafa',
+          300: '#f5f5f5',
+          400: '#f0f0f0',
+          500: '#e5e5e5',
+        },
+        // Keep existing colors for compatibility
         royal: {
           50: '#faf5ff',
           100: '#f3e8ff',
@@ -12,16 +35,16 @@ export default {
           300: '#d8b4fe',
           400: '#c084fc',
           500: '#a855f7',
-          600: '#9333ea', // Brighter purple
+          600: '#9333ea',
           700: '#7e22ce',
           800: '#6b21a8',
           900: '#581c87',
         },
         neon: {
-          purple: '#a855f7',
-          pink: '#ec4899',
+          purple: '#8b5cf6',
+          pink: '#ff006e',
           blue: '#3b82f6',
-          cyan: '#06b6d4',
+          cyan: '#00d9ff',
         },
         dark: {
           900: '#0a0a0f',
@@ -31,14 +54,19 @@ export default {
         },
       },
       backgroundImage: {
-        'gaming-gradient': 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        'card-gradient': 'linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%)',
+        'purple-gradient': 'linear-gradient(135deg, #f3e8ff 0%, #faf5ff 100%)',
+        'purple-radial': 'radial-gradient(circle at 30% 20%, rgba(168, 85, 247, 0.15) 0%, transparent 50%)',
+        'card-gradient': 'linear-gradient(135deg, rgba(168, 85, 247, 0.05) 0%, rgba(168, 85, 247, 0.02) 100%)',
+        'hero-gradient': 'linear-gradient(135deg, #faf5ff 0%, #f3e8ff 50%, #e9d5ff 100%)',
+        'button-gradient': 'linear-gradient(135deg, #a855f7 0%, #9333ea 100%)',
       },
       boxShadow: {
-        'neon-purple': '0 0 20px rgba(168, 85, 247, 0.5), 0 0 40px rgba(168, 85, 247, 0.3)',
-        'neon-pink': '0 0 20px rgba(236, 72, 153, 0.5), 0 0 40px rgba(236, 72, 153, 0.3)',
-        'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.37)',
-        'card': '0 4px 24px rgba(0, 0, 0, 0.4)',
+        'soft': '0 2px 8px rgba(168, 85, 247, 0.08)',
+        'medium': '0 4px 16px rgba(168, 85, 247, 0.12)',
+        'large': '0 8px 32px rgba(168, 85, 247, 0.15)',
+        'purple': '0 4px 20px rgba(168, 85, 247, 0.25)',
+        'card': '0 2px 12px rgba(0, 0, 0, 0.06)',
+        'hover': '0 8px 24px rgba(168, 85, 247, 0.2)',
       },
       backdropBlur: {
         xs: '2px',

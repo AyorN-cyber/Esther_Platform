@@ -72,12 +72,12 @@ export const FanMessageForm = () => {
 
   return (
     <div className="max-w-2xl mx-auto p-4 md:p-8">
-      <div className="bg-white rounded-2xl shadow-xl p-6 md:p-8 border-2 border-purple-100">
+      <div className="bg-white rounded-2xl shadow-xl p-6 md:p-8 border-2 border-purple-200">
         <div className="text-center mb-8">
           <h2 className="text-3xl font-black bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
             Send a Message
           </h2>
-          <p className="text-gray-600">
+          <p className="text-gray-700">
             Share your prayer request, testimony, or get in touch with Esther Reign
           </p>
         </div>
@@ -85,7 +85,7 @@ export const FanMessageForm = () => {
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Message Type */}
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-3">
+            <label className="block text-sm font-semibold text-gray-900 mb-3">
               What would you like to share? *
             </label>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
@@ -112,7 +112,7 @@ export const FanMessageForm = () => {
 
           {/* Name */}
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
+            <label className="block text-sm font-semibold text-gray-900 mb-2">
               Your Name {!formData.is_anonymous && '*'}
             </label>
             <input
@@ -121,7 +121,7 @@ export const FanMessageForm = () => {
               onChange={(e) => setFormData({ ...formData, from_name: e.target.value })}
               disabled={formData.is_anonymous}
               required={!formData.is_anonymous}
-              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none transition-colors disabled:bg-gray-100"
+              className="w-full px-4 py-3 bg-white text-gray-900 border-2 border-gray-300 rounded-xl focus:border-purple-500 focus:outline-none transition-colors disabled:bg-gray-100 disabled:text-gray-500"
               placeholder="Enter your name"
             />
             <label className="flex items-center gap-2 mt-2">
@@ -131,42 +131,42 @@ export const FanMessageForm = () => {
                 onChange={(e) => setFormData({ ...formData, is_anonymous: e.target.checked, from_name: e.target.checked ? 'Anonymous' : '' })}
                 className="rounded"
               />
-              <span className="text-sm text-gray-600">Send anonymously</span>
+              <span className="text-sm text-gray-700">Send anonymously</span>
             </label>
           </div>
 
           {/* Email */}
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
+            <label className="block text-sm font-semibold text-gray-900 mb-2">
               Email (optional)
             </label>
             <input
               type="email"
               value={formData.from_email}
               onChange={(e) => setFormData({ ...formData, from_email: e.target.value })}
-              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none transition-colors"
+              className="w-full px-4 py-3 bg-white text-gray-900 border-2 border-gray-300 rounded-xl focus:border-purple-500 focus:outline-none transition-colors"
               placeholder="your@email.com"
             />
-            <p className="text-xs text-gray-500 mt-1">We'll only use this to respond to you</p>
+            <p className="text-xs text-gray-600 mt-1">We'll only use this to respond to you</p>
           </div>
 
           {/* Subject */}
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
+            <label className="block text-sm font-semibold text-gray-900 mb-2">
               Subject (optional)
             </label>
             <input
               type="text"
               value={formData.subject}
               onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none transition-colors"
+              className="w-full px-4 py-3 bg-white text-gray-900 border-2 border-gray-300 rounded-xl focus:border-purple-500 focus:outline-none transition-colors"
               placeholder="Brief subject line"
             />
           </div>
 
           {/* Message */}
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
+            <label className="block text-sm font-semibold text-gray-900 mb-2">
               Your Message *
             </label>
             <textarea
@@ -174,7 +174,7 @@ export const FanMessageForm = () => {
               onChange={(e) => setFormData({ ...formData, message: e.target.value })}
               required
               rows={6}
-              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none transition-colors resize-none"
+              className="w-full px-4 py-3 bg-white text-gray-900 border-2 border-gray-300 rounded-xl focus:border-purple-500 focus:outline-none transition-colors resize-none"
               placeholder="Share your message, prayer request, testimony, or inquiry..."
             />
           </div>
