@@ -17,24 +17,13 @@ import EmailCampaignManager from './EmailCampaignManager';
 import MerchandiseManager from './MerchandiseManager';
 import TourManager from './TourManager';
 import type { Video, User as UserType, Analytics } from '../types';
+import { VideoManager } from './VideoManager';
 
 interface AdminPanelProps {
   onClose: () => void;
 }
 
-const INITIAL_VIDEOS = [
-  'Oba Eri (Audio) Visualizer Video', 'Oni Bu Ore (1)', 'Agbara Olorun po - Fi Agabara Han',
-  'Oh Glorious God', 'Ogo Re Po', 'Oba Eri (Video)', "He's ALIVE", 'Igba Iranwo',
-  'Excerpt from Group Worship x 2', 'BTS COMPILATION', 'Intro Video', 'Olorun Agabaye',
-  'Ta lo da bi re (Tope Alabi) Freestyle Audio', 'Generation (Dunsi) Freestyle Audio',
-  'Pius Elizabeth Cover parting', 'Ka se re bere (Video done with Black Dress Gown) with TG',
-  'You are Wonderful/E si mi lo ju emi (Video done with Black Dress Gown) with TG',
-  "Bi o tin sise re ko s'eni to ye (Video done with Black Dress Gown) with TG",
-  'Oni bu ore part II', 'Low light (Olorun Agabaye)', "A'lamo ire Cover", 'Chants (Audio)',
-  'The other part TG merged into it, the God is able to do, and kabiesi olorun ayo',
-  'Breathe Cover With Dunsin', 'Imole Kọ tàn (1) Iri by Ṣọla Allyson',
-  'Imole Kọ tàn (2) Iri by Ṣọla Allyson', 'Aigbagbọ Bila (Audio) #Mimo medley live... Ṣọla Allyson'
-];
+// No fake data - only real videos from database
 
 const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -73,26 +62,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
     const { getVideos } = await import('../lib/supabaseData');
     const videosData = await getVideos();
     
-    if (videosData.length > 0) {
-      setVideos(videosData);
-    } else {
-      // Initialize with default videos if database is empty
-      const initialVideos: Video[] = INITIAL_VIDEOS.map((title, index) => ({
-        id: `video-${index}`,
-        title,
-        status: 'pending',
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-        order_index: index
-      }));
-      
-      // Save to Supabase
-      const { addVideo } = await import('../lib/supabaseData');
-      for (const video of initialVideos) {
-        await addVideo(video);
-      }
-      setVideos(initialVideos);
-    }
+    // Only load real videos from database - no fake data
+    setVideos(videosData);
   };
 
   const loadAnalytics = async () => {
