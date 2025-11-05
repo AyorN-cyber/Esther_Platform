@@ -2,9 +2,34 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  /* Royal Color Scheme - Cyan + Purple + Blue */
+  --color-primary: #06b6d4; /* Cyan */
+  --color-secondary: #3b82f6; /* Blue */
+  --color-royal: #7c3aed; /* Royal Purple */
+  --color-violet: #8b5cf6; /* Violet */
+  
+  /* Text colors for contrast */
+  --text-on-dark: #ffffff;
+  --text-on-light: #1f2937;
+  --text-shadow-dark: 0 2px 4px rgba(0,0,0,0.3);
+  --text-shadow-light: 0 1px 2px rgba(255,255,255,0.3);
+}
+
 @layer base {
   * {
     -webkit-tap-highlight-color: transparent;
+  }
+  
+  /* Ensure text is always readable */
+  .text-readable-dark {
+    color: var(--text-on-dark);
+    text-shadow: var(--text-shadow-dark);
+  }
+  
+  .text-readable-light {
+    color: var(--text-on-light);
+    text-shadow: var(--text-shadow-light);
   }
 
   html {
