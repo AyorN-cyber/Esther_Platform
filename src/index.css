@@ -3,17 +3,26 @@
 @tailwind utilities;
 
 :root {
-  /* Royal Color Scheme - Cyan + Purple + Blue */
-  --color-primary: #06b6d4; /* Cyan */
-  --color-secondary: #3b82f6; /* Blue */
-  --color-royal: #7c3aed; /* Royal Purple */
-  --color-violet: #8b5cf6; /* Violet */
+  /* Gaming Dashboard Color Scheme */
+  --color-primary: #a855f7; /* Neon Purple */
+  --color-secondary: #ec4899; /* Neon Pink */
+  --color-accent: #06b6d4; /* Cyan */
+  --color-royal: #9333ea; /* Bright Royal Purple */
+  
+  /* Dark backgrounds */
+  --bg-dark-900: #0a0a0f;
+  --bg-dark-800: #13131a;
+  --bg-dark-700: #1a1a24;
+  
+  /* Glass effect */
+  --glass-bg: rgba(255, 255, 255, 0.05);
+  --glass-border: rgba(255, 255, 255, 0.1);
   
   /* Text colors for contrast */
   --text-on-dark: #ffffff;
   --text-on-light: #1f2937;
-  --text-shadow-dark: 0 2px 4px rgba(0,0,0,0.3);
-  --text-shadow-light: 0 1px 2px rgba(255,255,255,0.3);
+  --text-shadow-dark: 0 2px 8px rgba(0,0,0,0.5);
+  --text-shadow-glow: 0 0 20px rgba(168, 85, 247, 0.5);
 }
 
 @layer base {
@@ -104,6 +113,50 @@
 }
 
 @layer utilities {
+  /* Gaming Dashboard Glass Cards */
+  .glass-card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  }
+
+  .glass-card-hover {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .glass-card-hover:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(168, 85, 247, 0.5);
+    box-shadow: 0 0 30px rgba(168, 85, 247, 0.3);
+    transform: translateY(-4px);
+  }
+
+  /* Neon Glow Button */
+  .neon-button {
+    background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%);
+    box-shadow: 0 0 20px rgba(168, 85, 247, 0.5);
+    transition: all 0.3s ease;
+  }
+
+  .neon-button:hover {
+    box-shadow: 0 0 30px rgba(168, 85, 247, 0.8), 0 0 60px rgba(168, 85, 247, 0.5);
+    transform: translateY(-2px);
+  }
+
+  /* Gaming Card Border */
+  .gaming-border {
+    position: relative;
+    border: 2px solid transparent;
+    background: linear-gradient(var(--bg-dark-800), var(--bg-dark-800)) padding-box,
+                linear-gradient(135deg, #a855f7, #ec4899) border-box;
+  }
+
   .scrollbar-thin::-webkit-scrollbar {
     width: 6px;
   }
@@ -114,12 +167,12 @@
   }
 
   .scrollbar-thin::-webkit-scrollbar-thumb {
-    background: rgba(139, 92, 246, 0.5);
+    background: rgba(168, 85, 247, 0.5);
     border-radius: 3px;
   }
 
   .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-    background: rgba(139, 92, 246, 0.7);
+    background: rgba(168, 85, 247, 0.7);
   }
 
   .touch-manipulation {
