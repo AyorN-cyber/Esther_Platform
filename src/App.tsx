@@ -206,8 +206,8 @@ const EstherPlatform = () => {
             <div className="hidden md:flex items-center space-x-8">
               {[
                 { id: 'home', label: 'Home' },
+                { id: 'about', label: 'About' },
                 { id: 'videos', label: 'Videos' },
-                { id: 'about', label: 'Contact' },
                 { id: 'contact', label: 'Messages' }
               ].map((item) => (
                 <button
@@ -241,8 +241,8 @@ const EstherPlatform = () => {
             <nav className="container mx-auto px-6 py-6 space-y-4">
               {[
                 { id: 'home', label: 'Home' },
+                { id: 'about', label: 'About' },
                 { id: 'videos', label: 'Videos' },
-                { id: 'about', label: 'Contact' },
                 { id: 'contact', label: 'Messages' }
               ].map((item) => (
                 <button

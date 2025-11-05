@@ -102,45 +102,44 @@ export const ModernChat: React.FC<ModernChatProps> = ({ currentUser }) => {
 
   return (
     <>
-      {/* Floating Button - New Position: Left Side */}
+      {/* Floating Button - Right Side for Better UX */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={`fixed left-6 bottom-6 w-16 h-16 rounded-2xl shadow-2xl flex items-center justify-center transition-all duration-500 z-[100] ${
+        className={`fixed right-6 bottom-6 w-16 h-16 rounded-2xl shadow-2xl flex items-center justify-center transition-all duration-500 z-[100] ${
           isOpen 
             ? 'scale-0 rotate-180' 
-            : 'bg-gradient-to-br from-emerald-500 via-teal-500 to-emerald-600 hover:scale-110 hover:rotate-12 shadow-emerald-500/50'
+            : 'bg-gradient-to-br from-purple-500 via-purple-600 to-purple-700 hover:scale-110 hover:rotate-12 shadow-purple-500/50'
         }`}
       >
         <MessageSquare size={28} className="text-white drop-shadow-lg" />
         {unread > 0 && !isOpen && (
-          <div className="absolute -top-2 -right-2 w-7 h-7 bg-gradient-to-br from-amber-400 to-orange-500 rounded-full flex items-center justify-center text-white text-xs font-black animate-bounce shadow-lg">
+          <div className="absolute -top-2 -right-2 w-7 h-7 bg-gradient-to-br from-pink-400 to-pink-500 rounded-full flex items-center justify-center text-white text-xs font-black animate-bounce shadow-lg">
             {unread > 9 ? '9+' : unread}
           </div>
         )}
-        <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-emerald-400/20 to-teal-400/20 animate-pulse" />
+        <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-purple-400/20 to-purple-600/20 animate-pulse" />
       </button>
 
-      {/* Chat Window - Glassmorphism Design, Left Side */}
+      {/* Chat Window - Right Side, Mobile Responsive */}
       <div
-        className={`fixed left-6 bottom-24 w-[380px] h-[600px] backdrop-blur-2xl bg-gradient-to-br from-gray-900/90 via-emerald-950/80 to-gray-900/90 rounded-3xl shadow-2xl flex flex-col transition-all duration-500 z-[100] border-2 border-emerald-400/30 ${
+        className={`fixed right-4 md:right-6 bottom-20 md:bottom-24 w-[calc(100vw-2rem)] md:w-[420px] h-[calc(100vh-8rem)] md:h-[650px] backdrop-blur-2xl bg-white/95 rounded-3xl shadow-2xl flex flex-col transition-all duration-500 z-[100] border-2 border-purple-200 ${
           isOpen ? 'scale-100 opacity-100' : 'scale-0 opacity-0 pointer-events-none'
         }`}
-        style={{ transformOrigin: 'bottom left' }}
+        style={{ transformOrigin: 'bottom right' }}
       >
-        {/* Header - Glassmorphism */}
-        <div className="relative overflow-hidden rounded-t-3xl">
-          <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/20 via-teal-500/20 to-emerald-500/20 backdrop-blur-xl" />
-          <div className="relative p-5 flex items-center justify-between border-b border-emerald-400/30">
+        {/* Header - Light Purple Theme */}
+        <div className="relative overflow-hidden rounded-t-3xl bg-gradient-to-r from-purple-50 to-purple-100">
+          <div className="relative p-5 flex items-center justify-between border-b border-purple-200">
             <div className="flex items-center gap-3">
               <div className="relative">
-                <div className="w-12 h-12 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-2xl flex items-center justify-center text-gray-900 font-black text-lg shadow-lg">
+                <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center text-white font-black text-lg shadow-lg">
                   {otherUser[0]}
                 </div>
-                <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-400 rounded-full border-2 border-gray-900 animate-pulse" />
+                <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-400 rounded-full border-2 border-white animate-pulse" />
               </div>
               <div>
-                <h3 className="font-black text-white text-lg drop-shadow-lg">{otherUser}</h3>
-                <p className="text-xs text-emerald-300 font-medium flex items-center gap-1">
+                <h3 className="font-black text-gray-900 text-lg">{otherUser}</h3>
+                <p className="text-xs text-purple-600 font-medium flex items-center gap-1">
                   <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
                   Online
                 </p>
@@ -149,21 +148,18 @@ export const ModernChat: React.FC<ModernChatProps> = ({ currentUser }) => {
             <div className="flex gap-2">
               <button 
                 onClick={() => setIsOpen(false)} 
-                className="p-2.5 hover:bg-white/10 rounded-xl transition-all backdrop-blur-sm border border-white/10 hover:border-emerald-400/50"
+                className="p-2.5 hover:bg-purple-100 rounded-xl transition-all border border-purple-200"
               >
-                <X size={20} className="text-white drop-shadow" />
+                <X size={20} className="text-gray-700" />
               </button>
             </div>
           </div>
         </div>
 
-        {/* Messages - Better Contrast */}
+        {/* Messages - Light Theme with Better Contrast */}
         <div
           ref={containerRef}
-          className="flex-1 overflow-y-auto p-5 space-y-4"
-          style={{
-            background: 'linear-gradient(180deg, rgba(16,185,129,0.05) 0%, rgba(20,184,166,0.05) 100%)'
-          }}
+          className="flex-1 overflow-y-auto p-5 space-y-4 bg-gradient-to-b from-purple-50/30 to-white"
         >
           {messages.map((msg) => {
             const isOwn = msg.sender_id === currentUser.id;
@@ -172,19 +168,19 @@ export const ModernChat: React.FC<ModernChatProps> = ({ currentUser }) => {
               <div key={msg.id} className={`flex ${isOwn ? 'justify-end' : 'justify-start'} animate-fadeIn`}>
                 <div className={`max-w-[75%] ${isOwn ? 'items-end' : 'items-start'} flex flex-col gap-1`}>
                   {!isOwn && (
-                    <span className="text-xs font-bold text-emerald-300 px-3 drop-shadow">{msg.sender_name}</span>
+                    <span className="text-xs font-bold text-purple-600 px-3">{msg.sender_name}</span>
                   )}
                   
-                  <div className={`rounded-2xl px-5 py-3 shadow-xl backdrop-blur-sm border-2 ${
+                  <div className={`rounded-2xl px-5 py-3 shadow-md border ${
                     isOwn 
-                      ? 'bg-gradient-to-br from-emerald-500 to-teal-500 text-gray-900 border-emerald-400/50 font-semibold' 
-                      : 'bg-white/95 text-gray-900 border-white/50 font-medium'
+                      ? 'bg-gradient-to-br from-purple-500 to-purple-600 text-white border-purple-400 font-semibold' 
+                      : 'bg-white text-gray-900 border-gray-200 font-medium'
                   }`}>
                     <p className="text-sm leading-relaxed">{msg.message}</p>
                   </div>
                   
-                  <span className={`text-xs font-medium px-3 drop-shadow ${
-                    isOwn ? 'text-emerald-200' : 'text-gray-400'
+                  <span className={`text-xs font-medium px-3 ${
+                    isOwn ? 'text-purple-600' : 'text-gray-500'
                   }`}>
                     {formatTime(msg.timestamp)}
                   </span>
@@ -195,25 +191,25 @@ export const ModernChat: React.FC<ModernChatProps> = ({ currentUser }) => {
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Input Area - Glassmorphism */}
-        <div className="p-4 border-t border-emerald-400/30 bg-gradient-to-r from-gray-900/50 to-emerald-950/50 backdrop-blur-xl rounded-b-3xl">
-          <div className="flex items-center gap-3">
+        {/* Input Area - Light Theme */}
+        <div className="p-4 border-t border-purple-200 bg-gradient-to-r from-purple-50 to-white rounded-b-3xl">
+          <div className="flex items-center gap-2">
             <div className="relative">
               <button 
                 onClick={() => setShowEmoji(!showEmoji)} 
-                className="p-2.5 hover:bg-emerald-500/20 rounded-xl transition-all border border-emerald-400/30"
+                className="p-2.5 hover:bg-purple-100 rounded-xl transition-all border border-purple-200"
               >
-                <Smile size={20} className="text-emerald-300" />
+                <Smile size={20} className="text-purple-600" />
               </button>
               
               {showEmoji && (
-                <div className="absolute bottom-full mb-2 left-0 w-72 bg-gray-900/95 backdrop-blur-xl rounded-2xl border-2 border-emerald-400/30 shadow-2xl p-4">
+                <div className="absolute bottom-full mb-2 left-0 w-72 bg-white rounded-2xl border-2 border-purple-200 shadow-2xl p-4">
                   <div className="grid grid-cols-6 gap-2">
                     {EMOJIS.map(e => (
                       <button 
                         key={e} 
                         onClick={() => { setInput(input + e); setShowEmoji(false); }} 
-                        className="text-2xl hover:bg-emerald-500/20 rounded-xl p-2 transition-all hover:scale-125"
+                        className="text-2xl hover:bg-purple-100 rounded-xl p-2 transition-all hover:scale-125"
                       >
                         {e}
                       </button>
@@ -223,21 +219,28 @@ export const ModernChat: React.FC<ModernChatProps> = ({ currentUser }) => {
               )}
             </div>
 
+            <button 
+              className="p-2.5 hover:bg-purple-100 rounded-xl transition-all border border-purple-200"
+              title="Attach video reference"
+            >
+              <Paperclip size={20} className="text-purple-600" />
+            </button>
+
             <input
               type="text"
               value={input}
               onChange={e => setInput(e.target.value)}
               onKeyPress={e => e.key === 'Enter' && sendMessage()}
               placeholder="Type your message..."
-              className="flex-1 px-4 py-3 bg-white/10 backdrop-blur-sm border-2 border-emerald-400/30 rounded-2xl focus:outline-none focus:border-emerald-400 text-white placeholder-gray-400 font-medium transition-all"
+              className="flex-1 px-4 py-3 bg-white border-2 border-purple-200 rounded-2xl focus:outline-none focus:border-purple-500 text-gray-900 placeholder-gray-400 font-medium transition-all"
             />
 
             <button
               onClick={sendMessage}
               disabled={!input.trim()}
-              className="p-3 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-2xl disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-emerald-500/50 transition-all hover:scale-110 disabled:hover:scale-100"
+              className="p-3 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-purple-500/50 transition-all hover:scale-110 disabled:hover:scale-100"
             >
-              <Send size={20} className="text-gray-900" />
+              <Send size={20} className="text-white" />
             </button>
           </div>
         </div>

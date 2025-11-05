@@ -5,6 +5,7 @@ import { Settings } from './Settings';
 import { addNotification } from './NotificationCenter';
 import { VideoChart } from './VideoChart';
 import ModernPurpleBackground from './ModernPurpleBackground';
+import { WebGLBackground } from './WebGLBackground';
 import { AnalyticsDashboard } from './AnalyticsDashboard';
 import { GoalsTracker } from './GoalsTracker';
 import { FinancialDashboard } from './FinancialDashboard';
@@ -305,6 +306,9 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
   if (!isLoggedIn) {
     return (
       <div className="fixed inset-0 bg-gradient-to-br from-purple-50 via-white to-purple-100 flex items-center justify-center z-50">
+        <div className="fixed inset-0 opacity-30">
+          <WebGLBackground />
+        </div>
         <ModernPurpleBackground />
         <button
           onClick={onClose}
@@ -424,6 +428,9 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
 
   return (
     <div className="fixed inset-0 bg-gradient-to-br from-purple-50 via-white to-purple-100 overflow-y-auto z-50">
+      <div className="fixed inset-0 opacity-30">
+        <WebGLBackground />
+      </div>
       <ModernPurpleBackground />
       {/* Sidebar - Modern Light Design */}
       <div className="fixed left-0 top-0 h-full w-72 bg-white/95 backdrop-blur-xl border-r border-purple-200 hidden lg:flex flex-col z-50 shadow-xl">
