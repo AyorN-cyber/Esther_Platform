@@ -5,9 +5,16 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { X, LogOut, BarChart3, Video as VideoIcon, User, Eye, Settings as SettingsIcon, Key, MessageSquare, Calendar, TrendingUp } from 'lucide-react';
+import { X, LogOut, BarChart3, Video as VideoIcon, User, Eye, Settings as SettingsIcon, Key, MessageSquare, Calendar, TrendingUp, Mail, Music, DollarSign, Target, Package } from 'lucide-react';
 import { ModernChat } from './ModernChat';
 import { VideoManager } from './VideoManager';
+import { Settings } from './Settings';
+import { FanMessagesCenter } from './FanMessagesCenter';
+import { SongRequestsManager } from './SongRequestsManager';
+import { ContentCalendar } from './ContentCalendar';
+import { FinancialDashboard } from './FinancialDashboard';
+import { GoalsTracker } from './GoalsTracker';
+import AdvancedAnalytics from './AdvancedAnalytics';
 import DarkLuxuryBackground from './DarkLuxuryBackground';
 import type { Video, User as UserType, Analytics } from '../types';
 
@@ -20,7 +27,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
   const [currentUser, setCurrentUser] = useState<UserType | null>(null);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'videos' | 'analytics'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'videos' | 'analytics' | 'messages' | 'songs' | 'calendar' | 'financial' | 'goals' | 'settings'>('dashboard');
   const [videos, setVideos] = useState<Video[]>([]);
   const [analytics, setAnalytics] = useState<Analytics>({
     total_visitors: 0,
@@ -188,7 +195,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
       {/* Main Content */}
       <div className="container mx-auto px-6 pt-24 pb-12">
         {/* Tab Navigation */}
-        <div className="flex gap-4 mb-8 overflow-x-auto">
+        <div className="flex gap-4 mb-8 overflow-x-auto pb-2">
           <button
             onClick={() => setActiveTab('dashboard')}
             className={`px-6 py-3 rounded-xl font-semibold transition-all flex items-center gap-2 whitespace-nowrap ${
@@ -209,7 +216,62 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
             }`}
           >
             <VideoIcon size={20} />
-            Videos ({videos.length})
+            Videos
+          </button>
+          <button
+            onClick={() => setActiveTab('messages')}
+            className={`px-6 py-3 rounded-xl font-semibold transition-all flex items-center gap-2 whitespace-nowrap ${
+              activeTab === 'messages'
+                ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-lg shadow-purple-500/50'
+                : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white border border-white/10'
+            }`}
+          >
+            <Mail size={20} />
+            Messages
+          </button>
+          <button
+            onClick={() => setActiveTab('songs')}
+            className={`px-6 py-3 rounded-xl font-semibold transition-all flex items-center gap-2 whitespace-nowrap ${
+              activeTab === 'songs'
+                ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-lg shadow-purple-500/50'
+                : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white border border-white/10'
+            }`}
+          >
+            <Music size={20} />
+            Song Requests
+          </button>
+          <button
+            onClick={() => setActiveTab('calendar')}
+            className={`px-6 py-3 rounded-xl font-semibold transition-all flex items-center gap-2 whitespace-nowrap ${
+              activeTab === 'calendar'
+                ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-lg shadow-purple-500/50'
+                : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white border border-white/10'
+            }`}
+          >
+            <Calendar size={20} />
+            Calendar
+          </button>
+          <button
+            onClick={() => setActiveTab('financial')}
+            className={`px-6 py-3 rounded-xl font-semibold transition-all flex items-center gap-2 whitespace-nowrap ${
+              activeTab === 'financial'
+                ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-lg shadow-purple-500/50'
+                : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white border border-white/10'
+            }`}
+          >
+            <DollarSign size={20} />
+            Financial
+          </button>
+          <button
+            onClick={() => setActiveTab('goals')}
+            className={`px-6 py-3 rounded-xl font-semibold transition-all flex items-center gap-2 whitespace-nowrap ${
+              activeTab === 'goals'
+                ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-lg shadow-purple-500/50'
+                : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white border border-white/10'
+            }`}
+          >
+            <Target size={20} />
+            Goals
           </button>
           <button
             onClick={() => setActiveTab('analytics')}
@@ -221,6 +283,17 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
           >
             <TrendingUp size={20} />
             Analytics
+          </button>
+          <button
+            onClick={() => setActiveTab('settings')}
+            className={`px-6 py-3 rounded-xl font-semibold transition-all flex items-center gap-2 whitespace-nowrap ${
+              activeTab === 'settings'
+                ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-lg shadow-purple-500/50'
+                : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white border border-white/10'
+            }`}
+          >
+            <SettingsIcon size={20} />
+            Settings
           </button>
         </div>
 
@@ -303,38 +376,52 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
           </div>
         )}
 
+        {/* Messages Tab */}
+        {activeTab === 'messages' && (
+          <div>
+            <FanMessagesCenter />
+          </div>
+        )}
+
+        {/* Song Requests Tab */}
+        {activeTab === 'songs' && (
+          <div>
+            <SongRequestsManager />
+          </div>
+        )}
+
+        {/* Calendar Tab */}
+        {activeTab === 'calendar' && (
+          <div>
+            <ContentCalendar />
+          </div>
+        )}
+
+        {/* Financial Tab */}
+        {activeTab === 'financial' && (
+          <div>
+            <FinancialDashboard />
+          </div>
+        )}
+
+        {/* Goals Tab */}
+        {activeTab === 'goals' && (
+          <div>
+            <GoalsTracker />
+          </div>
+        )}
+
         {/* Analytics Tab */}
         {activeTab === 'analytics' && (
-          <div className="bg-gradient-to-br from-purple-500/10 to-blue-500/10 backdrop-blur-xl rounded-2xl p-8 border border-purple-500/20">
-            <h2 className="text-2xl font-black text-white mb-6">Analytics Overview</h2>
-            <div className="grid md:grid-cols-2 gap-6">
-              <div className="bg-white/5 rounded-xl p-6 border border-white/10">
-                <h3 className="text-lg font-bold text-white mb-4">Visitor Stats</h3>
-                <div className="space-y-4">
-                  <div>
-                    <p className="text-gray-400 text-sm mb-1">Total Visitors</p>
-                    <p className="text-3xl font-black text-white">{analytics.total_visitors}</p>
-                  </div>
-                  <div>
-                    <p className="text-gray-400 text-sm mb-1">Admin Logins</p>
-                    <p className="text-3xl font-black text-white">{analytics.artist_logins}</p>
-                  </div>
-                </div>
-              </div>
-              <div className="bg-white/5 rounded-xl p-6 border border-white/10">
-                <h3 className="text-lg font-bold text-white mb-4">Content Stats</h3>
-                <div className="space-y-4">
-                  <div>
-                    <p className="text-gray-400 text-sm mb-1">Total Videos</p>
-                    <p className="text-3xl font-black text-white">{videos.length}</p>
-                  </div>
-                  <div>
-                    <p className="text-gray-400 text-sm mb-1">Published</p>
-                    <p className="text-3xl font-black text-white">{videos.filter(v => v.status === 'completed').length}</p>
-                  </div>
-                </div>
-              </div>
-            </div>
+          <div>
+            <AdvancedAnalytics />
+          </div>
+        )}
+
+        {/* Settings Tab */}
+        {activeTab === 'settings' && (
+          <div>
+            <Settings />
           </div>
         )}
       </div>
