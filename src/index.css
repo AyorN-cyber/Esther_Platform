@@ -3,32 +3,33 @@
 @tailwind utilities;
 
 :root {
-  /* Modern Purple SaaS Theme */
-  --color-primary: #a855f7;
-  --color-secondary: #9333ea;
-  --color-accent: #8b5cf6;
+  /* Dark Luxury Theme - Inspired by Premium Jewelry Store */
+  --color-primary: #d4af37; /* Gold */
+  --color-secondary: #fbbf24; /* Amber */
+  --color-accent: #f59e0b; /* Orange-gold */
   
-  /* Light backgrounds */
-  --bg-primary: #ffffff;
-  --bg-secondary: #fafafa;
-  --bg-tertiary: #f5f5f5;
-  --bg-purple-light: #faf5ff;
-  --bg-purple-lighter: #f3e8ff;
+  /* Dark backgrounds */
+  --bg-primary: #0a0a0a;
+  --bg-secondary: #111111;
+  --bg-tertiary: #1a1a1a;
+  --bg-card: #141414;
   
-  /* Card backgrounds */
-  --card-bg: #ffffff;
-  --card-purple: #f3e8ff;
+  /* Text colors - White with shadows */
+  --text-primary: #ffffff;
+  --text-secondary: #e5e5e5;
+  --text-muted: #a3a3a3;
+  --text-gold: #d4af37;
   
-  /* Text colors */
-  --text-primary: #1f2937;
-  --text-secondary: #6b7280;
-  --text-muted: #9ca3af;
-  --text-purple: #7e22ce;
+  /* Shadows for text */
+  --text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+  --text-shadow-strong: 0 2px 8px rgba(0, 0, 0, 0.9);
+  --glow-gold: 0 0 20px rgba(212, 175, 55, 0.3);
   
-  /* Shadows */
-  --shadow-sm: 0 2px 8px rgba(168, 85, 247, 0.08);
-  --shadow-md: 0 4px 16px rgba(168, 85, 247, 0.12);
-  --shadow-lg: 0 8px 32px rgba(168, 85, 247, 0.15);
+  /* Card shadows */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
+  --shadow-gold: 0 4px 20px rgba(212, 175, 55, 0.2);
 }
 
 @layer base {
@@ -119,113 +120,118 @@
 }
 
 @layer utilities {
-  /* Modern Light Cards */
+  /* Dark Luxury Cards */
   .glass-card {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(168, 85, 247, 0.1);
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    background: rgba(20, 20, 20, 0.8);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(212, 175, 55, 0.1);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
   }
 
   .glass-card-hover {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(168, 85, 247, 0.1);
+    background: rgba(20, 20, 20, 0.8);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(212, 175, 55, 0.1);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .glass-card-hover:hover {
-    background: rgba(255, 255, 255, 1);
-    border: 1px solid rgba(168, 85, 247, 0.2);
-    box-shadow: 0 8px 24px rgba(168, 85, 247, 0.2);
+    background: rgba(26, 26, 26, 0.9);
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    box-shadow: 0 8px 24px rgba(212, 175, 55, 0.2), 0 0 40px rgba(212, 175, 55, 0.1);
     transform: translateY(-4px);
   }
 
-  /* Purple Feature Card */
+  /* Gold Feature Card */
   .purple-card {
-    background: linear-gradient(135deg, #f3e8ff 0%, #faf5ff 100%);
-    border: 1px solid rgba(168, 85, 247, 0.15);
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, rgba(20, 20, 20, 0.9) 100%);
+    border: 1px solid rgba(212, 175, 55, 0.2);
     transition: all 0.3s ease;
   }
 
   .purple-card:hover {
-    background: linear-gradient(135deg, #e9d5ff 0%, #f3e8ff 100%);
-    box-shadow: 0 8px 24px rgba(168, 85, 247, 0.2);
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.15) 0%, rgba(26, 26, 26, 0.9) 100%);
+    box-shadow: 0 8px 24px rgba(212, 175, 55, 0.2);
     transform: translateY(-2px);
   }
 
-  /* Modern Purple Button */
+  /* Luxury Gold Button */
   .neon-button {
-    background: linear-gradient(135deg, #a855f7 0%, #9333ea 100%);
-    box-shadow: 0 4px 16px rgba(168, 85, 247, 0.3);
+    background: linear-gradient(135deg, #d4af37 0%, #fbbf24 100%);
+    box-shadow: 0 4px 16px rgba(212, 175, 55, 0.4);
     transition: all 0.3s ease;
     border: none;
+    color: #0a0a0a;
+    font-weight: 700;
   }
 
   .neon-button:hover {
-    box-shadow: 0 6px 24px rgba(168, 85, 247, 0.4);
+    box-shadow: 0 6px 24px rgba(212, 175, 55, 0.6), 0 0 30px rgba(212, 175, 55, 0.3);
     transform: translateY(-2px);
   }
 
   .neon-button:active {
     transform: translateY(0);
-    box-shadow: 0 2px 12px rgba(168, 85, 247, 0.3);
+    box-shadow: 0 2px 12px rgba(212, 175, 55, 0.4);
   }
 
-  /* Purple Border */
+  /* Gold Border */
   .gaming-border {
     position: relative;
-    border: 2px solid rgba(168, 85, 247, 0.2);
-    background: white;
+    border: 2px solid rgba(212, 175, 55, 0.3);
+    background: #0a0a0a;
   }
 
-  /* Modern Button Styles */
+  /* Luxury Button Styles */
   .btn-gaming-primary {
-    background: linear-gradient(135deg, #a855f7, #9333ea);
+    background: linear-gradient(135deg, #d4af37, #fbbf24);
     border: none;
-    box-shadow: 0 4px 16px rgba(168, 85, 247, 0.3);
+    box-shadow: 0 4px 16px rgba(212, 175, 55, 0.4);
     transition: all 0.3s ease;
+    color: #0a0a0a;
+    font-weight: 700;
   }
 
   .btn-gaming-primary:hover {
-    box-shadow: 0 6px 24px rgba(168, 85, 247, 0.4);
+    box-shadow: 0 6px 24px rgba(212, 175, 55, 0.6), 0 0 30px rgba(212, 175, 55, 0.3);
     transform: translateY(-2px);
   }
 
   .btn-gaming-secondary {
-    background: white;
-    border: 2px solid rgba(168, 85, 247, 0.2);
-    color: #7e22ce;
+    background: rgba(20, 20, 20, 0.8);
+    border: 2px solid rgba(212, 175, 55, 0.3);
+    color: #d4af37;
     transition: all 0.3s ease;
   }
 
   .btn-gaming-secondary:hover {
-    background: #faf5ff;
-    border-color: rgba(168, 85, 247, 0.3);
-    box-shadow: 0 4px 16px rgba(168, 85, 247, 0.15);
+    background: rgba(26, 26, 26, 0.9);
+    border-color: rgba(212, 175, 55, 0.5);
+    box-shadow: 0 4px 16px rgba(212, 175, 55, 0.2);
   }
 
-  /* Modern Input Styles */
+  /* Dark Input Styles */
   .input-gaming {
-    background: white;
-    border: 2px solid rgba(168, 85, 247, 0.15);
+    background: rgba(20, 20, 20, 0.8);
+    border: 2px solid rgba(212, 175, 55, 0.2);
+    color: #ffffff;
     transition: all 0.3s ease;
   }
 
   .input-gaming:focus {
-    background: white;
-    border-color: rgba(168, 85, 247, 0.4);
-    box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.1);
+    background: rgba(26, 26, 26, 0.9);
+    border-color: rgba(212, 175, 55, 0.5);
+    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
     outline: none;
   }
 
-  /* Purple Badge */
+  /* Gold Badge */
   .badge-gaming {
-    background: linear-gradient(135deg, #f3e8ff, #faf5ff);
-    border: 1px solid rgba(168, 85, 247, 0.2);
-    color: #7e22ce;
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.2), rgba(212, 175, 55, 0.1));
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    color: #d4af37;
   }
 
   .scrollbar-thin::-webkit-scrollbar {
@@ -937,3 +943,41 @@ button:active, a:active {
 .stagger-delay-6 { animation-delay: 0.6s; }
 .stagger-delay-7 { animation-delay: 0.7s; }
 .stagger-delay-8 { animation-delay: 0.8s; }
+
+
+/* Floating animation for particles */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px) translateX(0px);
+    opacity: 0.2;
+  }
+  25% {
+    transform: translateY(-20px) translateX(10px);
+    opacity: 0.4;
+  }
+  50% {
+    transform: translateY(-40px) translateX(-10px);
+    opacity: 0.2;
+  }
+  75% {
+    transform: translateY(-20px) translateX(10px);
+    opacity: 0.4;
+  }
+}
+
+.animate-float {
+  animation: float 15s ease-in-out infinite;
+}
+
+/* Text shadow utilities for dark theme */
+.text-shadow {
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.text-shadow-strong {
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.9), 0 4px 16px rgba(0, 0, 0, 0.5);
+}
+
+.text-glow-gold {
+  text-shadow: 0 0 20px rgba(212, 175, 55, 0.5), 0 0 40px rgba(212, 175, 55, 0.3);
+}

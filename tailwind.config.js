@@ -4,28 +4,24 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Modern Purple SaaS Theme
-        brand: {
-          50: '#faf5ff',
-          100: '#f3e8ff',
-          200: '#e9d5ff',
-          300: '#d8b4fe',
-          400: '#c084fc',
-          500: '#a855f7',
-          600: '#9333ea',
-          700: '#7e22ce',
-          800: '#6b21a8',
-          900: '#581c87',
-          primary: '#8b5cf6',
-          secondary: '#a855f7',
+        // Dark Luxury Theme
+        gold: {
+          50: '#fef9e7',
+          100: '#fdf3d0',
+          200: '#fbe7a1',
+          300: '#f9db72',
+          400: '#f7cf43',
+          500: '#d4af37',
+          600: '#b8942e',
+          700: '#9c7925',
+          800: '#805e1c',
+          900: '#644313',
         },
-        light: {
-          50: '#ffffff',
-          100: '#fefefe',
-          200: '#fafafa',
-          300: '#f5f5f5',
-          400: '#f0f0f0',
-          500: '#e5e5e5',
+        luxury: {
+          dark: '#0a0a0a',
+          darker: '#050505',
+          card: '#141414',
+          border: '#1f1f1f',
         },
         // Keep existing colors for compatibility
         royal: {
@@ -54,19 +50,19 @@ export default {
         },
       },
       backgroundImage: {
-        'purple-gradient': 'linear-gradient(135deg, #f3e8ff 0%, #faf5ff 100%)',
-        'purple-radial': 'radial-gradient(circle at 30% 20%, rgba(168, 85, 247, 0.15) 0%, transparent 50%)',
-        'card-gradient': 'linear-gradient(135deg, rgba(168, 85, 247, 0.05) 0%, rgba(168, 85, 247, 0.02) 100%)',
-        'hero-gradient': 'linear-gradient(135deg, #faf5ff 0%, #f3e8ff 50%, #e9d5ff 100%)',
-        'button-gradient': 'linear-gradient(135deg, #a855f7 0%, #9333ea 100%)',
+        'dark-gradient': 'linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%)',
+        'dark-radial': 'radial-gradient(circle at 50% 50%, rgba(212, 175, 55, 0.1) 0%, transparent 70%)',
+        'card-gradient': 'linear-gradient(135deg, rgba(212, 175, 55, 0.05) 0%, transparent 100%)',
+        'hero-gradient': 'linear-gradient(135deg, #0a0a0a 0%, #141414 50%, #1a1a1a 100%)',
+        'gold-gradient': 'linear-gradient(135deg, #d4af37 0%, #fbbf24 100%)',
       },
       boxShadow: {
-        'soft': '0 2px 8px rgba(168, 85, 247, 0.08)',
-        'medium': '0 4px 16px rgba(168, 85, 247, 0.12)',
-        'large': '0 8px 32px rgba(168, 85, 247, 0.15)',
-        'purple': '0 4px 20px rgba(168, 85, 247, 0.25)',
-        'card': '0 2px 12px rgba(0, 0, 0, 0.06)',
-        'hover': '0 8px 24px rgba(168, 85, 247, 0.2)',
+        'soft': '0 2px 8px rgba(0, 0, 0, 0.3)',
+        'medium': '0 4px 16px rgba(0, 0, 0, 0.4)',
+        'large': '0 8px 32px rgba(0, 0, 0, 0.5)',
+        'gold': '0 4px 20px rgba(212, 175, 55, 0.3)',
+        'card': '0 2px 12px rgba(0, 0, 0, 0.4)',
+        'hover': '0 8px 24px rgba(212, 175, 55, 0.2)',
       },
       backdropBlur: {
         xs: '2px',
