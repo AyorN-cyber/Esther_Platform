@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { Music, ThumbsUp, Edit3, Trash2, X, Save, Star, TrendingUp } from 'lucide-react';
-import { useTheme } from '../contexts/ThemeContext';
 import { supabase } from '../lib/supabase';
 
 interface SongRequest {
@@ -24,7 +23,6 @@ interface SongRequest {
 }
 
 export const SongRequestsManager = () => {
-  const { theme } = useTheme();
   const [requests, setRequests] = useState<SongRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [editingRequest, setEditingRequest] = useState<SongRequest | null>(null);
@@ -165,10 +163,10 @@ export const SongRequestsManager = () => {
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h2 className={`text-3xl font-black ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+          <h2 className="text-3xl font-black text-white">
             Song Requests
           </h2>
-          <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+          <p className="text-sm text-purple-300">
             Manage fan song requests
           </p>
         </div>
@@ -181,9 +179,7 @@ export const SongRequestsManager = () => {
               className={`px-4 py-2 rounded-lg text-sm font-medium capitalize transition-all ${
                 filter === f
                   ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white'
-                  : theme === 'dark'
-                  ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                  : 'bg-purple-500/10 text-purple-300 hover:bg-purple-500/20 border border-purple-500/30'
               }`}
             >
               {f}
@@ -194,7 +190,7 @@ export const SongRequestsManager = () => {
 
       {/* Sort Options */}
       <div className="flex gap-2">
-        <span className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+        <span className="text-sm text-purple-300">
           Sort by:
         </span>
         {(['votes', 'recent', 'priority'] as const).map((s) => (
@@ -204,9 +200,7 @@ export const SongRequestsManager = () => {
             className={`px-3 py-1 rounded text-sm font-medium capitalize ${
               sortBy === s
                 ? 'bg-purple-600 text-white'
-                : theme === 'dark'
-                ? 'bg-gray-700 text-gray-300'
-                : 'bg-gray-200 text-gray-700'
+                : 'bg-purple-500/10 text-purple-300 border border-purple-500/30'
             }`}
           >
             {s}
@@ -219,11 +213,7 @@ export const SongRequestsManager = () => {
         {sortedRequests.map((request) => (
           <div
             key={request.id}
-            className={`p-6 rounded-xl border transition-all ${
-              theme === 'dark'
-                ? 'bg-gray-800 border-gray-700'
-                : 'bg-white border-gray-200'
-            }`}
+            className="p-6 rounded-xl border transition-all bg-black/40 backdrop-blur-xl border-purple-500/30 hover:border-purple-500/50"
           >
             <div className="flex items-start justify-between mb-3">
               <div className="flex-1">
@@ -239,24 +229,24 @@ export const SongRequestsManager = () => {
                   )}
                 </div>
 
-                <h3 className={`text-lg font-bold mb-1 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                <h3 className="text-lg font-bold mb-1 text-white">
                   {request.song_title}
                 </h3>
 
                 {request.original_artist && (
-                  <p className={`text-sm mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                  <p className="text-sm mb-2 text-purple-300">
                     by {request.original_artist}
                   </p>
                 )}
 
                 {request.reason && (
-                  <p className={`text-sm mb-3 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                  <p className="text-sm mb-3 text-purple-200">
                     "{request.reason}"
                   </p>
                 )}
 
                 {request.requested_by_name && (
-                  <p className={`text-xs mb-2 ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
+                  <p className="text-xs mb-2 text-purple-400">
                     Requested by {request.requested_by_name}
                   </p>
                 )}
@@ -266,7 +256,7 @@ export const SongRequestsManager = () => {
                     {request.genre_tags.map((tag, i) => (
                       <span
                         key={i}
-                        className={`px-2 py-1 rounded text-xs ${theme === 'dark' ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-700'}`}
+                        className="px-2 py-1 rounded text-xs bg-purple-500/20 text-purple-300 border border-purple-500/30"
                       >
                         {tag}
                       </span>
@@ -296,9 +286,9 @@ export const SongRequestsManager = () => {
               <div className="flex flex-col gap-2">
                 <button
                   onClick={() => setEditingRequest(request)}
-                  className={`p-2 rounded ${theme === 'dark' ? 'hover:bg-gray-700' : 'hover:bg-gray-100'}`}
+                  className="p-2 rounded hover:bg-purple-500/20 transition-colors"
                 >
-                  <Edit3 size={16} className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'} />
+                  <Edit3 size={16} className="text-purple-300" />
                 </button>
                 <button
                   onClick={() => handleDeleteRequest(request.id)}
@@ -357,8 +347,8 @@ export const SongRequestsManager = () => {
 
         {sortedRequests.length === 0 && (
           <div className="col-span-2 text-center py-12">
-            <Music size={48} className={`mx-auto mb-4 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
-            <p className={`text-lg font-medium ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+            <Music size={48} className="mx-auto mb-4 text-purple-500/50" />
+            <p className="text-lg font-medium text-purple-300">
               No song requests yet
             </p>
           </div>
@@ -368,34 +358,30 @@ export const SongRequestsManager = () => {
       {/* Edit Modal */}
       {editingRequest && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className={`w-full max-w-lg ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} rounded-lg shadow-xl max-h-[90vh] overflow-y-auto`}>
+          <div className="w-full max-w-lg bg-black/95 backdrop-blur-xl rounded-lg shadow-xl max-h-[90vh] overflow-y-auto border border-purple-500/30">
             <div className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <h3 className={`text-lg font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                <h3 className="text-lg font-semibold text-white">
                   Edit Song Request
                 </h3>
                 <button
                   onClick={() => setEditingRequest(null)}
-                  className={`p-1 rounded ${theme === 'dark' ? 'hover:bg-gray-700' : 'hover:bg-gray-100'}`}
+                  className="p-1 rounded hover:bg-purple-500/20 transition-colors"
                 >
-                  <X size={20} />
+                  <X size={20} className="text-purple-300" />
                 </button>
               </div>
 
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    <label className="block text-sm font-medium mb-1 text-purple-200">
                       Status
                     </label>
                     <select
                       value={editingRequest.status}
                       onChange={(e) => setEditingRequest({ ...editingRequest, status: e.target.value as any })}
-                      className={`w-full px-3 py-2 border rounded-lg ${
-                        theme === 'dark'
-                          ? 'bg-gray-700 border-gray-600 text-white'
-                          : 'bg-white border-gray-300 text-gray-900'
-                      }`}
+                      className="w-full px-3 py-2 border rounded-lg bg-black/50 border-purple-500/30 text-white focus:outline-none focus:border-purple-500"
                     >
                       <option value="new">New</option>
                       <option value="considering">Considering</option>
@@ -407,7 +393,7 @@ export const SongRequestsManager = () => {
                   </div>
 
                   <div>
-                    <label className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    <label className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-300'}`}>
                       Difficulty
                     </label>
                     <select
@@ -416,7 +402,7 @@ export const SongRequestsManager = () => {
                       className={`w-full px-3 py-2 border rounded-lg ${
                         theme === 'dark'
                           ? 'bg-gray-700 border-gray-600 text-white'
-                          : 'bg-white border-gray-300 text-gray-900'
+                          : 'bg-gray-900/80 border-purple-500/30 text-white'
                       }`}
                     >
                       <option value="">Not set</option>
@@ -428,68 +414,52 @@ export const SongRequestsManager = () => {
                 </div>
 
                 <div>
-                  <label className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                  <label className="block text-sm font-medium mb-1 text-purple-200">
                     Priority Score
                   </label>
                   <input
                     type="number"
                     value={editingRequest.priority_score}
                     onChange={(e) => setEditingRequest({ ...editingRequest, priority_score: Number(e.target.value) })}
-                    className={`w-full px-3 py-2 border rounded-lg ${
-                      theme === 'dark'
-                        ? 'bg-gray-700 border-gray-600 text-white'
-                        : 'bg-white border-gray-300 text-gray-900'
-                    }`}
+                    className="w-full px-3 py-2 border rounded-lg bg-black/50 border-purple-500/30 text-white focus:outline-none focus:border-purple-500"
                   />
                 </div>
 
                 <div>
-                  <label className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                  <label className="block text-sm font-medium mb-1 text-purple-200">
                     Estimated Production Days
                   </label>
                   <input
                     type="number"
                     value={editingRequest.estimated_production_days || ''}
                     onChange={(e) => setEditingRequest({ ...editingRequest, estimated_production_days: Number(e.target.value) || undefined })}
-                    className={`w-full px-3 py-2 border rounded-lg ${
-                      theme === 'dark'
-                        ? 'bg-gray-700 border-gray-600 text-white'
-                        : 'bg-white border-gray-300 text-gray-900'
-                    }`}
+                    className="w-full px-3 py-2 border rounded-lg bg-black/50 border-purple-500/30 text-white focus:outline-none focus:border-purple-500"
                     placeholder="e.g., 7"
                   />
                 </div>
 
                 <div>
-                  <label className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                  <label className="block text-sm font-medium mb-1 text-purple-200">
                     YouTube Reference
                   </label>
                   <input
                     type="url"
                     value={editingRequest.youtube_reference_url || ''}
                     onChange={(e) => setEditingRequest({ ...editingRequest, youtube_reference_url: e.target.value })}
-                    className={`w-full px-3 py-2 border rounded-lg ${
-                      theme === 'dark'
-                        ? 'bg-gray-700 border-gray-600 text-white'
-                        : 'bg-white border-gray-300 text-gray-900'
-                    }`}
+                    className="w-full px-3 py-2 border rounded-lg bg-black/50 border-purple-500/30 text-white focus:outline-none focus:border-purple-500"
                     placeholder="https://youtube.com/..."
                   />
                 </div>
 
                 <div>
-                  <label className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                  <label className="block text-sm font-medium mb-1 text-purple-200">
                     Notes
                   </label>
                   <textarea
                     value={editingRequest.notes || ''}
                     onChange={(e) => setEditingRequest({ ...editingRequest, notes: e.target.value })}
                     rows={4}
-                    className={`w-full px-3 py-2 border rounded-lg resize-none ${
-                      theme === 'dark'
-                        ? 'bg-gray-700 border-gray-600 text-white'
-                        : 'bg-white border-gray-300 text-gray-900'
-                    }`}
+                    className="w-full px-3 py-2 border rounded-lg resize-none bg-black/50 border-purple-500/30 text-white focus:outline-none focus:border-purple-500"
                     placeholder="Add notes about this request..."
                   />
                 </div>
@@ -498,11 +468,7 @@ export const SongRequestsManager = () => {
               <div className="flex gap-3 mt-6">
                 <button
                   onClick={() => setEditingRequest(null)}
-                  className={`flex-1 px-4 py-2 border rounded-lg ${
-                    theme === 'dark'
-                      ? 'border-gray-600 text-gray-300 hover:bg-gray-700'
-                      : 'border-gray-300 text-gray-700 hover:bg-gray-50'
-                  }`}
+                  className="flex-1 px-4 py-2 border rounded-lg border-purple-500/30 text-purple-300 hover:bg-purple-500/20 transition-colors"
                 >
                   Cancel
                 </button>

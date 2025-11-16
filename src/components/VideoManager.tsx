@@ -1,7 +1,6 @@
-import { useState, useEffect } from 'react';
-import { Plus, Edit3, Trash2, GripVertical, Save, X, ExternalLink } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Plus, Edit3, Trash2, GripVertical, Save, X, ExternalLink, Upload, Link as LinkIcon } from 'lucide-react';
 import { getVideos, addVideo, updateVideo, deleteVideo, reorderVideos } from '../lib/supabaseData';
-import { useTheme } from '../contexts/ThemeContext';
 import type { Video } from '../types';
 
 interface VideoManagerProps {
@@ -9,12 +8,15 @@ interface VideoManagerProps {
 }
 
 export const VideoManager: React.FC<VideoManagerProps> = ({ onVideoChange }) => {
-  const { theme } = useTheme();
   const [videos, setVideos] = useState<Video[]>([]);
   const [editingVideo, setEditingVideo] = useState<Video | null>(null);
   const [isAddingNew, setIsAddingNew] = useState(false);
   const [loading, setLoading] = useState(true);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+  const [uploadMethod, setUploadMethod] = useState<'link' | 'file'>('link');
+  const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     loadVideos();
@@ -129,9 +131,9 @@ export const VideoManager: React.FC<VideoManagerProps> = ({ onVideoChange }) => 
   }
 
   return (
-    <div className={`p-6 ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} rounded-lg shadow-lg`}>
+    <div className="p-6 bg-[#2d1b4e]/50 backdrop-blur-xl rounded-2xl border border-purple-500/20">
       <div className="flex items-center justify-between mb-6">
-        <h2 className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+        <h2 className="text-2xl font-bold text-white">
           Video Management
         </h2>
         <button
@@ -151,20 +153,16 @@ export const VideoManager: React.FC<VideoManagerProps> = ({ onVideoChange }) => 
             onDragStart={() => handleDragStart(index)}
             onDragOver={(e) => handleDragOver(e, index)}
             onDragEnd={handleDragEnd}
-            className={`p-4 border rounded-lg cursor-move transition-all ${
-              theme === 'dark' 
-                ? 'bg-gray-700 border-gray-600 hover:bg-gray-600' 
-                : 'bg-gray-50 border-gray-200 hover:bg-gray-100'
-            } ${draggedIndex === index ? 'opacity-50' : ''}`}
+            className={`p-4 border border-purple-500/20 rounded-lg cursor-move transition-all bg-purple-500/10 hover:bg-purple-500/20 ${draggedIndex === index ? 'opacity-50' : ''}`}
           >
             <div className="flex items-center gap-4">
-              <GripVertical size={20} className={theme === 'dark' ? 'text-gray-400' : 'text-gray-500'} />
+              <GripVertical size={20} className="text-purple-300" />
               
               <div className="flex-1">
-                <h3 className={`font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                <h3 className="font-semibold text-white">
                   {video.title || 'Untitled Video'}
                 </h3>
-                <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                <p className="text-sm text-purple-300">
                   Status: {video.status} • Order: {video.order_index}
                 </p>
                 {video.video_link && (
@@ -172,7 +170,7 @@ export const VideoManager: React.FC<VideoManagerProps> = ({ onVideoChange }) => 
                     href={video.video_link}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-sm text-purple-600 hover:text-purple-700"
+                    className="inline-flex items-center gap-1 text-sm text-purple-400 hover:text-purple-300 transition-colors"
                   >
                     <ExternalLink size={14} />
                     View Video
@@ -186,15 +184,15 @@ export const VideoManager: React.FC<VideoManagerProps> = ({ onVideoChange }) => 
                     setEditingVideo(video);
                     setIsAddingNew(false);
                   }}
-                  className={`p-2 rounded ${theme === 'dark' ? 'hover:bg-gray-600' : 'hover:bg-gray-200'} transition-colors`}
+                  className="p-2 rounded hover:bg-purple-500/20 transition-colors"
                 >
-                  <Edit3 size={16} className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'} />
+                  <Edit3 size={16} className="text-purple-300" />
                 </button>
                 <button
                   onClick={() => handleDeleteVideo(video.id)}
-                  className="p-2 rounded hover:bg-red-100 transition-colors"
+                  className="p-2 rounded hover:bg-red-500/20 transition-colors"
                 >
-                  <Trash2 size={16} className="text-red-600" />
+                  <Trash2 size={16} className="text-red-400" />
                 </button>
               </div>
             </div>
@@ -202,18 +200,18 @@ export const VideoManager: React.FC<VideoManagerProps> = ({ onVideoChange }) => 
         ))}
 
         {videos.length === 0 && (
-          <div className={`text-center py-8 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+          <div className="text-center py-8 text-purple-300">
             No videos yet. Click "Add Video" to get started.
           </div>
         )}
       </div>
 
       {editingVideo && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className={`w-full max-w-md ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} rounded-lg shadow-xl`}>
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="w-full max-w-md bg-[#2d1b4e] backdrop-blur-xl rounded-2xl shadow-xl border border-purple-500/30">
             <div className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <h3 className={`text-lg font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                <h3 className="text-lg font-semibold text-white">
                   {isAddingNew ? 'Add New Video' : 'Edit Video'}
                 </h3>
                 <button
@@ -221,79 +219,210 @@ export const VideoManager: React.FC<VideoManagerProps> = ({ onVideoChange }) => 
                     setEditingVideo(null);
                     setIsAddingNew(false);
                   }}
-                  className={`p-1 rounded ${theme === 'dark' ? 'hover:bg-gray-700' : 'hover:bg-gray-100'}`}
+                  className="p-1 rounded hover:bg-purple-500/20 transition-colors"
                 >
-                  <X size={20} className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'} />
+                  <X size={20} className="text-purple-300" />
                 </button>
               </div>
 
               <div className="space-y-4">
                 <div>
-                  <label className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                  <label className="block text-sm font-medium mb-1 text-purple-200">
                     Title *
                   </label>
                   <input
                     type="text"
                     value={editingVideo.title}
                     onChange={(e) => setEditingVideo({ ...editingVideo, title: e.target.value })}
-                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent ${
-                      theme === 'dark' 
-                        ? 'bg-gray-700 border-gray-600 text-white' 
-                        : 'bg-white border-gray-300 text-gray-900'
-                    }`}
+                    className="w-full px-3 py-2 bg-purple-500/10 border border-purple-500/30 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-white placeholder-purple-400"
                     placeholder="Enter video title"
                   />
                 </div>
 
+                {/* Upload Method Selection */}
                 <div>
-                  <label className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                  <label className="block text-sm font-medium mb-2 text-purple-200">
+                    Upload Method
+                  </label>
+                  <div className="flex gap-2 mb-4">
+                    <button
+                      type="button"
+                      onClick={() => setUploadMethod('link')}
+                      className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg transition-all ${
+                        uploadMethod === 'link'
+                          ? 'bg-purple-600 text-white'
+                          : 'bg-purple-500/10 text-purple-300 hover:bg-purple-500/20 border border-purple-500/30'
+                      }`}
+                    >
+                      <LinkIcon size={16} />
+                      Link
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setUploadMethod('file')}
+                      className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg transition-all ${
+                        uploadMethod === 'file'
+                          ? 'bg-purple-600 text-white'
+                          : 'bg-purple-500/10 text-purple-300 hover:bg-purple-500/20 border border-purple-500/30'
+                      }`}
+                    >
+                      <Upload size={16} />
+                      Upload File (Max 200MB)
+                    </button>
+                  </div>
+                </div>
+
+                {/* Video Link Input */}
+                {uploadMethod === 'link' && (
+                <div>
+                  <label className="block text-sm font-medium mb-1 text-purple-200">
                     Video Link
                   </label>
                   <input
                     type="url"
                     value={editingVideo.video_link || ''}
                     onChange={(e) => setEditingVideo({ ...editingVideo, video_link: e.target.value })}
-                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent ${
-                      theme === 'dark' 
-                        ? 'bg-gray-700 border-gray-600 text-white' 
-                        : 'bg-white border-gray-300 text-gray-900'
-                    }`}
-                    placeholder="https://youtube.com/watch?v=..."
+                    className="w-full px-3 py-2 bg-purple-500/10 border border-purple-500/30 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-white placeholder-purple-400"
+                      placeholder="https://youtube.com/watch?v=... or https://cloudinary.com/..."
+                    />
+                  </div>
+                )}
+
+                {/* File Upload */}
+                {uploadMethod === 'file' && (
+                  <div>
+                    <label className="block text-sm font-medium mb-1 text-purple-200">
+                      Video File (Max 200MB)
+                    </label>
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="video/*"
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        if (!file) return;
+
+                        // Check file size (200MB = 200 * 1024 * 1024 bytes)
+                        const maxSize = 200 * 1024 * 1024;
+                        if (file.size > maxSize) {
+                          alert(`File size exceeds 200MB limit. Your file is ${(file.size / (1024 * 1024)).toFixed(2)}MB`);
+                          return;
+                        }
+
+                        setUploading(true);
+                        setUploadProgress(0);
+
+                        try {
+                          // Create a FormData object
+                          const formData = new FormData();
+                          formData.append('file', file);
+
+                          // For now, we'll use a placeholder upload URL
+                          // In production, you'd upload to Cloudinary, Supabase Storage, or your own server
+                          // This is a simplified version - you'll need to implement actual upload logic
+                          
+                          // Simulate upload progress
+                          const progressInterval = setInterval(() => {
+                            setUploadProgress(prev => {
+                              if (prev >= 90) {
+                                clearInterval(progressInterval);
+                                return 90;
+                              }
+                              return prev + 10;
+                            });
+                          }, 200);
+
+                          // TODO: Replace with actual upload endpoint
+                          // Example: const response = await fetch('/api/upload-video', { method: 'POST', body: formData });
+                          // const { videoUrl } = await response.json();
+                          
+                          // For now, create a temporary URL
+                          const videoUrl = URL.createObjectURL(file);
+                          
+                          setTimeout(() => {
+                            clearInterval(progressInterval);
+                            setUploadProgress(100);
+                            setEditingVideo({ ...editingVideo, video_link: videoUrl });
+                            setUploading(false);
+                            alert('Note: This is a temporary URL. In production, upload to Cloudinary or Supabase Storage for permanent storage.');
+                          }, 2000);
+
+                        } catch (error) {
+                          console.error('Upload error:', error);
+                          alert('Failed to upload video. Please try again or use a link instead.');
+                          setUploading(false);
+                          setUploadProgress(0);
+                        }
+                      }}
+                      className="hidden"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={uploading}
+                      className={`w-full px-4 py-3 border-2 border-dashed rounded-lg transition-all ${
+                        uploading
+                          ? 'border-purple-400 bg-purple-500/10'
+                          : 'border-purple-500/30 bg-purple-500/10 hover:border-purple-500 hover:bg-purple-500/20'
+                      }`}
+                    >
+                      {uploading ? (
+                        <div className="space-y-2">
+                          <div className="flex items-center justify-center gap-2 text-purple-300">
+                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-purple-300"></div>
+                            <span>Uploading... {uploadProgress}%</span>
+                          </div>
+                          <div className="w-full h-2 rounded-full overflow-hidden bg-purple-500/20">
+                            <div 
+                              className="h-full bg-gradient-to-r from-purple-600 to-purple-700 transition-all duration-300"
+                              style={{ width: `${uploadProgress}%` }}
                   />
                 </div>
+                        </div>
+                      ) : (
+                        <div className="flex flex-col items-center gap-2">
+                          <Upload size={24} className="text-purple-300" />
+                          <span className="text-purple-200">
+                            Click to select video file
+                          </span>
+                          <span className="text-xs text-purple-400">
+                            Max size: 200MB
+                          </span>
+                        </div>
+                      )}
+                    </button>
+                    {editingVideo.video_link && uploadMethod === 'file' && (
+                      <p className="mt-2 text-xs text-purple-400">
+                        Video URL: {editingVideo.video_link.substring(0, 50)}...
+                      </p>
+                    )}
+                  </div>
+                )}
 
                 <div>
-                  <label className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                  <label className="block text-sm font-medium mb-1 text-purple-200">
                     Thumbnail URL
                   </label>
                   <input
                     type="url"
                     value={editingVideo.thumbnail_url || ''}
                     onChange={(e) => setEditingVideo({ ...editingVideo, thumbnail_url: e.target.value })}
-                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent ${
-                      theme === 'dark' 
-                        ? 'bg-gray-700 border-gray-600 text-white' 
-                        : 'bg-white border-gray-300 text-gray-900'
-                    }`}
+                    className="w-full px-3 py-2 bg-purple-500/10 border border-purple-500/30 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-white placeholder-purple-400"
                     placeholder="https://img.youtube.com/vi/..."
                   />
                 </div>
 
                 <div>
-                  <label className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                  <label className="block text-sm font-medium mb-1 text-purple-200">
                     Status
                   </label>
                   <select
                     value={editingVideo.status}
                     onChange={(e) => setEditingVideo({ ...editingVideo, status: e.target.value as 'pending' | 'completed' })}
-                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent ${
-                      theme === 'dark' 
-                        ? 'bg-gray-700 border-gray-600 text-white' 
-                        : 'bg-white border-gray-300 text-gray-900'
-                    }`}
+                    className="w-full px-3 py-2 bg-purple-500/10 border border-purple-500/30 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-white"
                   >
-                    <option value="pending">Pending</option>
-                    <option value="completed">Completed</option>
+                    <option value="pending" className="bg-[#2d1b4e]">Pending</option>
+                    <option value="completed" className="bg-[#2d1b4e]">Completed</option>
                   </select>
                 </div>
               </div>
@@ -304,11 +433,7 @@ export const VideoManager: React.FC<VideoManagerProps> = ({ onVideoChange }) => 
                     setEditingVideo(null);
                     setIsAddingNew(false);
                   }}
-                  className={`flex-1 px-4 py-2 border rounded-lg transition-colors ${
-                    theme === 'dark'
-                      ? 'border-gray-600 text-gray-300 hover:bg-gray-700'
-                      : 'border-gray-300 text-gray-700 hover:bg-gray-50'
-                  }`}
+                  className="flex-1 px-4 py-2 border border-purple-500/30 rounded-lg transition-colors text-purple-200 hover:bg-purple-500/20"
                 >
                   Cancel
                 </button>

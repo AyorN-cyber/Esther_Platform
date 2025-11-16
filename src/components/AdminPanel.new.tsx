@@ -6,7 +6,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, LogOut, BarChart3, Video as VideoIcon, User, Eye, Settings as SettingsIcon, MessageSquare, Calendar, TrendingUp, Mail, Music, DollarSign, Target } from 'lucide-react';
 import { AdminChatWidget } from './AdminChatWidget';
-import { NotificationSystem } from './NotificationSystem';
 import { VideoManager } from './VideoManager';
 import { DashboardCharts } from './DashboardCharts';
 import { Settings } from './Settings';
@@ -17,7 +16,6 @@ import { FinancialDashboard } from './FinancialDashboard';
 import { GoalsTracker } from './GoalsTracker';
 import AdvancedAnalytics from './AdvancedAnalytics';
 import PurpleWebGLBackground from './PurpleWebGLBackground';
-import { supabase } from '../lib/supabase';
 import type { Video, User as UserType, Analytics } from '../types';
 
 interface AdminPanelProps {
@@ -47,10 +45,6 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
     const savedSession = localStorage.getItem('admin_session');
     if (savedSession) {
       const session = JSON.parse(savedSession);
-      const profilePic = localStorage.getItem('admin_profile_picture');
-      if (profilePic && !session.user.profilePicture) {
-        session.user.profilePicture = profilePic;
-      }
       setCurrentUser(session.user);
       setIsLoggedIn(true);
     }
@@ -136,18 +130,18 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
   // Modern Login Screen
   if (!isLoggedIn) {
     return (
-      <div className="fixed inset-0 bg-black flex items-center justify-center z-50 overflow-y-auto p-4">
+      <div className="fixed inset-0 bg-gradient-to-br from-[#1a0a2e] via-[#2d1b4e] to-[#1a0a2e] flex items-center justify-center z-50">
         <PurpleWebGLBackground />
         
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 p-3 bg-purple-500/10 hover:bg-purple-500/20 rounded-xl transition-all border border-purple-500/20 backdrop-blur-sm z-10"
+          className="absolute top-6 right-6 p-3 bg-purple-500/10 hover:bg-purple-500/20 rounded-xl transition-all border border-purple-500/20 backdrop-blur-sm z-10"
         >
           <X size={24} className="text-white" />
         </button>
 
-        <div className="max-w-lg w-full my-auto relative z-10">
-          <div className="bg-black/90 backdrop-blur-2xl rounded-3xl p-6 md:p-8 border border-purple-500/30 shadow-2xl">
+        <div className="max-w-lg w-full mx-4 relative z-10">
+          <div className="bg-gradient-to-br from-[#2d1b4e]/95 to-[#1a0a2e]/95 backdrop-blur-2xl rounded-3xl p-8 md:p-10 border border-purple-500/30 shadow-2xl">
             <div className="text-center mb-8">
               <div className="w-24 h-24 bg-gradient-to-br from-purple-600 to-purple-700 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg shadow-purple-500/50">
                 <User size={48} className="text-white" />
@@ -158,7 +152,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
               <p className="text-purple-200">Enter your credentials to access the admin dashboard</p>
             </div>
 
-            {/* Login Credentials Card - No password shown */}
+            {/* Login Credentials Card */}
             <div className="mb-6 p-4 bg-purple-500/10 rounded-xl border border-purple-500/30">
               <p className="text-sm font-semibold text-purple-300 mb-3">Login Credentials:</p>
               <div className="space-y-2 text-sm">
@@ -166,14 +160,14 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
                   <span className="text-purple-200">Artist:</span>
                   <div className="text-right">
                     <p className="text-white font-medium">artist@estherreign.com</p>
-                    <p className="text-purple-300 text-xs">Password: ••••••••</p>
+                    <p className="text-purple-300 text-xs">artist2024</p>
                   </div>
                 </div>
                 <div className="flex items-center justify-between p-2 bg-purple-500/5 rounded-lg">
                   <span className="text-purple-200">Editor:</span>
                   <div className="text-right">
                     <p className="text-white font-medium">editor@estherreign.com</p>
-                    <p className="text-purple-300 text-xs">Password: ••••••••</p>
+                    <p className="text-purple-300 text-xs">editor2024</p>
                   </div>
                 </div>
               </div>
@@ -219,24 +213,16 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
 
   // Main Admin Panel
   return (
-    <div className="fixed inset-0 bg-black overflow-hidden z-50 flex flex-col">
+    <div className="fixed inset-0 bg-gradient-to-br from-[#1a0a2e] via-[#2d1b4e] to-[#1a0a2e] overflow-hidden z-50 flex flex-col">
       <PurpleWebGLBackground />
 
       {/* Top Navigation Bar */}
-      <nav className="flex-shrink-0 bg-black/90 backdrop-blur-xl border-b border-purple-500/30 z-40">
+      <nav className="flex-shrink-0 bg-[#2d1b4e]/90 backdrop-blur-xl border-b border-purple-500/20 z-40">
         <div className="container mx-auto px-4 md:px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            {currentUser?.profilePicture ? (
-              <img 
-                src={currentUser.profilePicture} 
-                alt="Profile" 
-                className="w-12 h-12 rounded-xl object-cover shadow-lg shadow-purple-500/30"
-              />
-            ) : (
-              <div className="w-12 h-12 bg-gradient-to-br from-purple-600 to-purple-700 rounded-xl flex items-center justify-center shadow-lg shadow-purple-500/30">
-                <span className="text-white font-black text-xl">{currentUser?.name?.charAt(0)}</span>
-              </div>
-            )}
+            <div className="w-12 h-12 bg-gradient-to-br from-purple-600 to-purple-700 rounded-xl flex items-center justify-center shadow-lg shadow-purple-500/30">
+              <span className="text-white font-black text-xl">{currentUser?.name?.charAt(0)}</span>
+            </div>
             <div>
               <h1 className="text-xl md:text-2xl font-black text-white">Esther Reign Admin</h1>
               <p className="text-sm text-purple-300">{currentUser?.name} • {currentUser?.role === 'artist' ? 'Artist' : 'Editor'}</p>
@@ -244,7 +230,6 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
           </div>
 
           <div className="flex items-center gap-3">
-            <NotificationSystem currentUser={currentUser} />
             <button
               onClick={onClose}
               className="px-4 py-2 bg-purple-500/10 hover:bg-purple-500/20 rounded-xl transition-all text-purple-200 border border-purple-500/20 flex items-center gap-2"

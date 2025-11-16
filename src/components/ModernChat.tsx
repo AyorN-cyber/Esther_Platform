@@ -77,26 +77,52 @@ export const ModernChat: React.FC<ModernChatProps> = ({ currentUser }) => {
     };
   };
 
+  const playNotificationSound = () => {
+    try {
+      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+      
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+      
+      oscillator.frequency.value = 800;
+      oscillator.type = 'sine';
+      
+      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+      
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + 0.3);
+    } catch (error) {
+      console.log('Could not play sound:', error);
+    }
+  };
+
   const sendMessage = async () => {
     if (!input.trim()) return;
-
-    const newMsg: ChatMessage = {
-      id: `${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-      sender_id: currentUser.id,
-      sender_name: currentUser.name,
-      message: input.trim(),
-      timestamp: new Date().toISOString()
-    };
 
     try {
       const { error } = await supabase
         .from('chat_messages')
-        .insert([newMsg]);
+        .insert([{
+          sender_id: currentUser.id,
+          sender_name: currentUser.name,
+          message: input.trim(),
+          timestamp: new Date().toISOString()
+        }]);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase error:', error);
+        alert('Failed to send message. Please check your connection.');
+        return;
+      }
+      
       setInput('');
+      playNotificationSound();
     } catch (error) {
       console.error('Error sending message:', error);
+      alert('Failed to send message. Please try again.');
     }
   };
 

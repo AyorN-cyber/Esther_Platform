@@ -19,6 +19,35 @@ export const Settings: React.FC = () => {
     }
   });
   const [heroDescription, setHeroDescription] = useState('');
+  const [profilePicture, setProfilePicture] = useState<string>('');
+
+  const handleProfilePictureUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      alert('Image size should be less than 5MB');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const base64String = reader.result as string;
+      setProfilePicture(base64String);
+      localStorage.setItem('admin_profile_picture', base64String);
+      
+      // Update current user session
+      const session = localStorage.getItem('admin_session');
+      if (session) {
+        const parsed = JSON.parse(session);
+        parsed.user.profilePicture = base64String;
+        localStorage.setItem('admin_session', JSON.stringify(parsed));
+      }
+      
+      alert('Profile picture updated! Refresh the page to see changes.');
+    };
+    reader.readAsDataURL(file);
+  };
 
   useEffect(() => {
     loadSettings();
@@ -99,6 +128,36 @@ export const Settings: React.FC = () => {
       </div>
 
       <div className="grid gap-6">
+        {/* Profile Picture */}
+        <div className="bg-gradient-to-br from-purple-500/10 to-blue-500/10 backdrop-blur-xl rounded-2xl p-6 border border-purple-500/20">
+          <h3 className="text-xl font-bold mb-4 text-white">Profile Picture</h3>
+          <div className="flex items-center gap-6">
+            <div className="relative">
+              {profilePicture || localStorage.getItem('admin_profile_picture') ? (
+                <img 
+                  src={profilePicture || localStorage.getItem('admin_profile_picture') || ''} 
+                  alt="Profile" 
+                  className="w-24 h-24 rounded-xl object-cover shadow-lg"
+                />
+              ) : (
+                <div className="w-24 h-24 bg-gradient-to-br from-purple-600 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
+                  <span className="text-white font-black text-4xl">E</span>
+                </div>
+              )}
+            </div>
+            <div className="flex-1">
+              <label className="block text-sm font-medium mb-2 text-white">Upload Profile Picture</label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleProfilePictureUpload}
+                className="w-full px-4 py-3 bg-gray-800 border border-purple-500/20 rounded-xl focus:outline-none focus:border-purple-500 text-white file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-gradient-to-r file:from-purple-600 file:to-blue-600 file:text-white hover:file:shadow-lg file:cursor-pointer"
+              />
+              <p className="text-xs text-gray-400 mt-2">Max size: 5MB. Recommended: Square image (500x500px)</p>
+            </div>
+          </div>
+        </div>
+
         {/* Images */}
         <div className="bg-gray-900/50 backdrop-blur-sm border border-purple-500/20 rounded-2xl p-6">
           <h3 className="text-xl font-bold mb-4 text-white">Images</h3>

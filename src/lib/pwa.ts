@@ -19,8 +19,8 @@ export async function registerServiceWorker(): Promise<ServiceWorkerRegistration
     try {
       console.log('[PWA] Registering service worker...');
       
-      const registration = await navigator.serviceWorker.register('/Esther_Platform/sw.js', {
-        scope: '/Esther_Platform/'
+      const registration = await navigator.serviceWorker.register('/sw.js', {
+        scope: '/'
       });
 
       console.log('[PWA] Service worker registered:', registration.scope);
@@ -68,7 +68,7 @@ function showUpdateNotification() {
       bottom: 20px;
       left: 50%;
       transform: translateX(-50%);
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: linear-gradient(135deg, #d4af37 0%, #fbbf24 100%);
       color: white;
       padding: 16px 24px;
       border-radius: 12px;
@@ -85,7 +85,7 @@ function showUpdateNotification() {
       </span>
       <button id="pwa-update-btn" style="
         background: white;
-        color: #667eea;
+        color: #0a0a0a;
         border: none;
         padding: 8px 16px;
         border-radius: 6px;
@@ -205,11 +205,11 @@ function showInstallButton() {
     @keyframes pwa-pulse {
       0%, 100% {
         transform: scale(1);
-        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        box-shadow: 0 4px 12px rgba(212, 175, 55, 0.4);
       }
       50% {
         transform: scale(1.05);
-        box-shadow: 0 6px 16px rgba(102, 126, 234, 0.6);
+        box-shadow: 0 6px 16px rgba(212, 175, 55, 0.6);
       }
     }
     
@@ -217,11 +217,11 @@ function showInstallButton() {
       position: fixed;
       top: 80px;
       left: 20px;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: linear-gradient(135deg, #d4af37 0%, #fbbf24 100%);
       color: white;
       padding: 10px 16px;
       border-radius: 50px;
-      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+      box-shadow: 0 4px 12px rgba(212, 175, 55, 0.4);
       z-index: 9998;
       display: flex;
       align-items: center;
@@ -236,7 +236,7 @@ function showInstallButton() {
     
     #pwa-install-btn:hover {
       transform: scale(1.05);
-      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+      box-shadow: 0 6px 20px rgba(212, 175, 55, 0.6);
     }
     
     #pwa-install-btn:active {
@@ -382,7 +382,7 @@ function showInstallInstructions() {
           margin-top: 20px;
           width: 100%;
           padding: 12px;
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          background: linear-gradient(135deg, #d4af37 0%, #fbbf24 100%);
           color: white;
           border: none;
           border-radius: 8px;

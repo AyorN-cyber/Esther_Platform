@@ -115,10 +115,10 @@ export const FinancialDashboard = () => {
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h2 className={`text-3xl font-black ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+          <h2 className={`text-3xl font-black ${theme === 'dark' ? 'text-white' : 'text-white'}`}>
             Financial Dashboard
           </h2>
-          <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+          <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-400'}`}>
             Track revenue and expenses
           </p>
         </div>
@@ -133,7 +133,7 @@ export const FinancialDashboard = () => {
                   ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white'
                   : theme === 'dark'
                   ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                  : 'bg-gray-200 text-gray-300 hover:bg-gray-300'
               }`}
             >
               {range === '30d' ? '30 Days' : range === '90d' ? '90 Days' : 'Year'}
@@ -144,9 +144,9 @@ export const FinancialDashboard = () => {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className={`p-6 rounded-xl border ${theme === 'dark' ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
+        <div className={`p-6 rounded-xl border ${theme === 'dark' ? 'bg-gray-800 border-gray-700' : 'bg-gray-900/80 border-purple-500/20'}`}>
           <div className="flex items-center justify-between mb-2">
-            <span className={`text-sm font-medium ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+            <span className={`text-sm font-medium ${theme === 'dark' ? 'text-gray-400' : 'text-gray-400'}`}>
               Total Revenue
             </span>
             <TrendingUp size={20} className="text-green-500" />
@@ -156,9 +156,9 @@ export const FinancialDashboard = () => {
           </p>
         </div>
 
-        <div className={`p-6 rounded-xl border ${theme === 'dark' ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
+        <div className={`p-6 rounded-xl border ${theme === 'dark' ? 'bg-gray-800 border-gray-700' : 'bg-gray-900/80 border-purple-500/20'}`}>
           <div className="flex items-center justify-between mb-2">
-            <span className={`text-sm font-medium ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+            <span className={`text-sm font-medium ${theme === 'dark' ? 'text-gray-400' : 'text-gray-400'}`}>
               Total Expenses
             </span>
             <TrendingDown size={20} className="text-red-500" />
@@ -168,9 +168,9 @@ export const FinancialDashboard = () => {
           </p>
         </div>
 
-        <div className={`p-6 rounded-xl border ${theme === 'dark' ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
+        <div className={`p-6 rounded-xl border ${theme === 'dark' ? 'bg-gray-800 border-gray-700' : 'bg-gray-900/80 border-purple-500/20'}`}>
           <div className="flex items-center justify-between mb-2">
-            <span className={`text-sm font-medium ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+            <span className={`text-sm font-medium ${theme === 'dark' ? 'text-gray-400' : 'text-gray-400'}`}>
               Net Profit
             </span>
             <DollarSign size={20} className={summary.netProfit >= 0 ? 'text-green-500' : 'text-red-500'} />
@@ -184,8 +184,8 @@ export const FinancialDashboard = () => {
       {/* Category Breakdown */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Revenue by Category */}
-        <div className={`p-6 rounded-xl border ${theme === 'dark' ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
-          <h3 className={`text-lg font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+        <div className={`p-6 rounded-xl border ${theme === 'dark' ? 'bg-gray-800 border-gray-700' : 'bg-gray-900/80 border-purple-500/20'}`}>
+          <h3 className={`text-lg font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-white'}`}>
             Revenue by Category
           </h3>
           <div className="space-y-3">
@@ -194,10 +194,10 @@ export const FinancialDashboard = () => {
               return (
                 <div key={category}>
                   <div className="flex justify-between mb-1">
-                    <span className={`text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    <span className={`text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-300'}`}>
                       {category}
                     </span>
-                    <span className={`text-sm font-medium ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                    <span className={`text-sm font-medium ${theme === 'dark' ? 'text-gray-400' : 'text-gray-400'}`}>
                       ₦{amount.toLocaleString()} ({percentage.toFixed(1)}%)
                     </span>
                   </div>
@@ -219,8 +219,8 @@ export const FinancialDashboard = () => {
         </div>
 
         {/* Expenses by Category */}
-        <div className={`p-6 rounded-xl border ${theme === 'dark' ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
-          <h3 className={`text-lg font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+        <div className={`p-6 rounded-xl border ${theme === 'dark' ? 'bg-gray-800 border-gray-700' : 'bg-gray-900/80 border-purple-500/20'}`}>
+          <h3 className={`text-lg font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-white'}`}>
             Expenses by Category
           </h3>
           <div className="space-y-3">
@@ -229,10 +229,10 @@ export const FinancialDashboard = () => {
               return (
                 <div key={category}>
                   <div className="flex justify-between mb-1">
-                    <span className={`text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    <span className={`text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-300'}`}>
                       {category}
                     </span>
-                    <span className={`text-sm font-medium ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                    <span className={`text-sm font-medium ${theme === 'dark' ? 'text-gray-400' : 'text-gray-400'}`}>
                       ₦{amount.toLocaleString()} ({percentage.toFixed(1)}%)
                     </span>
                   </div>
@@ -255,9 +255,9 @@ export const FinancialDashboard = () => {
       </div>
 
       {/* Transactions List */}
-      <div className={`p-6 rounded-xl border ${theme === 'dark' ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
+      <div className={`p-6 rounded-xl border ${theme === 'dark' ? 'bg-gray-800 border-gray-700' : 'bg-gray-900/80 border-purple-500/20'}`}>
         <div className="flex justify-between items-center mb-4">
-          <h3 className={`text-lg font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+          <h3 className={`text-lg font-bold ${theme === 'dark' ? 'text-white' : 'text-white'}`}>
             Recent Transactions
           </h3>
           <div className="flex gap-2">
@@ -270,7 +270,7 @@ export const FinancialDashboard = () => {
                     ? 'bg-purple-600 text-white'
                     : theme === 'dark'
                     ? 'bg-gray-700 text-gray-300'
-                    : 'bg-gray-200 text-gray-700'
+                    : 'bg-gray-200 text-gray-300'
                 }`}
               >
                 {f}
@@ -296,7 +296,7 @@ export const FinancialDashboard = () => {
             <div
               key={transaction.id}
               className={`p-4 rounded-lg border flex items-center justify-between ${
-                theme === 'dark' ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'
+                theme === 'dark' ? 'bg-gray-700 border-gray-600' : 'bg-gray-800/50 border-purple-500/20'
               }`}
             >
               <div className="flex-1">
@@ -308,12 +308,12 @@ export const FinancialDashboard = () => {
                   }`}>
                     {transaction.type}
                   </span>
-                  <span className={`text-sm font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                  <span className={`text-sm font-medium ${theme === 'dark' ? 'text-white' : 'text-white'}`}>
                     {transaction.category}
                   </span>
                 </div>
                 {transaction.description && (
-                  <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                  <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-400'}`}>
                     {transaction.description}
                   </p>
                 )}
@@ -348,10 +348,10 @@ export const FinancialDashboard = () => {
       {/* Edit Modal */}
       {editingTransaction && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className={`w-full max-w-md ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} rounded-lg shadow-xl`}>
+          <div className={`w-full max-w-md ${theme === 'dark' ? 'bg-gray-800' : 'bg-gray-900/80'} rounded-lg shadow-xl`}>
             <div className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <h3 className={`text-lg font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                <h3 className={`text-lg font-semibold ${theme === 'dark' ? 'text-white' : 'text-white'}`}>
                   Add {editingTransaction.type === 'revenue' ? 'Revenue' : 'Expense'}
                 </h3>
                 <button
@@ -359,7 +359,7 @@ export const FinancialDashboard = () => {
                     setEditingTransaction(null);
                     setIsAddingNew(false);
                   }}
-                  className={`p-1 rounded ${theme === 'dark' ? 'hover:bg-gray-700' : 'hover:bg-gray-100'}`}
+                  className={`p-1 rounded ${theme === 'dark' ? 'hover:bg-gray-700' : 'hover:bg-gray-800/50'}`}
                 >
                   <X size={20} />
                 </button>
@@ -367,7 +367,7 @@ export const FinancialDashboard = () => {
 
               <div className="space-y-4">
                 <div>
-                  <label className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                  <label className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-300'}`}>
                     Category *
                   </label>
                   <select
@@ -376,7 +376,7 @@ export const FinancialDashboard = () => {
                     className={`w-full px-3 py-2 border rounded-lg ${
                       theme === 'dark'
                         ? 'bg-gray-700 border-gray-600 text-white'
-                        : 'bg-white border-gray-300 text-gray-900'
+                        : 'bg-gray-900/80 border-purple-500/30 text-white'
                     }`}
                   >
                     <option value="">Select category</option>
@@ -387,7 +387,7 @@ export const FinancialDashboard = () => {
                 </div>
 
                 <div>
-                  <label className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                  <label className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-300'}`}>
                     Amount (₦) *
                   </label>
                   <input
@@ -397,14 +397,14 @@ export const FinancialDashboard = () => {
                     className={`w-full px-3 py-2 border rounded-lg ${
                       theme === 'dark'
                         ? 'bg-gray-700 border-gray-600 text-white'
-                        : 'bg-white border-gray-300 text-gray-900'
+                        : 'bg-gray-900/80 border-purple-500/30 text-white'
                     }`}
                     placeholder="0.00"
                   />
                 </div>
 
                 <div>
-                  <label className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                  <label className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-300'}`}>
                     Date
                   </label>
                   <input
@@ -414,13 +414,13 @@ export const FinancialDashboard = () => {
                     className={`w-full px-3 py-2 border rounded-lg ${
                       theme === 'dark'
                         ? 'bg-gray-700 border-gray-600 text-white'
-                        : 'bg-white border-gray-300 text-gray-900'
+                        : 'bg-gray-900/80 border-purple-500/30 text-white'
                     }`}
                   />
                 </div>
 
                 <div>
-                  <label className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                  <label className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-300'}`}>
                     Description
                   </label>
                   <textarea
@@ -430,7 +430,7 @@ export const FinancialDashboard = () => {
                     className={`w-full px-3 py-2 border rounded-lg resize-none ${
                       theme === 'dark'
                         ? 'bg-gray-700 border-gray-600 text-white'
-                        : 'bg-white border-gray-300 text-gray-900'
+                        : 'bg-gray-900/80 border-purple-500/30 text-white'
                     }`}
                     placeholder="Add details..."
                   />
@@ -446,7 +446,7 @@ export const FinancialDashboard = () => {
                   className={`flex-1 px-4 py-2 border rounded-lg ${
                     theme === 'dark'
                       ? 'border-gray-600 text-gray-300 hover:bg-gray-700'
-                      : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+                      : 'border-purple-500/30 text-gray-300 hover:bg-gray-800/50'
                   }`}
                 >
                   Cancel

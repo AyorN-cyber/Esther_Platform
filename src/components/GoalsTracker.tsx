@@ -124,10 +124,10 @@ export const GoalsTracker = () => {
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h2 className={`text-3xl font-black ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+          <h2 className={`text-3xl font-black ${theme === 'dark' ? 'text-white' : 'text-white'}`}>
             Goals Tracker
           </h2>
-          <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+          <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-400'}`}>
             Set and track your ministry goals
           </p>
         </div>
@@ -142,7 +142,7 @@ export const GoalsTracker = () => {
                   ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white'
                   : theme === 'dark'
                   ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                  : 'bg-gray-200 text-gray-300 hover:bg-gray-300'
               }`}
             >
               {f}
@@ -175,7 +175,7 @@ export const GoalsTracker = () => {
               className={`p-6 rounded-xl border transition-all ${
                 theme === 'dark'
                   ? 'bg-gray-800 border-gray-700'
-                  : 'bg-white border-gray-200'
+                  : 'bg-gray-900/80 border-purple-500/20'
               } ${isCompleted ? 'opacity-75' : ''}`}
             >
               <div className="flex items-start justify-between mb-4">
@@ -188,11 +188,11 @@ export const GoalsTracker = () => {
                       {goal.priority}
                     </span>
                   </div>
-                  <h3 className={`text-lg font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                  <h3 className={`text-lg font-bold ${theme === 'dark' ? 'text-white' : 'text-white'}`}>
                     {goal.title}
                   </h3>
                   {goal.notes && (
-                    <p className={`text-sm mt-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                    <p className={`text-sm mt-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-400'}`}>
                       {goal.notes}
                     </p>
                   )}
@@ -207,9 +207,9 @@ export const GoalsTracker = () => {
                           setEditingGoal(goal);
                           setIsAddingNew(false);
                         }}
-                        className={`p-2 rounded ${theme === 'dark' ? 'hover:bg-gray-700' : 'hover:bg-gray-100'}`}
+                        className={`p-2 rounded ${theme === 'dark' ? 'hover:bg-gray-700' : 'hover:bg-gray-800/50'}`}
                       >
-                        <Edit3 size={16} className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'} />
+                        <Edit3 size={16} className={theme === 'dark' ? 'text-gray-400' : 'text-gray-400'} />
                       </button>
                       <button
                         onClick={() => handleDeleteGoal(goal.id)}
@@ -225,10 +225,10 @@ export const GoalsTracker = () => {
               {/* Progress */}
               <div className="mb-4">
                 <div className="flex justify-between items-center mb-2">
-                  <span className={`text-sm font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                  <span className={`text-sm font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-300'}`}>
                     Progress
                   </span>
-                  <span className={`text-sm font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                  <span className={`text-sm font-bold ${theme === 'dark' ? 'text-white' : 'text-white'}`}>
                     {goal.current_value} / {goal.target_value} {goal.unit || ''}
                   </span>
                 </div>
@@ -254,7 +254,7 @@ export const GoalsTracker = () => {
                       className={`w-20 px-2 py-1 text-xs rounded border ${
                         theme === 'dark'
                           ? 'bg-gray-700 border-gray-600 text-white'
-                          : 'bg-white border-gray-300 text-gray-900'
+                          : 'bg-gray-900/80 border-purple-500/30 text-white'
                       }`}
                     />
                   )}
@@ -264,8 +264,8 @@ export const GoalsTracker = () => {
               {/* Timeline */}
               {daysLeft !== null && !isCompleted && (
                 <div className="flex items-center gap-2 text-sm">
-                  <Clock size={16} className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'} />
-                  <span className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>
+                  <Clock size={16} className={theme === 'dark' ? 'text-gray-400' : 'text-gray-400'} />
+                  <span className={theme === 'dark' ? 'text-gray-400' : 'text-gray-400'}>
                     {daysLeft > 0 ? `${daysLeft} days left` : daysLeft === 0 ? 'Due today' : `${Math.abs(daysLeft)} days overdue`}
                   </span>
                 </div>
@@ -276,8 +276,8 @@ export const GoalsTracker = () => {
 
         {filteredGoals.length === 0 && (
           <div className="col-span-2 text-center py-12">
-            <Target size={48} className={`mx-auto mb-4 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
-            <p className={`text-lg font-medium ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+            <Target size={48} className={`mx-auto mb-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-400'}`} />
+            <p className={`text-lg font-medium ${theme === 'dark' ? 'text-gray-400' : 'text-gray-400'}`}>
               No {filter !== 'all' ? filter : ''} goals yet
             </p>
             <p className={`text-sm ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
@@ -290,10 +290,10 @@ export const GoalsTracker = () => {
       {/* Edit Modal */}
       {editingGoal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className={`w-full max-w-lg ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} rounded-lg shadow-xl max-h-[90vh] overflow-y-auto`}>
+          <div className={`w-full max-w-lg ${theme === 'dark' ? 'bg-gray-800' : 'bg-gray-900/80'} rounded-lg shadow-xl max-h-[90vh] overflow-y-auto`}>
             <div className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <h3 className={`text-lg font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                <h3 className={`text-lg font-semibold ${theme === 'dark' ? 'text-white' : 'text-white'}`}>
                   {isAddingNew ? 'Add New Goal' : 'Edit Goal'}
                 </h3>
                 <button
@@ -301,15 +301,15 @@ export const GoalsTracker = () => {
                     setEditingGoal(null);
                     setIsAddingNew(false);
                   }}
-                  className={`p-1 rounded ${theme === 'dark' ? 'hover:bg-gray-700' : 'hover:bg-gray-100'}`}
+                  className={`p-1 rounded ${theme === 'dark' ? 'hover:bg-gray-700' : 'hover:bg-gray-800/50'}`}
                 >
-                  <X size={20} className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'} />
+                  <X size={20} className={theme === 'dark' ? 'text-gray-400' : 'text-gray-400'} />
                 </button>
               </div>
 
               <div className="space-y-4">
                 <div>
-                  <label className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                  <label className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-300'}`}>
                     Goal Title *
                   </label>
                   <input
@@ -319,7 +319,7 @@ export const GoalsTracker = () => {
                     className={`w-full px-3 py-2 border rounded-lg ${
                       theme === 'dark'
                         ? 'bg-gray-700 border-gray-600 text-white'
-                        : 'bg-white border-gray-300 text-gray-900'
+                        : 'bg-gray-900/80 border-purple-500/30 text-white'
                     }`}
                     placeholder="e.g., Upload 10 videos this month"
                   />
@@ -327,7 +327,7 @@ export const GoalsTracker = () => {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    <label className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-300'}`}>
                       Category
                     </label>
                     <select
@@ -336,7 +336,7 @@ export const GoalsTracker = () => {
                       className={`w-full px-3 py-2 border rounded-lg ${
                         theme === 'dark'
                           ? 'bg-gray-700 border-gray-600 text-white'
-                          : 'bg-white border-gray-300 text-gray-900'
+                          : 'bg-gray-900/80 border-purple-500/30 text-white'
                       }`}
                     >
                       <option value="content">Content</option>
@@ -350,7 +350,7 @@ export const GoalsTracker = () => {
                   </div>
 
                   <div>
-                    <label className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    <label className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-300'}`}>
                       Priority
                     </label>
                     <select
@@ -359,7 +359,7 @@ export const GoalsTracker = () => {
                       className={`w-full px-3 py-2 border rounded-lg ${
                         theme === 'dark'
                           ? 'bg-gray-700 border-gray-600 text-white'
-                          : 'bg-white border-gray-300 text-gray-900'
+                          : 'bg-gray-900/80 border-purple-500/30 text-white'
                       }`}
                     >
                       <option value="low">Low</option>
@@ -371,7 +371,7 @@ export const GoalsTracker = () => {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    <label className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-300'}`}>
                       Target Value
                     </label>
                     <input
@@ -381,13 +381,13 @@ export const GoalsTracker = () => {
                       className={`w-full px-3 py-2 border rounded-lg ${
                         theme === 'dark'
                           ? 'bg-gray-700 border-gray-600 text-white'
-                          : 'bg-white border-gray-300 text-gray-900'
+                          : 'bg-gray-900/80 border-purple-500/30 text-white'
                       }`}
                     />
                   </div>
 
                   <div>
-                    <label className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    <label className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-300'}`}>
                       Current Value
                     </label>
                     <input
@@ -397,14 +397,14 @@ export const GoalsTracker = () => {
                       className={`w-full px-3 py-2 border rounded-lg ${
                         theme === 'dark'
                           ? 'bg-gray-700 border-gray-600 text-white'
-                          : 'bg-white border-gray-300 text-gray-900'
+                          : 'bg-gray-900/80 border-purple-500/30 text-white'
                       }`}
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                  <label className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-300'}`}>
                     Unit (optional)
                   </label>
                   <input
@@ -414,14 +414,14 @@ export const GoalsTracker = () => {
                     className={`w-full px-3 py-2 border rounded-lg ${
                       theme === 'dark'
                         ? 'bg-gray-700 border-gray-600 text-white'
-                        : 'bg-white border-gray-300 text-gray-900'
+                        : 'bg-gray-900/80 border-purple-500/30 text-white'
                     }`}
                     placeholder="e.g., videos, subscribers, ₦"
                   />
                 </div>
 
                 <div>
-                  <label className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                  <label className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-300'}`}>
                     Target Date
                   </label>
                   <input
@@ -431,13 +431,13 @@ export const GoalsTracker = () => {
                     className={`w-full px-3 py-2 border rounded-lg ${
                       theme === 'dark'
                         ? 'bg-gray-700 border-gray-600 text-white'
-                        : 'bg-white border-gray-300 text-gray-900'
+                        : 'bg-gray-900/80 border-purple-500/30 text-white'
                     }`}
                   />
                 </div>
 
                 <div>
-                  <label className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                  <label className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-300'}`}>
                     Notes
                   </label>
                   <textarea
@@ -447,7 +447,7 @@ export const GoalsTracker = () => {
                     className={`w-full px-3 py-2 border rounded-lg resize-none ${
                       theme === 'dark'
                         ? 'bg-gray-700 border-gray-600 text-white'
-                        : 'bg-white border-gray-300 text-gray-900'
+                        : 'bg-gray-900/80 border-purple-500/30 text-white'
                     }`}
                     placeholder="Add any notes or strategy..."
                   />
@@ -463,7 +463,7 @@ export const GoalsTracker = () => {
                   className={`flex-1 px-4 py-2 border rounded-lg ${
                     theme === 'dark'
                       ? 'border-gray-600 text-gray-300 hover:bg-gray-700'
-                      : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+                      : 'border-purple-500/30 text-gray-300 hover:bg-gray-800/50'
                   }`}
                 >
                   Cancel

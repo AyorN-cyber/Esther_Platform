@@ -16,6 +16,7 @@ export interface User {
   role: 'artist' | 'editor';
   phone: string;
   name: string;
+  profilePicture?: string;
 }
 
 export interface Analytics {
