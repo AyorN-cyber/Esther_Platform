@@ -973,15 +973,22 @@ button:active, a:active {
   animation: float 15s ease-in-out infinite;
 }
 
-/* Text shadow utilities for dark theme */
+/* Text shadow utilities for dark theme - ULTRA STRONG for visibility */
 .text-shadow {
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 1), 0 4px 16px rgba(0, 0, 0, 0.9);
 }
 
 .text-shadow-strong {
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.9), 0 4px 16px rgba(0, 0, 0, 0.5);
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 1), 0 4px 24px rgba(0, 0, 0, 0.95), 0 8px 48px rgba(0, 0, 0, 0.8);
 }
 
 .text-glow-gold {
   text-shadow: 0 0 20px rgba(212, 175, 55, 0.5), 0 0 40px rgba(212, 175, 55, 0.3);
+}
+
+/* Admin panel text visibility - Force high contrast */
+.admin-text {
+  color: #ffffff !important;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 1), 0 4px 24px rgba(0, 0, 0, 0.95) !important;
+  font-weight: 600 !important;
 }
