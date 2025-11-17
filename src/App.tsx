@@ -239,67 +239,10 @@ const EstherPlatform = () => {
       {/* Hero Section */}
       <section id="home" className="min-h-screen flex items-center relative overflow-hidden pt-16 md:pt-20 bg-black">
         <div className="container mx-auto px-4 md:px-6 lg:px-12 relative z-10">
-          <div className="grid lg:grid-cols-2 gap-8 md:gap-12 items-center">
-            {/* Text Content */}
-            <div className="space-y-6 md:space-y-8 text-center lg:text-left">
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-purple-500/20 rounded-full mx-auto lg:mx-0 border border-purple-500/30">
-                <Sparkles size={16} className="text-purple-300 animate-pulse" />
-                <span className="text-sm text-purple-200 font-medium">Gospel Singer • Worship Leader</span>
-              </div>
-
-              <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black leading-tight">
-                <span className="text-white">
-                  Esther
-                </span>
-                <br />
-                <span className="bg-gradient-to-r from-purple-400 to-purple-600 bg-clip-text text-transparent">
-                  Reign
-                </span>
-              </h1>
-
-              <p className="text-base md:text-lg lg:text-xl text-gray-200 leading-relaxed max-w-xl mx-auto lg:mx-0">
-                {settings?.hero_description || 'Lifting voices in worship through powerful gospel music. Experience the presence of God through every note.'}
-              </p>
-
-              <div className="flex flex-wrap gap-4 justify-center lg:justify-start">
-                <button
-                  onClick={() => scrollToSection('videos')}
-                  className="group bg-gradient-to-r from-purple-600 to-purple-700 px-8 py-4 rounded-full font-semibold flex items-center gap-2 text-white hover:shadow-lg hover:shadow-purple-500/50 transition-all"
-                >
-                  Watch Videos
-                  <ChevronRight size={20} className="group-hover:translate-x-1 transition-transform" />
-                </button>
-                <button
-                  onClick={() => scrollToSection('contact')}
-                  className="px-8 py-4 rounded-full font-semibold border-2 border-purple-500/30 text-purple-300 hover:border-purple-500/50 hover:bg-purple-500/10 transition-all"
-                >
-                  Get In Touch
-                </button>
-              </div>
-
-              {/* Social Links */}
-              <div className="flex gap-4 pt-6 pb-8 md:pb-0 justify-center lg:justify-start">
-                <a href={settings?.social_links?.instagram || "https://instagram.com/estherreign"} target="_blank" rel="noopener noreferrer"
-                  className="w-12 h-12 bg-purple-500/20 border border-purple-500/30 hover:border-purple-500/50 hover:bg-purple-500/30 rounded-full flex items-center justify-center text-purple-300 transition-all">
-                  <Instagram size={20} />
-                </a>
-                <a href={settings?.social_links?.youtube || "https://youtube.com/@estherreign"} target="_blank" rel="noopener noreferrer"
-                  className="w-12 h-12 bg-purple-500/20 border border-purple-500/30 hover:border-purple-500/50 hover:bg-purple-500/30 rounded-full flex items-center justify-center text-purple-300 transition-all">
-                  <Youtube size={20} />
-                </a>
-                <a href={settings?.social_links?.tiktok || "https://tiktok.com/@estherreign"} target="_blank" rel="noopener noreferrer"
-                  className="w-12 h-12 bg-purple-500/20 border border-purple-500/30 hover:border-purple-500/50 hover:bg-purple-500/30 rounded-full flex items-center justify-center text-purple-300 transition-all">
-                  <FaTiktok size={20} />
-                </a>
-                <a href={settings?.social_links?.facebook || "https://facebook.com/estherreign"} target="_blank" rel="noopener noreferrer"
-                  className="w-12 h-12 bg-purple-500/20 border border-purple-500/30 hover:border-purple-500/50 hover:bg-purple-500/30 rounded-full flex items-center justify-center text-purple-300 transition-all">
-                  <FaFacebook size={20} />
-                </a>
-              </div>
-            </div>
-
-            {/* Image - With frame and glow */}
-            <div className="relative max-w-sm mx-auto lg:max-w-none">
+          <div className="grid lg:grid-cols-2 gap-6 md:gap-12 items-center">
+            
+            {/* Image - Mobile First (shows at top on mobile) */}
+            <div className="relative max-w-[280px] sm:max-w-sm mx-auto lg:max-w-none lg:order-2">
               {/* Glow effect around image */}
               <div className="absolute inset-0 bg-gradient-to-br from-purple-500/50 via-purple-600/40 to-purple-700/30 rounded-full lg:rounded-3xl blur-3xl opacity-60 animate-pulse"></div>
               <div className="absolute inset-0 bg-gradient-to-br from-purple-400/40 to-purple-600/30 rounded-full lg:rounded-3xl blur-2xl opacity-50"></div>
@@ -317,6 +260,64 @@ const EstherPlatform = () => {
                   }}
                   loading="eager"
                 />
+              </div>
+            </div>
+
+            {/* Text Content */}
+            <div className="space-y-4 md:space-y-6 text-center lg:text-left lg:order-1">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 md:px-4 md:py-2 bg-purple-500/20 rounded-full mx-auto lg:mx-0 border border-purple-500/30">
+                <Sparkles size={14} className="text-purple-300 animate-pulse" />
+                <span className="text-xs md:text-sm text-purple-200 font-medium">Gospel Singer • Worship Leader</span>
+              </div>
+
+              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-black leading-tight">
+                <span className="text-white">
+                  Esther
+                </span>
+                <br />
+                <span className="bg-gradient-to-r from-purple-400 to-purple-600 bg-clip-text text-transparent">
+                  Reign
+                </span>
+              </h1>
+
+              <p className="text-sm md:text-base lg:text-lg xl:text-xl text-gray-200 leading-relaxed max-w-xl mx-auto lg:mx-0">
+                {settings?.hero_description || 'Lifting voices in worship through powerful gospel music. Experience the presence of God through every note.'}
+              </p>
+
+              <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center lg:justify-start">
+                <button
+                  onClick={() => scrollToSection('videos')}
+                  className="group bg-gradient-to-r from-purple-600 to-purple-700 px-6 py-3 md:px-8 md:py-4 rounded-full font-semibold flex items-center justify-center gap-2 text-white hover:shadow-lg hover:shadow-purple-500/50 transition-all text-sm md:text-base"
+                >
+                  Watch Videos
+                  <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />
+                </button>
+                <button
+                  onClick={() => scrollToSection('contact')}
+                  className="px-6 py-3 md:px-8 md:py-4 rounded-full font-semibold border-2 border-purple-500/30 text-purple-300 hover:border-purple-500/50 hover:bg-purple-500/10 transition-all text-sm md:text-base"
+                >
+                  Get In Touch
+                </button>
+              </div>
+
+              {/* Social Links */}
+              <div className="flex gap-3 md:gap-4 pt-4 md:pt-6 pb-6 md:pb-8 lg:pb-0 justify-center lg:justify-start">
+                <a href={settings?.social_links?.instagram || "https://instagram.com/estherreign"} target="_blank" rel="noopener noreferrer"
+                  className="w-10 h-10 md:w-12 md:h-12 bg-purple-500/20 border border-purple-500/30 hover:border-purple-500/50 hover:bg-purple-500/30 rounded-full flex items-center justify-center text-purple-300 transition-all">
+                  <Instagram size={18} className="md:w-5 md:h-5" />
+                </a>
+                <a href={settings?.social_links?.youtube || "https://youtube.com/@estherreign"} target="_blank" rel="noopener noreferrer"
+                  className="w-10 h-10 md:w-12 md:h-12 bg-purple-500/20 border border-purple-500/30 hover:border-purple-500/50 hover:bg-purple-500/30 rounded-full flex items-center justify-center text-purple-300 transition-all">
+                  <Youtube size={18} className="md:w-5 md:h-5" />
+                </a>
+                <a href={settings?.social_links?.tiktok || "https://tiktok.com/@estherreign"} target="_blank" rel="noopener noreferrer"
+                  className="w-10 h-10 md:w-12 md:h-12 bg-purple-500/20 border border-purple-500/30 hover:border-purple-500/50 hover:bg-purple-500/30 rounded-full flex items-center justify-center text-purple-300 transition-all">
+                  <FaTiktok size={18} className="md:w-5 md:h-5" />
+                </a>
+                <a href={settings?.social_links?.facebook || "https://facebook.com/estherreign"} target="_blank" rel="noopener noreferrer"
+                  className="w-10 h-10 md:w-12 md:h-12 bg-purple-500/20 border border-purple-500/30 hover:border-purple-500/50 hover:bg-purple-500/30 rounded-full flex items-center justify-center text-purple-300 transition-all">
+                  <FaFacebook size={18} className="md:w-5 md:h-5" />
+                </a>
               </div>
             </div>
           </div>

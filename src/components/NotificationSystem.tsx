@@ -47,6 +47,17 @@ export const NotificationSystem: React.FC<NotificationSystemProps> = ({
     }
   }, []);
 
+  // Add notification to panel
+  const addNotification = useCallback((notification: Notification) => {
+    setNotifications(prev => {
+      // Check if notification already exists
+      const exists = prev.some(n => n.id === notification.id);
+      if (exists) return prev;
+      return [notification, ...prev].slice(0, 50); // Keep last 50
+    });
+    setUnreadCount(prev => prev + 1);
+  }, []);
+
   // Show browser notification
   const showBrowserNotification = useCallback((title: string, body: string, icon?: string) => {
     if ('Notification' in window && Notification.permission === 'granted') {
@@ -148,7 +159,7 @@ export const NotificationSystem: React.FC<NotificationSystemProps> = ({
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [currentUser, playNotificationSound, showBrowserNotification]);
+  }, [currentUser, playNotificationSound, showBrowserNotification, addNotification]);
 
   // Listen for chat messages
   useEffect(() => {
@@ -192,12 +203,7 @@ export const NotificationSystem: React.FC<NotificationSystemProps> = ({
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [currentUser, playNotificationSound, showBrowserNotification]);
-
-  const addNotification = (notification: Notification) => {
-    setNotifications(prev => [notification, ...prev].slice(0, 50)); // Keep last 50
-    setUnreadCount(prev => prev + 1);
-  };
+  }, [currentUser, playNotificationSound, showBrowserNotification, addNotification]);
 
   const markAsRead = (id: string) => {
     setNotifications(prev => 

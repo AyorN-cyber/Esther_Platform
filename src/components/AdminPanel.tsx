@@ -17,6 +17,7 @@ import { FinancialDashboard } from './FinancialDashboard';
 import { GoalsTracker } from './GoalsTracker';
 import AdvancedAnalytics from './AdvancedAnalytics';
 import PurpleWebGLBackground from './PurpleWebGLBackground';
+import { PWAInstallButton } from './PWAInstallButton';
 import { supabase } from '../lib/supabase';
 import { useRealtimeNotifications } from '../hooks/useRealtimeNotifications';
 import { notificationService } from '../lib/notificationService';
@@ -240,6 +241,9 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
                 >
                   Sign In
                 </button>
+
+                {/* PWA Install Button */}
+                <PWAInstallButton />
               </form>
             ) : (
               <form onSubmit={handlePasswordReset} className="space-y-5">

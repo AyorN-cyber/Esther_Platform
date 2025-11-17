@@ -172,6 +172,15 @@ export const AdminChatWidget: React.FC<AdminChatWidgetProps> = ({ currentUser, v
     console.log('📤 Sending message:', newMsg);
 
     try {
+      // Optimistically add to local state immediately
+      const optimisticMessage = { ...newMsg, timestamp: new Date().toISOString() };
+      setMessages(prev => [...prev, optimisticMessage as ChatMessage]);
+      
+      // Clear inputs immediately for better UX
+      setInput('');
+      setSelectedVideo('');
+      setShowVideoPicker(false);
+
       const { data, error } = await supabase
         .from('chat_messages')
         .insert([newMsg])
@@ -180,15 +189,12 @@ export const AdminChatWidget: React.FC<AdminChatWidgetProps> = ({ currentUser, v
 
       if (error) {
         console.error('❌ Error sending message:', error);
+        // Remove optimistic message on error
+        setMessages(prev => prev.filter(m => m.id !== newMsg.id));
         throw error;
       }
       
       console.log('✅ Message sent successfully:', data);
-      
-      // Clear inputs
-      setInput('');
-      setSelectedVideo('');
-      setShowVideoPicker(false);
       
     } catch (error) {
       console.error('❌ Failed to send message:', error);
