@@ -207,8 +207,9 @@ export const VideoManager: React.FC<VideoManagerProps> = ({ onVideoChange }) => 
       </div>
 
       {editingVideo && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[200] flex items-center justify-center p-4">
-          <div className="w-full max-w-md bg-[#2d1b4e] backdrop-blur-xl rounded-2xl shadow-xl border border-purple-500/30 max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[200] overflow-y-auto">
+          <div className="min-h-screen flex items-center justify-center p-4">
+            <div className="w-full max-w-md bg-[#2d1b4e] backdrop-blur-xl rounded-2xl shadow-xl border border-purple-500/30 my-8">
             <div className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-white">
@@ -447,6 +448,7 @@ export const VideoManager: React.FC<VideoManagerProps> = ({ onVideoChange }) => 
                 </button>
               </div>
             </div>
+          </div>
           </div>
         </div>
       )}
