@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Mail, Heart, Music, Calendar, MessageCircle, Check, X, Send, Trash2 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
@@ -31,6 +32,18 @@ export const FanMessagesCenter = () => {
   useEffect(() => {
     loadMessages();
   }, []);
+
+  // Scroll modal to top when it opens
+  useEffect(() => {
+    if (selectedMessage) {
+      setTimeout(() => {
+        const modalOverlay = document.querySelector('.message-modal-overlay');
+        if (modalOverlay) {
+          modalOverlay.scrollTop = 0;
+        }
+      }, 10);
+    }
+  }, [selectedMessage]);
 
   const loadMessages = async () => {
     setLoading(true);
@@ -302,8 +315,8 @@ export const FanMessagesCenter = () => {
     </div>
 
       {/* Message Detail Modal */}
-      {selectedMessage && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[200] overflow-y-auto">
+      {selectedMessage && createPortal(
+        <div className="message-modal-overlay fixed inset-0 bg-black/70 backdrop-blur-sm z-[200] overflow-y-auto">
           <div className="min-h-screen flex items-center justify-center p-4">
             <div className="w-full max-w-2xl bg-[#2d1b4e] backdrop-blur-xl rounded-2xl shadow-xl border border-purple-500/30 my-8">
             <div className="p-6">
@@ -385,7 +398,8 @@ export const FanMessagesCenter = () => {
             </div>
           </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );
