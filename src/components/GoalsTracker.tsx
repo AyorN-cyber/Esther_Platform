@@ -141,8 +141,8 @@ export const GoalsTracker = () => {
                 filter === f
                   ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white'
                   : theme === 'dark'
-                  ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                  : 'bg-gray-200 text-gray-300 hover:bg-gray-300'
+                  ? 'bg-gray-800 text-gray-100 hover:bg-gray-700'
+                  : 'bg-black text-gray-100 hover:bg-gray-900'
               }`}
             >
               {f}

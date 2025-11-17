@@ -132,8 +132,8 @@ export const FinancialDashboard = () => {
                 timeRange === range
                   ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white'
                   : theme === 'dark'
-                  ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                  : 'bg-gray-200 text-gray-300 hover:bg-gray-300'
+                  ? 'bg-gray-800 text-gray-100 hover:bg-gray-700'
+                  : 'bg-black text-gray-100 hover:bg-gray-900'
               }`}
             >
               {range === '30d' ? '30 Days' : range === '90d' ? '90 Days' : 'Year'}
@@ -269,8 +269,8 @@ export const FinancialDashboard = () => {
                   filter === f
                     ? 'bg-purple-600 text-white'
                     : theme === 'dark'
-                    ? 'bg-gray-700 text-gray-300'
-                    : 'bg-gray-200 text-gray-300'
+                    ? 'bg-gray-800 text-gray-100'
+                    : 'bg-black text-gray-100'
                 }`}
               >
                 {f}

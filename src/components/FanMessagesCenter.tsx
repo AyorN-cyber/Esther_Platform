@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Mail, Heart, Music, Calendar, MessageCircle, Check, X, Send } from 'lucide-react';
+import { Mail, Heart, Music, Calendar, MessageCircle, Check, X, Send, Trash2 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 interface FanMessage {
@@ -128,6 +128,28 @@ export const FanMessagesCenter = () => {
     return colors[type] || 'gray';
   };
 
+  const handleDeleteMessage = async (id: string) => {
+    if (!confirm('Are you sure you want to delete this message? This action cannot be undone.')) return;
+
+    try {
+      const { error } = await supabase
+        .from('fan_messages')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+      
+      setMessages(messages.filter(m => m.id !== id));
+      if (selectedMessage?.id === id) {
+        setSelectedMessage(null);
+      }
+      alert('Message deleted successfully');
+    } catch (error) {
+      console.error('Error deleting message:', error);
+      alert('Failed to delete message');
+    }
+  };
+
   const filteredMessages = messages.filter(m => {
     if (filter === 'all') return true;
     if (filter === 'unread') return m.status === 'unread';
@@ -239,17 +261,29 @@ export const FanMessagesCenter = () => {
                   </p>
                 </div>
 
-                {message.message_type === 'prayer_request' && !message.is_prayed_for && (
+                <div className="flex flex-col gap-2">
+                  {message.message_type === 'prayer_request' && !message.is_prayed_for && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleMarkAsPrayed(message.id);
+                      }}
+                      className="px-3 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700"
+                    >
+                      Mark Prayed
+                    </button>
+                  )}
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      handleMarkAsPrayed(message.id);
+                      handleDeleteMessage(message.id);
                     }}
-                    className="px-3 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700"
+                    className="p-2 rounded hover:bg-red-500/20 transition-colors"
+                    title="Delete message"
                   >
-                    Mark Prayed
+                    <Trash2 size={18} className="text-red-400 hover:text-red-300" />
                   </button>
-                )}
+                </div>
               </div>
             </div>
           );
@@ -267,8 +301,8 @@ export const FanMessagesCenter = () => {
 
       {/* Message Detail Modal */}
       {selectedMessage && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="w-full max-w-2xl bg-[#2d1b4e] backdrop-blur-xl rounded-2xl shadow-xl border border-purple-500/30 max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-[200] p-4 overflow-y-auto">
+          <div className="w-full max-w-2xl bg-[#2d1b4e] backdrop-blur-xl rounded-2xl shadow-xl border border-purple-500/30 my-8 max-h-[85vh] overflow-y-auto">
             <div className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-white">
