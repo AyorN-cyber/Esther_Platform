@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { X, LogOut, BarChart3, Video as VideoIcon, User, Eye, Settings as SettingsIcon, MessageSquare, Calendar, TrendingUp, Mail, Music, DollarSign, Target } from 'lucide-react';
+import { X, LogOut, BarChart3, Video as VideoIcon, User, Eye, EyeOff, KeyRound, Settings as SettingsIcon, MessageSquare, Calendar, TrendingUp, Mail, Music, DollarSign, Target } from 'lucide-react';
 import { AdminChatWidget } from './AdminChatWidget';
 import { NotificationSystem } from './NotificationSystem';
 import { VideoManager } from './VideoManager';
@@ -29,6 +29,10 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
   const [currentUser, setCurrentUser] = useState<UserType | null>(null);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [resetEmail, setResetEmail] = useState('');
+  const [resetSent, setResetSent] = useState(false);
   const [activeTab, setActiveTab] = useState<'dashboard' | 'videos' | 'analytics' | 'messages' | 'songs' | 'calendar' | 'financial' | 'goals' | 'settings'>('dashboard');
   const [videos, setVideos] = useState<Video[]>([]);
   const [analytics, setAnalytics] = useState<Analytics>({
@@ -127,6 +131,24 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
     }
   };
 
+  const handlePasswordReset = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    const validEmails = ['artist@estherreign.com', 'editor@estherreign.com'];
+    
+    if (validEmails.includes(resetEmail)) {
+      setResetSent(true);
+      setTimeout(() => {
+        alert(`Password reset instructions have been sent to ${resetEmail}.\n\nFor demo purposes:\n- Artist password: artist2024\n- Editor password: editor2024`);
+        setShowForgotPassword(false);
+        setResetSent(false);
+        setResetEmail('');
+      }, 1500);
+    } else {
+      alert('Email not found. Please check your email address.');
+    }
+  };
+
   const handleLogout = () => {
     setIsLoggedIn(false);
     setCurrentUser(null);
@@ -158,59 +180,102 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
               <p className="text-purple-200">Enter your credentials to access the admin dashboard</p>
             </div>
 
-            {/* Login Credentials Card - No password shown */}
-            <div className="mb-6 p-4 bg-purple-500/10 rounded-xl border border-purple-500/30">
-              <p className="text-sm font-semibold text-purple-300 mb-3">Login Credentials:</p>
-              <div className="space-y-2 text-sm">
-                <div className="flex items-center justify-between p-2 bg-purple-500/5 rounded-lg">
-                  <span className="text-purple-200">Artist:</span>
-                  <div className="text-right">
-                    <p className="text-white font-medium">artist@estherreign.com</p>
-                    <p className="text-purple-300 text-xs">Password: ••••••••</p>
+            {!showForgotPassword ? (
+              <form onSubmit={handleLogin} className="space-y-5">
+                <div>
+                  <label className="block text-sm font-semibold text-purple-200 mb-2">Email Address</label>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full px-4 py-3 bg-purple-500/10 border border-purple-500/30 rounded-xl focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all text-white placeholder-purple-400"
+                    placeholder="Enter your email"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-purple-200 mb-2">Password</label>
+                  <div className="relative">
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="w-full px-4 py-3 pr-12 bg-purple-500/10 border border-purple-500/30 rounded-xl focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all text-white placeholder-purple-400"
+                      placeholder="Enter your password"
+                      required
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 p-2 text-purple-300 hover:text-purple-200 transition-colors"
+                    >
+                      {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                    </button>
                   </div>
                 </div>
-                <div className="flex items-center justify-between p-2 bg-purple-500/5 rounded-lg">
-                  <span className="text-purple-200">Editor:</span>
-                  <div className="text-right">
-                    <p className="text-white font-medium">editor@estherreign.com</p>
-                    <p className="text-purple-300 text-xs">Password: ••••••••</p>
-                  </div>
+
+                <div className="flex items-center justify-between text-sm">
+                  <button
+                    type="button"
+                    onClick={() => setShowForgotPassword(true)}
+                    className="text-purple-300 hover:text-purple-200 transition-colors flex items-center gap-1"
+                  >
+                    <KeyRound size={16} />
+                    Forgot Password?
+                  </button>
                 </div>
-              </div>
-            </div>
 
-            <form onSubmit={handleLogin} className="space-y-5">
-              <div>
-                <label className="block text-sm font-semibold text-purple-200 mb-2">Email Address</label>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-4 py-3 bg-purple-500/10 border border-purple-500/30 rounded-xl focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all text-white placeholder-purple-400"
-                  placeholder="Enter your email"
-                  required
-                />
-              </div>
+                <button
+                  type="submit"
+                  className="w-full bg-gradient-to-r from-purple-600 to-purple-700 text-white px-6 py-4 rounded-xl font-bold text-lg transition-all hover:shadow-lg hover:shadow-purple-500/50 hover:scale-[1.02] active:scale-[0.98]"
+                >
+                  Sign In
+                </button>
+              </form>
+            ) : (
+              <form onSubmit={handlePasswordReset} className="space-y-5">
+                <div className="text-center mb-4">
+                  <div className="w-16 h-16 bg-purple-500/20 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <KeyRound size={32} className="text-purple-300" />
+                  </div>
+                  <h3 className="text-xl font-bold text-white mb-2">Reset Password</h3>
+                  <p className="text-sm text-purple-200">Enter your email to receive reset instructions</p>
+                </div>
 
-              <div>
-                <label className="block text-sm font-semibold text-purple-200 mb-2">Password</label>
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-4 py-3 bg-purple-500/10 border border-purple-500/30 rounded-xl focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all text-white placeholder-purple-400"
-                  placeholder="Enter your password"
-                  required
-                />
-              </div>
+                <div>
+                  <label className="block text-sm font-semibold text-purple-200 mb-2">Email Address</label>
+                  <input
+                    type="email"
+                    value={resetEmail}
+                    onChange={(e) => setResetEmail(e.target.value)}
+                    className="w-full px-4 py-3 bg-purple-500/10 border border-purple-500/30 rounded-xl focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all text-white placeholder-purple-400"
+                    placeholder="Enter your email"
+                    required
+                  />
+                </div>
 
-              <button
-                type="submit"
-                className="w-full bg-gradient-to-r from-purple-600 to-purple-700 text-white px-6 py-4 rounded-xl font-bold text-lg transition-all hover:shadow-lg hover:shadow-purple-500/50 hover:scale-[1.02] active:scale-[0.98]"
-              >
-                Sign In
-              </button>
-            </form>
+                <div className="flex gap-3">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowForgotPassword(false);
+                      setResetEmail('');
+                    }}
+                    className="flex-1 bg-purple-500/10 border border-purple-500/30 text-purple-200 px-6 py-3 rounded-xl font-semibold transition-all hover:bg-purple-500/20"
+                  >
+                    Back
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={resetSent}
+                    className="flex-1 bg-gradient-to-r from-purple-600 to-purple-700 text-white px-6 py-3 rounded-xl font-semibold transition-all hover:shadow-lg hover:shadow-purple-500/50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {resetSent ? 'Sending...' : 'Send Reset Link'}
+                  </button>
+                </div>
+              </form>
+            )}
           </div>
         </div>
       </div>
@@ -220,10 +285,13 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
   // Main Admin Panel
   return (
     <div className="fixed inset-0 bg-black overflow-hidden z-50 flex flex-col">
-      <PurpleWebGLBackground />
+      {/* Background - Fixed at z-0 so content stays on top */}
+      <div className="fixed inset-0 z-0">
+        <PurpleWebGLBackground />
+      </div>
 
       {/* Top Navigation Bar */}
-      <nav className="flex-shrink-0 bg-black/90 backdrop-blur-xl border-b border-purple-500/30 z-40">
+      <nav className="flex-shrink-0 bg-black/95 backdrop-blur-xl border-b border-purple-500/30 z-50 relative">
         <div className="container mx-auto px-4 md:px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
             {currentUser?.profilePicture ? (
