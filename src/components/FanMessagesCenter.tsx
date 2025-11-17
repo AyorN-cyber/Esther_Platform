@@ -28,6 +28,7 @@ export const FanMessagesCenter = () => {
   const [selectedMessage, setSelectedMessage] = useState<FanMessage | null>(null);
   const [response, setResponse] = useState('');
   const [filter, setFilter] = useState<'all' | 'unread' | 'prayer_request' | 'testimony'>('all');
+  const [modalScrollPosition, setModalScrollPosition] = useState(0);
 
   useEffect(() => {
     loadMessages();
@@ -213,6 +214,11 @@ export const FanMessagesCenter = () => {
                   : 'bg-purple-500/10 border-purple-500/20'
               }`}
               onClick={() => {
+                // Capture current scroll position
+                const mainContent = document.querySelector('.flex-1.overflow-y-auto');
+                if (mainContent) {
+                  setModalScrollPosition(mainContent.scrollTop);
+                }
                 setSelectedMessage(message);
                 if (message.status === 'unread') {
                   handleMarkAsRead(message.id);
@@ -305,7 +311,7 @@ export const FanMessagesCenter = () => {
       {/* Message Detail Modal */}
       {selectedMessage && createPortal(
         <div className="message-modal-overlay fixed inset-0 bg-black/70 backdrop-blur-sm z-[200] overflow-y-auto">
-          <div className="flex justify-center py-8">
+          <div className="flex justify-center" style={{ paddingTop: `${modalScrollPosition}px`, paddingBottom: '2rem' }}>
             <div className="w-full max-w-2xl bg-[#2d1b4e] backdrop-blur-xl rounded-2xl shadow-xl border border-purple-500/30">
             <div className="p-6">
               <div className="flex items-center justify-between mb-4">

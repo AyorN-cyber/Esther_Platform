@@ -16,6 +16,7 @@ export const VideoManager: React.FC<VideoManagerProps> = ({ onVideoChange }) => 
   const [uploadMethod, setUploadMethod] = useState<'link' | 'file'>('link');
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [modalScrollPosition, setModalScrollPosition] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -181,6 +182,11 @@ export const VideoManager: React.FC<VideoManagerProps> = ({ onVideoChange }) => 
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => {
+                    // Capture current scroll position
+                    const mainContent = document.querySelector('.flex-1.overflow-y-auto');
+                    if (mainContent) {
+                      setModalScrollPosition(mainContent.scrollTop);
+                    }
                     setEditingVideo(video);
                     setIsAddingNew(false);
                   }}
@@ -208,7 +214,7 @@ export const VideoManager: React.FC<VideoManagerProps> = ({ onVideoChange }) => 
 
       {editingVideo && (
         <div className="modal-overlay fixed inset-0 bg-black/70 backdrop-blur-sm z-[200] overflow-y-auto">
-          <div className="flex justify-center py-8">
+          <div className="flex justify-center" style={{ paddingTop: `${modalScrollPosition}px`, paddingBottom: '2rem' }}>
             <div className="w-full max-w-md bg-[#2d1b4e] backdrop-blur-xl rounded-2xl shadow-xl border border-purple-500/30">
             <div className="p-6">
               <div className="flex items-center justify-between mb-4">
