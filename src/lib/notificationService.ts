@@ -69,22 +69,39 @@ class NotificationService {
   // Update PWA badge
   async updateBadge(count: number) {
     this.notificationCount = count;
+    console.log('🔔 Updating badge to:', count);
 
-    // Update badge on PWA icon
+    // Method 1: Try navigator.setAppBadge (Chrome/Edge)
     if ('setAppBadge' in navigator) {
       try {
         if (count > 0) {
           await (navigator as any).setAppBadge(count);
+          console.log('✅ Badge set via navigator.setAppBadge');
         } else {
           await (navigator as any).clearAppBadge();
+          console.log('✅ Badge cleared via navigator.clearAppBadge');
         }
       } catch (error) {
-        console.error('Error updating badge:', error);
+        console.error('❌ navigator.setAppBadge error:', error);
       }
     }
 
-    // Fallback: Update favicon with badge
+    // Method 2: Send message to service worker
+    if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+      try {
+        navigator.serviceWorker.controller.postMessage({
+          type: 'UPDATE_BADGE',
+          count: count
+        });
+        console.log('✅ Badge update message sent to service worker');
+      } catch (error) {
+        console.error('❌ Service worker message error:', error);
+      }
+    }
+
+    // Method 3: Always update favicon as fallback
     this.updateFaviconBadge(count);
+    console.log('✅ Favicon badge updated');
   }
 
   // Update favicon with notification count

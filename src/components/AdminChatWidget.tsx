@@ -70,6 +70,7 @@ export const AdminChatWidget: React.FC<AdminChatWidgetProps> = ({ currentUser, v
   const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
   const [editText, setEditText] = useState('');
   const [unread, setUnread] = useState(0);
+  const [clearRequest, setClearRequest] = useState<any>(null);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -79,6 +80,8 @@ export const AdminChatWidget: React.FC<AdminChatWidgetProps> = ({ currentUser, v
   useEffect(() => {
     loadMessages();
     setupRealtimeSubscription();
+    loadClearRequest();
+    setupClearRequestSubscription();
   }, []);
 
   useEffect(() => {
@@ -153,7 +156,11 @@ export const AdminChatWidget: React.FC<AdminChatWidgetProps> = ({ currentUser, v
     const video = selectedVideo ? videos.find(v => v.id === selectedVideo) : null;
     const messageText = input.trim() || (selectedVideo && video ? `📹 Referencing: ${video.title}` : '📹 Video reference');
 
+    // Generate unique ID for the message
+    const messageId = `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
     const newMsg: any = {
+      id: messageId,
       sender_id: currentUser.id,
       sender_name: currentUser.name,
       message: messageText,
@@ -162,6 +169,8 @@ export const AdminChatWidget: React.FC<AdminChatWidgetProps> = ({ currentUser, v
       edited: false
     };
 
+    console.log('📤 Sending message:', newMsg);
+
     try {
       const { data, error } = await supabase
         .from('chat_messages')
@@ -169,22 +178,21 @@ export const AdminChatWidget: React.FC<AdminChatWidgetProps> = ({ currentUser, v
         .select()
         .single();
 
-      if (error) throw error;
-      
-      // Add to local state immediately
-      if (data) {
-        setMessages(prev => [...prev, data as ChatMessage]);
+      if (error) {
+        console.error('❌ Error sending message:', error);
+        throw error;
       }
       
+      console.log('✅ Message sent successfully:', data);
+      
+      // Clear inputs
       setInput('');
       setSelectedVideo('');
       setShowVideoPicker(false);
       
-      // Play sound for sent message (optional)
-      // playNotificationSound();
     } catch (error) {
-      console.error('Error sending message:', error);
-      alert('Failed to send message. Please try again.');
+      console.error('❌ Failed to send message:', error);
+      alert('Failed to send message: ' + (error as any).message);
     }
   };
 
@@ -258,6 +266,133 @@ export const AdminChatWidget: React.FC<AdminChatWidgetProps> = ({ currentUser, v
     return date.toLocaleDateString();
   };
 
+  // Clear Chat Functions
+  const loadClearRequest = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('chat_clear_requests')
+        .select('*')
+        .eq('status', 'pending')
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .single();
+
+      if (error && error.code !== 'PGRST116') throw error; // PGRST116 = no rows
+      setClearRequest(data || null);
+    } catch (error) {
+      console.error('Error loading clear request:', error);
+    }
+  };
+
+  const setupClearRequestSubscription = () => {
+    const channel = supabase
+      .channel('clear_requests_channel')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'chat_clear_requests'
+        },
+        (payload) => {
+          if (payload.eventType === 'INSERT' || payload.eventType === 'UPDATE') {
+            const request = payload.new as any;
+            if (request.status === 'pending') {
+              setClearRequest(request);
+            } else if (request.status === 'approved') {
+              // Clear messages locally
+              setMessages([]);
+              setClearRequest(null);
+              playNotificationSound();
+            } else {
+              setClearRequest(null);
+            }
+          } else if (payload.eventType === 'DELETE') {
+            setClearRequest(null);
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  };
+
+  const handleRequestClear = async () => {
+    if (!confirm(`Request to clear all messages? ${otherUser} must approve.`)) return;
+
+    try {
+      const { data, error } = await supabase
+        .from('chat_clear_requests')
+        .insert([{
+          requested_by: currentUser.id,
+          requested_by_name: currentUser.name,
+          requested_by_role: currentUser.role,
+          status: 'pending'
+        }])
+        .select()
+        .single();
+
+      if (error) throw error;
+      
+      setClearRequest(data);
+      alert('Clear request sent. Waiting for approval...');
+    } catch (error) {
+      console.error('Error requesting clear:', error);
+      alert('Failed to send clear request');
+    }
+  };
+
+  const handleApproveClear = async () => {
+    if (!clearRequest) return;
+    if (!confirm('Approve clearing all messages? This cannot be undone.')) return;
+
+    try {
+      // Update request status
+      const { error: updateError } = await supabase
+        .from('chat_clear_requests')
+        .update({ status: 'approved' })
+        .eq('id', clearRequest.id);
+
+      if (updateError) throw updateError;
+
+      // Delete all messages
+      const { error: deleteError } = await supabase
+        .from('chat_messages')
+        .delete()
+        .neq('id', '00000000-0000-0000-0000-000000000000'); // Delete all
+
+      if (deleteError) throw deleteError;
+
+      setMessages([]);
+      setClearRequest(null);
+      alert('Chat cleared successfully!');
+    } catch (error) {
+      console.error('Error approving clear:', error);
+      alert('Failed to clear chat');
+    }
+  };
+
+  const handleRejectClear = async () => {
+    if (!clearRequest) return;
+
+    try {
+      const { error } = await supabase
+        .from('chat_clear_requests')
+        .update({ status: 'rejected' })
+        .eq('id', clearRequest.id);
+
+      if (error) throw error;
+
+      setClearRequest(null);
+      alert('Clear request rejected');
+    } catch (error) {
+      console.error('Error rejecting clear:', error);
+      alert('Failed to reject request');
+    }
+  };
+
   // Floating Button
   if (!isOpen) {
     return (
@@ -289,13 +424,61 @@ export const AdminChatWidget: React.FC<AdminChatWidgetProps> = ({ currentUser, v
             <p className="text-xs text-purple-300">Online</p>
           </div>
         </div>
-        <button
-          onClick={() => setIsOpen(false)}
-          className="w-8 h-8 flex items-center justify-center text-white hover:bg-purple-500/20 rounded-full transition-colors"
-        >
-          <X size={20} />
-        </button>
+        <div className="flex items-center gap-2">
+          {!clearRequest && (
+            <button
+              onClick={handleRequestClear}
+              className="px-3 py-1 text-xs bg-red-500/20 hover:bg-red-500/30 text-red-300 rounded-lg transition-colors"
+              title="Request to clear all messages"
+            >
+              Clear Chat
+            </button>
+          )}
+          <button
+            onClick={() => setIsOpen(false)}
+            className="w-8 h-8 flex items-center justify-center text-white hover:bg-purple-500/20 rounded-full transition-colors"
+          >
+            <X size={20} />
+          </button>
+        </div>
       </div>
+
+      {/* Clear Request Approval Banner */}
+      {clearRequest && clearRequest.requested_by !== currentUser.id && (
+        <div className="flex-shrink-0 p-4 bg-yellow-500/20 border-b border-yellow-500/50">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className="text-white font-semibold text-sm">Clear Chat Request</p>
+              <p className="text-yellow-200 text-xs mt-1">
+                {clearRequest.requested_by_name} wants to clear all messages
+              </p>
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={handleApproveClear}
+                className="px-3 py-1 bg-green-600 hover:bg-green-700 text-white text-xs rounded-lg transition-colors"
+              >
+                Approve
+              </button>
+              <button
+                onClick={handleRejectClear}
+                className="px-3 py-1 bg-red-600 hover:bg-red-700 text-white text-xs rounded-lg transition-colors"
+              >
+                Reject
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Pending Request Indicator */}
+      {clearRequest && clearRequest.requested_by === currentUser.id && (
+        <div className="flex-shrink-0 p-3 bg-blue-500/20 border-b border-blue-500/50">
+          <p className="text-blue-200 text-xs text-center">
+            ⏳ Waiting for {otherUser} to approve clear request...
+          </p>
+        </div>
+      )}
 
       {/* Messages Area - Scrollable */}
       <div className="flex-1 overflow-y-auto p-4 space-y-3 min-h-0">

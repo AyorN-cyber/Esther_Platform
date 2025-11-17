@@ -378,6 +378,25 @@ self.addEventListener('message', (event) => {
         .then((cache) => cache.addAll(event.data.urls))
     );
   }
+  
+  // Handle badge updates
+  if (event.data && event.data.type === 'UPDATE_BADGE') {
+    const count = event.data.count || 0;
+    console.log('[SW] Updating badge to:', count);
+    
+    // Update badge using Badge API
+    if (self.registration && 'setAppBadge' in self.registration) {
+      if (count > 0) {
+        self.registration.setAppBadge(count).catch(err => {
+          console.error('[SW] Badge update failed:', err);
+        });
+      } else {
+        self.registration.clearAppBadge().catch(err => {
+          console.error('[SW] Badge clear failed:', err);
+        });
+      }
+    }
+  }
 });
 
 console.log('[SW] Service worker script loaded', CACHE_VERSION);
