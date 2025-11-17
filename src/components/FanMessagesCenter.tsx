@@ -304,8 +304,9 @@ export const FanMessagesCenter = () => {
 
       {/* Message Detail Modal */}
       {selectedMessage && createPortal(
-        <div className="message-modal-overlay fixed inset-0 bg-black/70 backdrop-blur-sm z-[200] flex items-start justify-center overflow-y-auto">
-          <div className="w-full max-w-2xl bg-[#2d1b4e] backdrop-blur-xl rounded-2xl shadow-xl border border-purple-500/30 my-8">
+        <div className="message-modal-overlay fixed inset-0 bg-black/70 backdrop-blur-sm z-[200] overflow-y-auto">
+          <div className="flex justify-center py-8">
+            <div className="w-full max-w-2xl bg-[#2d1b4e] backdrop-blur-xl rounded-2xl shadow-xl border border-purple-500/30">
             <div className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-white">
@@ -383,6 +384,7 @@ export const FanMessagesCenter = () => {
                 </button>
               </div>
             </div>
+          </div>
           </div>
         </div>,
         document.body
