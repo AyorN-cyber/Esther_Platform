@@ -301,8 +301,8 @@ export const FanMessagesCenter = () => {
 
       {/* Message Detail Modal */}
       {selectedMessage && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-[200] p-4 overflow-y-auto">
-          <div className="w-full max-w-2xl bg-[#2d1b4e] backdrop-blur-xl rounded-2xl shadow-xl border border-purple-500/30 my-8 max-h-[85vh] overflow-y-auto">
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[200] flex items-center justify-center p-4">
+          <div className="w-full max-w-2xl bg-[#2d1b4e] backdrop-blur-xl rounded-2xl shadow-xl border border-purple-500/30 max-h-[90vh] overflow-y-auto">
             <div className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-white">
