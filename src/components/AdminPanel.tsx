@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { X, LogOut, BarChart3, Video as VideoIcon, User, Eye, EyeOff, KeyRound, Settings as SettingsIcon, MessageSquare, Calendar, TrendingUp, Mail, Music, DollarSign, Target } from 'lucide-react';
+import { X, LogOut, BarChart3, Video as VideoIcon, User, Eye, EyeOff, KeyRound, Settings as SettingsIcon, MessageSquare, Calendar, TrendingUp, Mail, Music, DollarSign, Target, Bell } from 'lucide-react';
 import { AdminChatWidget } from './AdminChatWidget';
 import { NotificationSystem } from './NotificationSystem';
 import { VideoManager } from './VideoManager';
@@ -18,6 +18,8 @@ import { GoalsTracker } from './GoalsTracker';
 import AdvancedAnalytics from './AdvancedAnalytics';
 import PurpleWebGLBackground from './PurpleWebGLBackground';
 import { supabase } from '../lib/supabase';
+import { useRealtimeNotifications } from '../hooks/useRealtimeNotifications';
+import { notificationService } from '../lib/notificationService';
 import type { Video, User as UserType, Analytics } from '../types';
 
 interface AdminPanelProps {
@@ -46,6 +48,9 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
     loginFrequency: [] as Array<{ date: string; value: number }>,
     siteVisits: [] as Array<{ date: string; value: number }>
   });
+
+  // Real-time notifications
+  const { unreadCount, updateUnreadCount } = useRealtimeNotifications(currentUser);
 
   useEffect(() => {
     const savedSession = localStorage.getItem('admin_session');
@@ -121,6 +126,9 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
       setCurrentUser(user);
       setIsLoggedIn(true);
       localStorage.setItem('admin_session', JSON.stringify({ user }));
+      
+      // Notify other users about login
+      notificationService.notifyUserLogin(user.name, user.role);
       
       const { getSettings, updateSettings } = await import('../lib/supabaseData');
       const settings = await getSettings();
@@ -314,7 +322,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
           </div>
 
           <div className="flex items-center gap-3">
-            <NotificationSystem currentUser={currentUser} />
+            <NotificationSystem currentUser={currentUser} externalUnreadCount={unreadCount} />
             <button
               onClick={onClose}
               className="px-4 py-2 bg-purple-500/10 hover:bg-purple-500/20 rounded-xl transition-all text-purple-200 border border-purple-500/20 flex items-center gap-2"

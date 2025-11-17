@@ -1,0 +1,2 @@
+// This is a placeholder - you'll need to add an actual notification sound file
+// For now, I'll create a system that uses the Web Audio API to generate a sound

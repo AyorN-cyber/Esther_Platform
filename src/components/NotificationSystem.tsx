@@ -21,15 +21,24 @@ interface Notification {
 interface NotificationSystemProps {
   currentUser: UserType | null;
   onNotificationClick?: (notification: Notification) => void;
+  externalUnreadCount?: number;
 }
 
 export const NotificationSystem: React.FC<NotificationSystemProps> = ({ 
   currentUser, 
-  onNotificationClick 
+  onNotificationClick,
+  externalUnreadCount = 0
 }) => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
+
+  // Use external unread count if provided
+  useEffect(() => {
+    if (externalUnreadCount > 0) {
+      setUnreadCount(externalUnreadCount);
+    }
+  }, [externalUnreadCount]);
 
   // Request notification permission
   useEffect(() => {
