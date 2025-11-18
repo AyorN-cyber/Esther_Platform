@@ -305,7 +305,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
       </div>
 
       {/* Top Navigation Bar */}
-      <nav className="flex-shrink-0 bg-black/95 backdrop-blur-xl border-b border-purple-500/30 relative z-[100]">
+      <nav className="flex-shrink-0 bg-black/95 backdrop-blur-xl border-b border-purple-500/30 relative z-[90]" style={{ zIndex: 90, position: 'relative' }}>
         <div className="container mx-auto px-4 md:px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
             {currentUser?.profilePicture ? (
@@ -348,7 +348,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
       {/* Main Content Area - Higher z-index to stay above background */}
       <div className="flex-1 overflow-hidden flex relative z-[50]">
         {/* Sidebar Navigation */}
-        <aside className="hidden lg:block w-64 bg-[#2d1b4e]/90 backdrop-blur-xl border-r border-purple-500/20 overflow-y-auto relative z-[50]">
+        <aside className="hidden lg:block w-64 bg-[#2d1b4e]/90 backdrop-blur-xl border-r border-purple-500/20 overflow-y-auto relative z-[40]">
           <div className="p-4 space-y-2">
             {[
               { id: 'dashboard', label: 'Dashboard', icon: BarChart3 },
@@ -381,8 +381,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
         </aside>
 
         {/* Content Area */}
-        <main className="flex-1 overflow-y-auto relative z-[50]">
-          <div className="container mx-auto px-4 md:px-6 py-6 relative z-[50]">
+        <main className="flex-1 overflow-y-auto relative z-[30]">
+          <div className="container mx-auto px-4 md:px-6 py-6 relative z-[30]">
             {/* Mobile Tab Navigation */}
             <div className="lg:hidden flex gap-2 mb-6 overflow-x-auto pb-2 scrollbar-hide">
               {[
