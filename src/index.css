@@ -148,18 +148,6 @@
     font-size: 16px;
   }
 
-  /* Mobile responsive button sizing */
-  @media (max-width: 640px) {
-    button {
-      min-height: 44px;
-      padding: 0.625rem 1rem;
-    }
-    
-    input, textarea, select {
-      min-height: 44px;
-      padding: 0.625rem 0.875rem;
-    }
-  }
 }
 
 @layer utilities {
@@ -1033,28 +1021,3 @@ button:active, a:active {
 }
 
 
-/* ===== MOBILE RESPONSIVE FIXES - MINIMAL APPROACH ===== */
-
-/* Mobile-only: Prevent horizontal overflow ONLY */
-@media (max-width: 640px) {
-  /* Prevent horizontal scroll - CRITICAL */
-  html, body {
-    overflow-x: hidden !important;
-    max-width: 100vw !important;
-  }
-  
-  * {
-    box-sizing: border-box;
-  }
-  
-  /* Ensure containers don't overflow */
-  .container, section, div {
-    max-width: 100vw !important;
-    overflow-x: hidden;
-  }
-  
-  #root, #root > * {
-    max-width: 100vw !important;
-    overflow-x: hidden !important;
-  }
-}
