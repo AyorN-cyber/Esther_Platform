@@ -405,7 +405,7 @@ export const AdminChatWidget: React.FC<AdminChatWidgetProps> = ({ currentUser, v
       <button
         onClick={() => setIsOpen(true)}
         className="fixed right-4 bottom-4 w-14 h-14 bg-gradient-to-br from-purple-600 to-purple-700 rounded-full flex items-center justify-center text-white shadow-lg hover:shadow-purple-500/50 transition-all z-[9999] hover:scale-110"
-        style={{ zIndex: 999999, position: 'fixed' }}
+
       >
         <MessageSquare size={24} />
         {unread > 0 && (
@@ -419,7 +419,7 @@ export const AdminChatWidget: React.FC<AdminChatWidgetProps> = ({ currentUser, v
 
   // Chat Window - Fits properly on screen (mobile: full screen, desktop: fixed widget)
   return (
-    <div className="fixed inset-0 lg:inset-auto lg:fixed lg:right-4 lg:bottom-4 lg:w-[380px] lg:h-[580px] max-w-full max-h-full bg-gradient-to-br from-[#2d1b4e] to-[#1a0a2e] backdrop-blur-2xl rounded-none lg:rounded-3xl shadow-2xl flex flex-col border-0 lg:border border-purple-500/30 z-[9999]" style={{ zIndex: 999999, position: 'fixed' }}>
+    <div className="fixed inset-0 lg:inset-auto lg:fixed lg:right-4 lg:bottom-4 lg:w-[380px] lg:h-[580px] max-w-full max-h-full bg-gradient-to-br from-[#2d1b4e] to-[#1a0a2e] backdrop-blur-2xl rounded-none lg:rounded-3xl shadow-2xl flex flex-col border-0 lg:border border-purple-500/30 z-[9999]">
       {/* Header */}
       <div className="flex-shrink-0 bg-gradient-to-r from-purple-600/30 to-purple-700/30 p-4 flex items-center justify-between border-b border-purple-500/30 rounded-t-2xl lg:rounded-t-3xl">
         <div className="flex items-center gap-3">

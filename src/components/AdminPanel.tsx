@@ -305,7 +305,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
       </div>
 
       {/* Top Navigation Bar */}
-      <nav className="flex-shrink-0 bg-black/95 backdrop-blur-xl border-b border-purple-500/30 relative z-[90]" style={{ zIndex: 90, position: 'relative' }}>
+      <nav className="flex-shrink-0 bg-black/95 backdrop-blur-xl border-b border-purple-500/30 relative z-[90]">
         <div className="container mx-auto px-4 md:px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
             {currentUser?.profilePicture ? (

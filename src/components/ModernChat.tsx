@@ -141,7 +141,7 @@ export const ModernChat: React.FC<ModernChatProps> = ({ currentUser }) => {
             ? 'scale-0 rotate-180' 
             : 'bg-gradient-to-br from-purple-600 to-blue-600 hover:scale-110 hover:rotate-12 shadow-purple-500/50'
         }`}
-        style={{ zIndex: 999999, position: 'fixed' }}
+
       >
         <MessageSquare size={24} className="text-white md:w-7 md:h-7" />
         {unread > 0 && !isOpen && (
@@ -156,7 +156,7 @@ export const ModernChat: React.FC<ModernChatProps> = ({ currentUser }) => {
         className={`fixed right-3 md:right-6 bottom-[4.5rem] md:bottom-24 w-[calc(100vw-1.5rem)] md:w-[380px] lg:w-[420px] h-[calc(100vh-6rem)] md:h-[580px] lg:h-[650px] backdrop-blur-2xl bg-gradient-to-br from-gray-900/95 to-gray-950/95 rounded-2xl md:rounded-3xl shadow-2xl flex flex-col transition-all duration-500 z-[9999] border border-purple-500/20 ${
           isOpen ? 'scale-100 opacity-100' : 'scale-0 opacity-0 pointer-events-none'
         }`}
-        style={{ transformOrigin: 'bottom right', zIndex: 999999, position: 'fixed' }}
+        style={{ transformOrigin: 'bottom right' }}
       >
         {/* Header */}
         <div className="relative overflow-hidden rounded-t-2xl md:rounded-t-3xl bg-gradient-to-r from-purple-600/20 to-blue-600/20 backdrop-blur-xl">

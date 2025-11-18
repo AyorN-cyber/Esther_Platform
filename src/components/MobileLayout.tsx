@@ -29,9 +29,9 @@ export const MobileLayout = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col" style={{ maxWidth: '100vw', overflowX: 'hidden' }}>
+    <div className="h-screen bg-black text-white flex flex-col overflow-hidden" style={{ maxWidth: '100vw', position: 'fixed', inset: 0 }}>
       {/* Mobile Header - Fixed */}
-      <header className="fixed top-0 w-full bg-black/95 backdrop-blur-xl border-b border-purple-500/30 z-40 px-3 py-2">
+      <header className="flex-shrink-0 w-full bg-black/95 backdrop-blur-xl border-b border-purple-500/30 z-40 px-3 py-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <img
@@ -80,7 +80,7 @@ export const MobileLayout = () => {
       )}
 
       {/* Mobile Content - Scrollable */}
-      <main className="flex-1 pt-14 pb-16 overflow-y-auto" style={{ maxWidth: '100vw' }}>
+      <main className="flex-1 overflow-y-auto overflow-x-hidden" style={{ maxWidth: '100vw', WebkitOverflowScrolling: 'touch' }}>
         {activeTab === 'home' && (
           <div className="p-4 space-y-6">
             <div className="text-center space-y-3">
@@ -162,7 +162,7 @@ export const MobileLayout = () => {
       </main>
 
       {/* Mobile Bottom Navigation - Fixed */}
-      <nav className="fixed bottom-0 w-full bg-black/95 backdrop-blur-xl border-t border-purple-500/30 z-40">
+      <nav className="flex-shrink-0 w-full bg-black/95 backdrop-blur-xl border-t border-purple-500/30 z-40">
         <div className="flex justify-around py-2">
           <button
             onClick={() => setActiveTab('home')}
