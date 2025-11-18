@@ -237,8 +237,8 @@ const EstherPlatform = () => {
       </nav>
 
       {/* Hero Section */}
-      <section id="home" className="min-h-screen flex items-center relative overflow-hidden pt-16 md:pt-20 bg-black">
-        <div className="container mx-auto px-3 md:px-6 lg:px-12 relative z-10 max-w-7xl">
+      <section id="home" className="min-h-screen flex items-center relative overflow-hidden pt-16 md:pt-20 bg-black" style={{ maxWidth: '100vw', overflowX: 'hidden' }}>
+        <div className="container mx-auto px-3 md:px-6 lg:px-12 relative z-10 max-w-7xl" style={{ maxWidth: '100vw', overflowX: 'hidden' }}>
           <div className="grid lg:grid-cols-2 gap-4 md:gap-8 lg:gap-12 items-center">
             
             {/* Image - Mobile First (shows at top on mobile) */}
@@ -284,17 +284,19 @@ const EstherPlatform = () => {
                 {settings?.hero_description || 'Lifting voices in worship through powerful gospel music. Experience the presence of God through every note.'}
               </p>
 
-              <div className="flex flex-col sm:flex-row gap-2 md:gap-3 justify-center lg:justify-start w-full max-w-sm mx-auto lg:max-w-none">
+              <div className="flex flex-col sm:flex-row gap-1.5 md:gap-2 justify-center lg:justify-start w-full max-w-[260px] sm:max-w-sm mx-auto lg:max-w-none" style={{ maxWidth: window.innerWidth <= 640 ? '90vw' : undefined }}>
                 <button
                   onClick={() => scrollToSection('videos')}
-                  className="group bg-gradient-to-r from-purple-600 to-purple-700 px-6 py-3 md:px-8 md:py-4 rounded-full font-semibold flex items-center justify-center gap-2 text-white hover:shadow-lg hover:shadow-purple-500/50 transition-all text-sm md:text-base whitespace-nowrap"
+                  className="group bg-gradient-to-r from-purple-600 to-purple-700 px-2.5 py-1 md:px-4 md:py-2 rounded-full font-semibold flex items-center justify-center gap-0.5 text-white hover:shadow-lg hover:shadow-purple-500/50 transition-all text-[9px] md:text-xs whitespace-nowrap flex-1 sm:flex-initial"
+                  style={{ fontSize: window.innerWidth <= 640 ? '9px' : undefined, padding: window.innerWidth <= 640 ? '4px 10px' : undefined, maxWidth: '100%' }}
                 >
                   Watch Videos
-                  <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform flex-shrink-0" />
+                  <ChevronRight size={10} className="group-hover:translate-x-1 transition-transform flex-shrink-0 md:w-3.5 md:h-3.5" />
                 </button>
                 <button
                   onClick={() => scrollToSection('contact')}
-                  className="px-6 py-3 md:px-8 md:py-4 rounded-full font-semibold border-2 border-purple-500/30 text-purple-300 hover:border-purple-500/50 hover:bg-purple-500/10 transition-all text-sm md:text-base whitespace-nowrap"
+                  className="px-2.5 py-1 md:px-4 md:py-2 rounded-full font-semibold border border-purple-500/30 text-purple-300 hover:border-purple-500/50 hover:bg-purple-500/10 transition-all text-[9px] md:text-xs whitespace-nowrap flex-1 sm:flex-initial"
+                  style={{ fontSize: window.innerWidth <= 640 ? '9px' : undefined, padding: window.innerWidth <= 640 ? '4px 10px' : undefined, maxWidth: '100%' }}
                 >
                   Get In Touch
                 </button>
