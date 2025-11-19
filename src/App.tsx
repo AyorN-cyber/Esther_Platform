@@ -17,7 +17,7 @@ const AdminPanel = lazy(() => import('./components/AdminPanel'));
 const EstherPlatform = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [showAdmin, setShowAdmin] = useState(false);
   const [videos, setVideos] = useState<Video[]>([]);
   const [settings, setSettings] = useState<any>(null);
@@ -27,7 +27,6 @@ const EstherPlatform = () => {
 
   useEffect(() => {
     loadData();
-    setTimeout(() => setLoading(false), 400);
 
     // Subscribe to real-time changes
     import('./lib/supabaseData').then(({ subscribeToVideos, subscribeToSettings, trackVisit }) => {

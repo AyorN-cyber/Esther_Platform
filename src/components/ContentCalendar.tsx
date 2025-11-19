@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Calendar, Plus, Edit3, Trash2, X, Save, Clock, CheckCircle, AlertCircle } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
 import { supabase } from '../lib/supabase';
@@ -296,9 +297,9 @@ export const ContentCalendar = () => {
         )}
       </div>
 
-      {/* Edit Modal */}
-      {editingItem && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      {/* Edit Modal - Using Portal */}
+      {editingItem && createPortal(
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[200] flex items-center justify-center p-4">
           <div className={`w-full max-w-2xl ${theme === 'dark' ? 'bg-gray-800' : 'bg-gray-900/80'} rounded-lg shadow-xl max-h-[90vh] overflow-y-auto`}>
             <div className="p-6">
               <div className="flex items-center justify-between mb-4">
@@ -508,7 +509,8 @@ export const ContentCalendar = () => {
               </div>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

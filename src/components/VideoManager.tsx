@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { Plus, Edit3, Trash2, GripVertical, Save, X, ExternalLink, Upload, Link as LinkIcon } from 'lucide-react';
 import { getVideos, addVideo, updateVideo, deleteVideo, reorderVideos } from '../lib/supabaseData';
 import type { Video } from '../types';
@@ -212,10 +213,9 @@ export const VideoManager: React.FC<VideoManagerProps> = ({ onVideoChange }) => 
         )}
       </div>
 
-      {editingVideo && (
-        <div className="modal-overlay fixed inset-0 bg-black/70 backdrop-blur-sm z-[200] overflow-y-auto">
-          <div className="flex justify-center" style={{ paddingTop: `${modalScrollPosition}px`, paddingBottom: '2rem' }}>
-            <div className="w-full max-w-md bg-[#2d1b4e] backdrop-blur-xl rounded-2xl shadow-xl border border-purple-500/30">
+      {editingVideo && createPortal(
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[200] flex items-center justify-center p-4">
+          <div className="w-full max-w-md bg-[#2d1b4e] backdrop-blur-xl rounded-2xl shadow-xl border border-purple-500/30 max-h-[90vh] overflow-y-auto">
             <div className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-white">
@@ -455,8 +455,8 @@ export const VideoManager: React.FC<VideoManagerProps> = ({ onVideoChange }) => 
               </div>
             </div>
           </div>
-          </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

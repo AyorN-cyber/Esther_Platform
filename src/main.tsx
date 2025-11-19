@@ -5,6 +5,7 @@ import './index.css';
 import './mobile-fix.css';
 import { initPWA } from './lib/pwa';
 import { ThemeProvider } from './contexts/ThemeContext';
+import { ProfilePictureProvider } from './contexts/ProfilePictureContext';
 
 // Initialize PWA features
 initPWA().then(() => {
@@ -16,7 +17,9 @@ initPWA().then(() => {
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ThemeProvider>
-      <App />
+      <ProfilePictureProvider>
+        <App />
+      </ProfilePictureProvider>
     </ThemeProvider>
   </StrictMode>
 );

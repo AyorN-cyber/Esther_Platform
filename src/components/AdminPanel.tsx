@@ -21,6 +21,7 @@ import { PWAInstallButton } from './PWAInstallButton';
 import { supabase } from '../lib/supabase';
 import { useRealtimeNotifications } from '../hooks/useRealtimeNotifications';
 import { notificationService } from '../lib/notificationService';
+import { useProfilePicture } from '../contexts/ProfilePictureContext';
 import type { Video, User as UserType, Analytics } from '../types';
 
 interface AdminPanelProps {
@@ -28,6 +29,7 @@ interface AdminPanelProps {
 }
 
 const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
+  const { profilePicture } = useProfilePicture();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [currentUser, setCurrentUser] = useState<UserType | null>(null);
   const [email, setEmail] = useState('');
@@ -83,7 +85,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
                 role: dbUser.role,
                 phone: dbUser.phone || '',
                 name: dbUser.full_name,
-                profilePicture: localStorage.getItem('admin_profile_picture') || undefined,
+                profilePicture: profilePicture || localStorage.getItem('admin_profile_picture') || undefined,
               };
             }
           }
@@ -95,7 +97,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
             role: 'artist',
             phone: '',
             name: fallbackName,
-            profilePicture: localStorage.getItem('admin_profile_picture') || undefined,
+            profilePicture: profilePicture || localStorage.getItem('admin_profile_picture') || undefined,
           };
 
           setCurrentUser(user);
@@ -106,7 +108,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
           const savedSession = localStorage.getItem('admin_session');
           if (savedSession) {
             const session = JSON.parse(savedSession);
-            const profilePic = localStorage.getItem('admin_profile_picture');
+            const profilePic = profilePicture || localStorage.getItem('admin_profile_picture');
             if (profilePic && !session.user.profilePicture) {
               session.user.profilePicture = profilePic;
             }
@@ -122,7 +124,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
     };
 
     init();
-  }, []);
+  }, [profilePicture]);
 
   const loadData = async () => {
     const { getVideos, getSettings } = await import('../lib/supabaseData');
@@ -387,9 +389,9 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
       <nav className="flex-shrink-0 bg-black/95 backdrop-blur-xl border-b border-purple-500/30 relative z-[90]" style={{ zIndex: 90, position: 'relative' }}>
         <div className="container mx-auto px-4 md:px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            {currentUser?.profilePicture ? (
+            {(profilePicture || currentUser?.profilePicture) ? (
               <img 
-                src={currentUser.profilePicture} 
+                src={profilePicture || currentUser?.profilePicture || ''} 
                 alt="Profile" 
                 className="w-12 h-12 rounded-xl object-cover shadow-lg shadow-purple-500/30"
               />
@@ -404,20 +406,20 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 md:gap-3">
             <NotificationSystem currentUser={currentUser} externalUnreadCount={unreadCount} />
             <button
               onClick={onClose}
-              className="px-4 py-2 bg-purple-500/10 hover:bg-purple-500/20 rounded-xl transition-all text-purple-200 border border-purple-500/20 flex items-center gap-2"
+              className="px-3 py-2 md:px-4 bg-purple-500/10 hover:bg-purple-500/20 rounded-xl transition-all text-purple-200 border border-purple-500/20 flex items-center gap-1.5 md:gap-2 touch-manipulation min-h-[44px]"
             >
-              <Eye size={18} />
+              <Eye size={16} className="md:w-[18px] md:h-[18px]" />
               <span className="hidden md:inline">View Site</span>
             </button>
             <button
               onClick={handleLogout}
-              className="px-4 py-2 bg-red-500/10 hover:bg-red-500/20 rounded-xl transition-all text-red-300 border border-red-500/20 flex items-center gap-2"
+              className="px-3 py-2 md:px-4 bg-red-500/10 hover:bg-red-500/20 rounded-xl transition-all text-red-300 border border-red-500/20 flex items-center gap-1.5 md:gap-2 touch-manipulation min-h-[44px]"
             >
-              <LogOut size={18} />
+              <LogOut size={16} className="md:w-[18px] md:h-[18px]" />
               <span className="hidden md:inline">Logout</span>
             </button>
           </div>
@@ -463,7 +465,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
         <main className="flex-1 overflow-y-auto relative z-[30]">
           <div className="container mx-auto px-4 md:px-6 py-6 relative z-[30]">
             {/* Mobile Tab Navigation */}
-            <div className="lg:hidden flex gap-2 mb-6 overflow-x-auto pb-2 scrollbar-hide">
+            <div className="lg:hidden flex gap-2 mb-6 overflow-x-auto pb-2 scrollbar-hide touch-pan-x">
               {[
                 { id: 'dashboard', label: 'Dashboard', icon: BarChart3 },
                 { id: 'videos', label: 'Videos', icon: VideoIcon },
@@ -480,14 +482,14 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
                   <button
                     key={item.id}
                     onClick={() => setActiveTab(item.id as any)}
-                    className={`flex-shrink-0 px-4 py-2 rounded-lg font-semibold transition-all flex items-center gap-2 ${
+                    className={`flex-shrink-0 px-3 py-2.5 rounded-lg font-semibold transition-all flex items-center gap-1.5 text-sm min-h-[44px] touch-manipulation ${
                       activeTab === item.id
                         ? 'bg-gradient-to-r from-purple-600 to-purple-700 text-white shadow-lg'
-                        : 'bg-purple-500/10 text-purple-200 hover:bg-purple-500/20'
+                        : 'bg-purple-500/10 text-purple-200 hover:bg-purple-500/20 active:bg-purple-500/30'
                     }`}
                   >
-                    <Icon size={18} />
-                    <span className="text-sm">{item.label}</span>
+                    <Icon size={16} />
+                    <span className="text-xs sm:text-sm whitespace-nowrap">{item.label}</span>
                   </button>
                 );
               })}

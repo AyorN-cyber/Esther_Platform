@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Music, ThumbsUp, Edit3, Trash2, X, Save, Star, TrendingUp } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
@@ -355,9 +356,9 @@ export const SongRequestsManager = () => {
         )}
       </div>
 
-      {/* Edit Modal */}
-      {editingRequest && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      {/* Edit Modal - Using Portal */}
+      {editingRequest && createPortal(
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[200] flex items-center justify-center p-4">
           <div className="w-full max-w-lg bg-black/95 backdrop-blur-xl rounded-lg shadow-xl max-h-[90vh] overflow-y-auto border border-purple-500/30">
             <div className="p-6">
               <div className="flex items-center justify-between mb-4">
@@ -393,17 +394,13 @@ export const SongRequestsManager = () => {
                   </div>
 
                   <div>
-                    <label className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-300'}`}>
+                    <label className="block text-sm font-medium mb-1 text-purple-200">
                       Difficulty
                     </label>
                     <select
                       value={editingRequest.difficulty || ''}
                       onChange={(e) => setEditingRequest({ ...editingRequest, difficulty: e.target.value as any })}
-                      className={`w-full px-3 py-2 border rounded-lg ${
-                        theme === 'dark'
-                          ? 'bg-gray-700 border-gray-600 text-white'
-                          : 'bg-gray-900/80 border-purple-500/30 text-white'
-                      }`}
+                      className="w-full px-3 py-2 border rounded-lg bg-black/50 border-purple-500/30 text-white focus:outline-none focus:border-purple-500"
                     >
                       <option value="">Not set</option>
                       <option value="easy">Easy</option>
@@ -482,7 +479,8 @@ export const SongRequestsManager = () => {
               </div>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

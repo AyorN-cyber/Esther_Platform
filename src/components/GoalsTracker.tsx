@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Plus, Target, TrendingUp, CheckCircle, Clock, Edit3, Trash2, X, Save } from 'lucide-react';
 import { getGoals, addGoal, updateGoal, deleteGoal } from '../lib/supabaseEnhanced';
 import { useTheme } from '../contexts/ThemeContext';
@@ -287,9 +288,9 @@ export const GoalsTracker = () => {
         )}
       </div>
 
-      {/* Edit Modal */}
-      {editingGoal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      {/* Edit Modal - Using Portal */}
+      {editingGoal && createPortal(
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[200] flex items-center justify-center p-4">
           <div className={`w-full max-w-lg ${theme === 'dark' ? 'bg-gray-800' : 'bg-gray-900/80'} rounded-lg shadow-xl max-h-[90vh] overflow-y-auto`}>
             <div className="p-6">
               <div className="flex items-center justify-between mb-4">
@@ -479,7 +480,8 @@ export const GoalsTracker = () => {
               </div>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

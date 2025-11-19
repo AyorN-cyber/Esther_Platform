@@ -6,6 +6,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { MessageSquare, X, Send, Smile, Paperclip, Trash2, Edit2, Video as VideoIcon, Check } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { useProfilePicture } from '../contexts/ProfilePictureContext';
 import type { User, Video } from '../types';
 
 interface ChatMessage {
@@ -61,6 +62,7 @@ const playNotificationSound = () => {
 };
 
 export const AdminChatWidget: React.FC<AdminChatWidgetProps> = ({ currentUser, videos = [] }) => {
+  const { profilePicture } = useProfilePicture();
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
@@ -423,9 +425,17 @@ export const AdminChatWidget: React.FC<AdminChatWidgetProps> = ({ currentUser, v
       {/* Header */}
       <div className="flex-shrink-0 bg-gradient-to-r from-purple-600/30 to-purple-700/30 p-4 flex items-center justify-between border-b border-purple-500/30 rounded-t-2xl lg:rounded-t-3xl">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold">
-            {otherUser.charAt(0)}
-          </div>
+          {(profilePicture || currentUser?.profilePicture) ? (
+            <img 
+              src={profilePicture || currentUser?.profilePicture || ''} 
+              alt="Profile" 
+              className="w-10 h-10 rounded-full object-cover shadow-lg"
+            />
+          ) : (
+            <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold">
+              {otherUser.charAt(0)}
+            </div>
+          )}
           <div>
             <h3 className="text-white font-bold text-sm md:text-base">{otherUser}</h3>
             <p className="text-xs text-purple-300">Online</p>

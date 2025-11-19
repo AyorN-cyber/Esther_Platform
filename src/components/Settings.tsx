@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { Save, Upload } from 'lucide-react';
 import type { SiteSettings } from '../types';
 import { uploadImageToSupabase } from '../lib/supabase';
+import { useProfilePicture } from '../contexts/ProfilePictureContext';
 
 export const Settings: React.FC = () => {
+  const { profilePicture, updateProfilePicture } = useProfilePicture();
   const [settings, setSettings] = useState<SiteSettings>({
     hero_image: '/Estherreign.jpg',
     about_image: '/IMG-20250915-WA0023.jpg',
@@ -20,16 +22,8 @@ export const Settings: React.FC = () => {
     }
   });
   const [heroDescription, setHeroDescription] = useState('');
-  const [profilePicture, setProfilePicture] = useState<string>('');
   const [uploadingProfile, setUploadingProfile] = useState(false);
   const [imageUploading, setImageUploading] = useState<{ hero: boolean; about: boolean }>({ hero: false, about: false });
-
-  useEffect(() => {
-    const cached = localStorage.getItem('admin_profile_picture');
-    if (cached) {
-      setProfilePicture(cached);
-    }
-  }, []);
 
   const handleProfilePictureUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -40,15 +34,23 @@ export const Settings: React.FC = () => {
       return;
     }
 
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      alert('Please select a valid image file (JPG, PNG, etc.)');
+      return;
+    }
+
     try {
       setUploadingProfile(true);
       const publicUrl = await uploadImageToSupabase(file, 'profile');
+      
       if (!publicUrl) {
-        alert('Upload failed. Please try again.');
+        alert('Upload failed: No URL returned. Please check your Supabase Storage configuration.');
         return;
       }
-      setProfilePicture(publicUrl);
-      localStorage.setItem('admin_profile_picture', publicUrl);
+      
+      // Update through context (this will sync everywhere)
+      updateProfilePicture(publicUrl);
 
       // Update current user session
       const session = localStorage.getItem('admin_session');
@@ -58,10 +60,12 @@ export const Settings: React.FC = () => {
         localStorage.setItem('admin_session', JSON.stringify(parsed));
       }
 
-      alert('Profile picture updated! Refresh the page to see changes.');
-    } catch (error) {
+      alert('Profile picture updated successfully!');
+    } catch (error: any) {
       console.error('Error uploading profile picture:', error);
-      alert('Upload failed. Please try again.');
+      // Show specific error message to user
+      const errorMessage = error?.message || error?.toString() || 'Unknown error occurred';
+      alert(`Upload failed: ${errorMessage}\n\nPlease check:\n1. Supabase Storage bucket "media" exists\n2. Bucket has public access enabled\n3. RLS policies allow uploads`);
     } finally {
       setUploadingProfile(false);
     }
@@ -166,9 +170,9 @@ export const Settings: React.FC = () => {
           <h3 className="text-xl font-bold mb-4 text-white">Profile Picture</h3>
           <div className="flex items-center gap-6">
             <div className="relative">
-              {profilePicture || localStorage.getItem('admin_profile_picture') ? (
+              {profilePicture ? (
                 <img 
-                  src={profilePicture || localStorage.getItem('admin_profile_picture') || ''} 
+                  src={profilePicture} 
                   alt="Profile" 
                   className="w-24 h-24 rounded-xl object-cover shadow-lg"
                 />
