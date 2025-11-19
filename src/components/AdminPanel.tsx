@@ -54,17 +54,74 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
   const { unreadCount, updateUnreadCount } = useRealtimeNotifications(currentUser);
 
   useEffect(() => {
-    const savedSession = localStorage.getItem('admin_session');
-    if (savedSession) {
-      const session = JSON.parse(savedSession);
-      const profilePic = localStorage.getItem('admin_profile_picture');
-      if (profilePic && !session.user.profilePicture) {
-        session.user.profilePicture = profilePic;
+    document.body.classList.add('admin-panel-active');
+    return () => {
+      document.body.classList.remove('admin-panel-active');
+    };
+  }, []);
+
+  useEffect(() => {
+    const init = async () => {
+      try {
+        // Try to restore Supabase auth session first
+        const { data } = await supabase.auth.getUser();
+        if (data?.user) {
+          const email = data.user.email || '';
+          let profile: UserType | null = null;
+
+          if (email) {
+            const { data: dbUser } = await supabase
+              .from('users')
+              .select('*')
+              .eq('email', email)
+              .maybeSingle();
+
+            if (dbUser) {
+              profile = {
+                id: dbUser.id,
+                email: dbUser.email,
+                role: dbUser.role,
+                phone: dbUser.phone || '',
+                name: dbUser.full_name,
+                profilePicture: localStorage.getItem('admin_profile_picture') || undefined,
+              };
+            }
+          }
+
+          const fallbackName = data.user.email?.split('@')[0] || 'Admin';
+          const user: UserType = profile || {
+            id: data.user.id,
+            email: email,
+            role: 'artist',
+            phone: '',
+            name: fallbackName,
+            profilePicture: localStorage.getItem('admin_profile_picture') || undefined,
+          };
+
+          setCurrentUser(user);
+          setIsLoggedIn(true);
+          localStorage.setItem('admin_session', JSON.stringify({ user }));
+        } else {
+          // Fallback to legacy local session if it exists
+          const savedSession = localStorage.getItem('admin_session');
+          if (savedSession) {
+            const session = JSON.parse(savedSession);
+            const profilePic = localStorage.getItem('admin_profile_picture');
+            if (profilePic && !session.user.profilePicture) {
+              session.user.profilePicture = profilePic;
+            }
+            setCurrentUser(session.user);
+            setIsLoggedIn(true);
+          }
+        }
+      } catch (error) {
+        console.error('Error restoring admin session:', error);
+      } finally {
+        loadData();
       }
-      setCurrentUser(session.user);
-      setIsLoggedIn(true);
-    }
-    loadData();
+    };
+
+    init();
   }, []);
 
   const loadData = async () => {
@@ -107,36 +164,53 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    const credentials = {
-      'artist@estherreign.com': { password: 'artist2024', role: 'artist' as const, name: 'Esther Reign', id: '1', phone: '+234 818 019 4269' },
-      'editor@estherreign.com': { password: 'editor2024', role: 'editor' as const, name: 'Video Editor', id: '2', phone: '+234 000 000 0000' }
-    };
-    
-    const userCreds = credentials[email as keyof typeof credentials];
-    
-    if (userCreds && userCreds.password === password) {
-      const user: UserType = {
-        id: userCreds.id,
+
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
-        role: userCreds.role,
-        phone: userCreds.phone,
-        name: userCreds.name
+        password,
+      });
+
+      if (error || !data.user) {
+        alert('Invalid email or password. Please check your credentials.');
+        return;
+      }
+
+      // Look up extended profile in users table
+      let userProfile: any = null;
+      const { data: profile } = await supabase
+        .from('users')
+        .select('*')
+        .eq('email', email)
+        .maybeSingle();
+
+      if (profile) {
+        userProfile = profile;
+      }
+
+      const user: UserType = {
+        id: userProfile?.id || data.user.id,
+        email: email,
+        role: (userProfile?.role as any) || 'artist',
+        phone: userProfile?.phone || '',
+        name: userProfile?.full_name || (email.split('@')[0] || 'Admin'),
+        profilePicture: localStorage.getItem('admin_profile_picture') || undefined,
       };
-      
+
       setCurrentUser(user);
       setIsLoggedIn(true);
       localStorage.setItem('admin_session', JSON.stringify({ user }));
-      
+
       // Notify other users about login
       notificationService.notifyUserLogin(user.name, user.role);
-      
+
       const { getSettings, updateSettings } = await import('../lib/supabaseData');
       const settings = await getSettings();
       const currentLogins = (settings as any)?.artist_logins || 0;
       await updateSettings({ artist_logins: currentLogins + 1 });
-    } else {
-      alert('Invalid email or password. Please check your credentials.');
+    } catch (err) {
+      console.error('Error during admin login:', err);
+      alert('Login failed due to a server error. Please try again.');
     }
   };
 
@@ -158,7 +232,12 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
     }
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      await supabase.auth.signOut();
+    } catch (error) {
+      console.error('Error signing out from Supabase:', error);
+    }
     setIsLoggedIn(false);
     setCurrentUser(null);
     localStorage.removeItem('admin_session');
@@ -167,7 +246,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
   // Modern Login Screen
   if (!isLoggedIn) {
     return (
-      <div className="fixed inset-0 bg-black flex items-center justify-center z-50 overflow-y-auto p-4">
+      <div className="admin-panel fixed inset-0 bg-black flex items-center justify-center z-50 overflow-y-auto p-4">
         <PurpleWebGLBackground />
         
         <button
@@ -296,7 +375,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
 
   // Main Admin Panel
   return (
-    <div className="fixed inset-0 bg-black overflow-hidden z-50 flex flex-col">
+    <div className="admin-panel fixed inset-0 bg-black overflow-hidden z-50 flex flex-col">
       {/* Background - Fixed at z-0 so content stays on top */}
       <div className="fixed inset-0 z-0">
         <PurpleWebGLBackground />

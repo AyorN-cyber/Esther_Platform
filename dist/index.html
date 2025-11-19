@@ -2,15 +2,132 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Build: 2025-11-18-v2 - Desktop UI Restored -->
+    
+    <!-- Primary Meta Tags -->
     <title>Esther Reign Platform</title>
-    <script type="module" crossorigin src="/Esther_Platform/assets/index-BYrp0O6i.js"></script>
-    <link rel="modulepreload" crossorigin href="/Esther_Platform/assets/react-vendor-DtX1tuCI.js">
-    <link rel="modulepreload" crossorigin href="/Esther_Platform/assets/icons-DM3m-bkw.js">
-    <link rel="stylesheet" crossorigin href="/Esther_Platform/assets/index-e0-xzvJq.css">
+    <meta name="title" content="Esther Reign Platform">
+    <meta name="description" content="Official platform for Esther Reign - Gospel music, worship, and creative content">
+    
+    <!-- Viewport Meta Tag - PWA Essential -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+    
+    <!-- Theme Color - Android -->
+    <meta name="theme-color" content="#9333ea">
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#1a0a2e">
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#9333ea">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/Esther_Platform/manifest.json">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/Esther_Platform/icons/ios/32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/Esther_Platform/icons/ios/16.png">
+    <link rel="shortcut icon" href="/Esther_Platform/icons/android/android-launchericon-192-192.png">
+    
+    <!-- Apple Touch Icons - iOS -->
+    <link rel="apple-touch-icon" href="/Esther_Platform/icons/ios/180.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/Esther_Platform/icons/ios/152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/Esther_Platform/icons/ios/180.png">
+    <link rel="apple-touch-icon" sizes="167x167" href="/Esther_Platform/icons/ios/167.png">
+    
+    <!-- iOS Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="ER Admin">
+    
+    <!-- iOS Splash Screens - Complete Coverage -->
+    <!-- iPhone 5/SE -->
+    <link rel="apple-touch-startup-image" href="/Esther_Platform/splash/iphone5_splash.svg" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)">
+    <!-- iPhone 6/7/8 -->
+    <link rel="apple-touch-startup-image" href="/Esther_Platform/splash/iphone6_splash.svg" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2)">
+    <!-- iPhone 6+/7+/8+ -->
+    <link rel="apple-touch-startup-image" href="/Esther_Platform/splash/iphoneplus_splash.svg" media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3)">
+    <!-- iPhone X/XS/11 Pro -->
+    <link rel="apple-touch-startup-image" href="/Esther_Platform/splash/iphonex_splash.svg" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3)">
+    <!-- iPhone XR/11 -->
+    <link rel="apple-touch-startup-image" href="/Esther_Platform/splash/iphone11_splash.svg" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2)">
+    <!-- iPhone XS Max/11 Pro Max -->
+    <link rel="apple-touch-startup-image" href="/Esther_Platform/splash/iphone11promax_splash.svg" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3)">
+    <!-- iPhone 12/12 Pro/13/13 Pro/14 -->
+    <link rel="apple-touch-startup-image" href="/Esther_Platform/splash/iphone12_splash.svg" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3)">
+    <!-- iPhone 12 Pro Max/13 Pro Max -->
+    <link rel="apple-touch-startup-image" href="/Esther_Platform/splash/iphone12promax_splash.svg" media="(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3)">
+    <!-- iPhone 14 Pro Max -->
+    <link rel="apple-touch-startup-image" href="/Esther_Platform/splash/iphone14promax_splash.svg" media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3)">
+    <!-- iPhone 15/15 Pro/16 -->
+    <link rel="apple-touch-startup-image" href="/Esther_Platform/splash/iphone15_splash.svg" media="(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3)">
+    <!-- iPhone 15 Pro Max/15 Plus/16 Pro Max -->
+    <link rel="apple-touch-startup-image" href="/Esther_Platform/splash/iphone15promax_splash.svg" media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3)">
+    <!-- iPhone 17 Pro Max -->
+    <link rel="apple-touch-startup-image" href="/Esther_Platform/splash/iphone17promax_splash.svg" media="(device-width: 440px) and (device-height: 956px) and (-webkit-device-pixel-ratio: 3)">
+    <!-- iPad -->
+    <link rel="apple-touch-startup-image" href="/Esther_Platform/splash/ipad_splash.svg" media="(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2)">
+    <!-- iPad Pro 10.5" -->
+    <link rel="apple-touch-startup-image" href="/Esther_Platform/splash/ipad_splash.svg" media="(device-width: 834px) and (device-height: 1112px) and (-webkit-device-pixel-ratio: 2)">
+    <!-- iPad Pro 12.9" -->
+    <link rel="apple-touch-startup-image" href="/Esther_Platform/splash/ipad_splash.svg" media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2)">
+    
+    <!-- Microsoft Tiles - Windows -->
+    <meta name="msapplication-TileColor" content="#d4af37">
+    <meta name="msapplication-TileImage" content="/icons/android/android-launchericon-144-144.png">
+    <meta name="msapplication-config" content="/browserconfig.xml">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://ayorn-cyber.github.io/Esther_Platform/">
+    <meta property="og:title" content="Esther Reign Platform">
+    <meta property="og:description" content="Official platform for Esther Reign - Gospel music, worship, and creative content">
+    <meta property="og:image" content="/og-image.png">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://ayorn-cyber.github.io/Esther_Platform/">
+    <meta property="twitter:title" content="Esther Reign Platform">
+    <meta property="twitter:description" content="Official platform for Esther Reign - Gospel music, worship, and creative content">
+    <meta property="twitter:image" content="/og-image.png">
+    
+    <!-- Security Headers -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+    
+    <!-- Preconnect to external domains for performance -->
+    <link rel="preconnect" href="https://ciawsbarwhhebghhyjub.supabase.co">
+    <link rel="dns-prefetch" href="https://ciawsbarwhhebghhyjub.supabase.co">
+    
+    <!-- iOS Safe Area Insets -->
+    <style>
+      :root {
+        --safe-area-inset-top: env(safe-area-inset-top);
+        --safe-area-inset-right: env(safe-area-inset-right);
+        --safe-area-inset-bottom: env(safe-area-inset-bottom);
+        --safe-area-inset-left: env(safe-area-inset-left);
+      }
+      
+      body {
+        padding-top: var(--safe-area-inset-top);
+        padding-right: var(--safe-area-inset-right);
+        padding-bottom: var(--safe-area-inset-bottom);
+        padding-left: var(--safe-area-inset-left);
+      }
+      
+      /* Prevent pull-to-refresh on iOS */
+      body {
+        overscroll-behavior-y: contain;
+      }
+    </style>
+    <script type="module" crossorigin src="/Esther_Platform/assets/index-BXC4dLVF.js"></script>
+    <link rel="modulepreload" crossorigin href="/Esther_Platform/assets/react-vendor-9mwbaf1v.js">
+    <link rel="modulepreload" crossorigin href="/Esther_Platform/assets/icons-D3sHNqvn.js">
+    <link rel="stylesheet" crossorigin href="/Esther_Platform/assets/index-FwW47yGk.css">
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root"></div>
+    
+    <!-- PWA Installation Script -->
+    <script>
+      // Service worker is registered by src/lib/pwa.ts
+      // This ensures proper initialization with the React app
+    </script>
   </body>
 </html>

@@ -2,6 +2,7 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
 import './index.css';
+import './mobile-fix.css';
 import { initPWA } from './lib/pwa';
 import { ThemeProvider } from './contexts/ThemeContext';
 

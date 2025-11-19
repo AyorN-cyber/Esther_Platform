@@ -14,3 +14,4 @@
 - Ensure all text is white/purple-300
 - Fix any errors causing blank screens
 
+

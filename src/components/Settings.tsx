@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Save, Upload } from 'lucide-react';
 import type { SiteSettings } from '../types';
+import { uploadImageToSupabase } from '../lib/supabase';
 
 export const Settings: React.FC = () => {
   const [settings, setSettings] = useState<SiteSettings>({
@@ -20,8 +21,17 @@ export const Settings: React.FC = () => {
   });
   const [heroDescription, setHeroDescription] = useState('');
   const [profilePicture, setProfilePicture] = useState<string>('');
+  const [uploadingProfile, setUploadingProfile] = useState(false);
+  const [imageUploading, setImageUploading] = useState<{ hero: boolean; about: boolean }>({ hero: false, about: false });
 
-  const handleProfilePictureUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  useEffect(() => {
+    const cached = localStorage.getItem('admin_profile_picture');
+    if (cached) {
+      setProfilePicture(cached);
+    }
+  }, []);
+
+  const handleProfilePictureUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -30,23 +40,31 @@ export const Settings: React.FC = () => {
       return;
     }
 
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      const base64String = reader.result as string;
-      setProfilePicture(base64String);
-      localStorage.setItem('admin_profile_picture', base64String);
-      
+    try {
+      setUploadingProfile(true);
+      const publicUrl = await uploadImageToSupabase(file, 'profile');
+      if (!publicUrl) {
+        alert('Upload failed. Please try again.');
+        return;
+      }
+      setProfilePicture(publicUrl);
+      localStorage.setItem('admin_profile_picture', publicUrl);
+
       // Update current user session
       const session = localStorage.getItem('admin_session');
       if (session) {
         const parsed = JSON.parse(session);
-        parsed.user.profilePicture = base64String;
+        parsed.user.profilePicture = publicUrl;
         localStorage.setItem('admin_session', JSON.stringify(parsed));
       }
-      
+
       alert('Profile picture updated! Refresh the page to see changes.');
-    };
-    reader.readAsDataURL(file);
+    } catch (error) {
+      console.error('Error uploading profile picture:', error);
+      alert('Upload failed. Please try again.');
+    } finally {
+      setUploadingProfile(false);
+    }
   };
 
   useEffect(() => {
@@ -104,19 +122,34 @@ export const Settings: React.FC = () => {
     }
   };
 
-  const handleImageUpload = (type: 'hero' | 'about', event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (type: 'hero' | 'about', event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const base64String = reader.result as string;
-        if (type === 'hero') {
-          setSettings({ ...settings, hero_image: base64String });
-        } else {
-          setSettings({ ...settings, about_image: base64String });
-        }
-      };
-      reader.readAsDataURL(file);
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      alert('Image size should be less than 5MB');
+      return;
+    }
+
+    try {
+      setImageUploading((prev) => ({ ...prev, [type]: true }));
+      const publicUrl = await uploadImageToSupabase(file, type);
+      if (!publicUrl) {
+        alert('Upload failed. Please try again.');
+        return;
+      }
+
+      if (type === 'hero') {
+        setSettings({ ...settings, hero_image: publicUrl });
+      } else {
+        setSettings({ ...settings, about_image: publicUrl });
+      }
+      alert('Image uploaded! Remember to hit "Save All Settings".');
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      alert('Upload failed. Please try again.');
+    } finally {
+      setImageUploading((prev) => ({ ...prev, [type]: false }));
     }
   };
 
@@ -150,10 +183,13 @@ export const Settings: React.FC = () => {
               <input
                 type="file"
                 accept="image/*"
+                disabled={uploadingProfile}
                 onChange={handleProfilePictureUpload}
-                className="w-full px-4 py-3 bg-gray-800 border border-purple-500/20 rounded-xl focus:outline-none focus:border-purple-500 text-white file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-gradient-to-r file:from-purple-600 file:to-blue-600 file:text-white hover:file:shadow-lg file:cursor-pointer"
+                className={`w-full px-4 py-3 bg-gray-800 border border-purple-500/20 rounded-xl focus:outline-none focus:border-purple-500 text-white file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-gradient-to-r file:from-purple-600 file:to-blue-600 file:text-white hover:file:shadow-lg file:cursor-pointer ${uploadingProfile ? 'opacity-60 cursor-not-allowed' : ''}`}
               />
-              <p className="text-xs text-gray-400 mt-2">Max size: 5MB. Recommended: Square image (500x500px)</p>
+              <p className="text-xs text-gray-400 mt-2">
+                {uploadingProfile ? 'Uploading image...' : 'Max size: 5MB. Recommended: Square image (500x500px)'}
+              </p>
             </div>
           </div>
         </div>
@@ -168,8 +204,9 @@ export const Settings: React.FC = () => {
                 <input
                   type="file"
                   accept="image/*"
+                  disabled={imageUploading.hero}
                   onChange={(e) => handleImageUpload('hero', e)}
-                  className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl focus:outline-none focus:border-purple-500 text-white file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-purple-600 file:text-white hover:file:bg-purple-700 file:cursor-pointer"
+                  className={`w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl focus:outline-none focus:border-purple-500 text-white file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-purple-600 file:text-white hover:file:bg-purple-700 file:cursor-pointer ${imageUploading.hero ? 'opacity-60 cursor-not-allowed' : ''}`}
                 />
                 <input
                   type="url"
@@ -190,8 +227,9 @@ export const Settings: React.FC = () => {
                 <input
                   type="file"
                   accept="image/*"
+                  disabled={imageUploading.about}
                   onChange={(e) => handleImageUpload('about', e)}
-                  className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl focus:outline-none focus:border-purple-500 text-white file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-purple-600 file:text-white hover:file:bg-purple-700 file:cursor-pointer"
+                  className={`w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl focus:outline-none focus:border-purple-500 text-white file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-purple-600 file:text-white hover:file:bg-purple-700 file:cursor-pointer ${imageUploading.about ? 'opacity-60 cursor-not-allowed' : ''}`}
                 />
                 <input
                   type="url"
