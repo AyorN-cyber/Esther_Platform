@@ -264,7 +264,7 @@ const EstherPlatform = () => {
 
             {/* Image - Mobile First (shows at top on mobile) */}
             <div className="relative max-w-[280px] sm:max-w-sm mx-auto lg:max-w-none lg:order-2">
-              {/* Glow effect around image */}
+              {/* Glow effect around image - Adjusted to match shape */}
               <div className="absolute inset-0 bg-gradient-to-br from-purple-500/50 via-purple-600/40 to-purple-700/30 rounded-full lg:rounded-3xl blur-3xl opacity-60 animate-pulse"></div>
               <div className="absolute inset-0 bg-gradient-to-br from-purple-400/40 to-purple-600/30 rounded-full lg:rounded-3xl blur-2xl opacity-50"></div>
 
@@ -288,7 +288,7 @@ const EstherPlatform = () => {
             <div className="space-y-4 md:space-y-6 text-center lg:text-left lg:order-1">
               <div className="inline-flex items-center gap-2 px-3 py-1.5 md:px-4 md:py-2 bg-purple-500/20 rounded-full mx-auto lg:mx-0 border border-purple-500/30">
                 <Sparkles size={14} className="text-purple-300 animate-pulse" />
-                <span className="text-xs md:text-sm text-purple-200 font-medium">Gospel Singer ΓÇó Worship Leader</span>
+                <span className="text-xs md:text-sm text-purple-200 font-medium">Gospel Singer & Worship Leader</span>
               </div>
 
               <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-black leading-tight">

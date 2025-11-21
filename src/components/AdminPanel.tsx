@@ -265,7 +265,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
           <X size={24} className="text-white" />
         </button>
 
-        <div className="max-w-lg w-full my-auto relative z-10">
+        <div className="max-w-lg w-full my-auto relative z-10 w-full px-4 md:px-0">
           <div className="bg-black/90 backdrop-blur-2xl rounded-3xl p-6 md:p-8 border border-purple-500/30 shadow-2xl">
             <div className="text-center mb-8">
               <div className="w-24 h-24 bg-gradient-to-br from-purple-600 to-purple-700 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg shadow-purple-500/50">
