@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { Plus, Edit3, Trash2, GripVertical, Save, X, ExternalLink, Upload, Link as LinkIcon } from 'lucide-react';
 import { getVideos, addVideo, updateVideo, deleteVideo, reorderVideos } from '../lib/supabaseData';
+import { uploadVideoFile } from '../lib/uploadVideo';
 import type { Video } from '../types';
 
 interface VideoManagerProps {
@@ -17,7 +18,6 @@ export const VideoManager: React.FC<VideoManagerProps> = ({ onVideoChange }) => 
   const [uploadMethod, setUploadMethod] = useState<'link' | 'file'>('link');
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
-  const [modalScrollPosition, setModalScrollPosition] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -63,7 +63,7 @@ export const VideoManager: React.FC<VideoManagerProps> = ({ onVideoChange }) => 
           setVideos(videos.map(v => v.id === editingVideo.id ? editingVideo : v));
         }
       }
-      
+
       setEditingVideo(null);
       setIsAddingNew(false);
       onVideoChange?.();
@@ -101,12 +101,12 @@ export const VideoManager: React.FC<VideoManagerProps> = ({ onVideoChange }) => 
     const draggedVideo = newVideos[draggedIndex];
     newVideos.splice(draggedIndex, 1);
     newVideos.splice(index, 0, draggedVideo);
-    
+
     const reorderedVideos = newVideos.map((video, idx) => ({
       ...video,
       order_index: idx
     }));
-    
+
     setVideos(reorderedVideos);
     setDraggedIndex(index);
   };
@@ -157,37 +157,34 @@ export const VideoManager: React.FC<VideoManagerProps> = ({ onVideoChange }) => 
             onDragEnd={handleDragEnd}
             className={`p-4 border border-purple-500/20 rounded-lg cursor-move transition-all bg-purple-500/10 hover:bg-purple-500/20 ${draggedIndex === index ? 'opacity-50' : ''}`}
           >
-            <div className="flex items-center gap-4">
-              <GripVertical size={20} className="text-purple-300" />
-              
-              <div className="flex-1">
-                <h3 className="font-semibold text-white">
-                  {video.title || 'Untitled Video'}
-                </h3>
-                <p className="text-sm text-purple-300">
-                  Status: {video.status} • Order: {video.order_index}
-                </p>
-                {video.video_link && (
-                  <a
-                    href={video.video_link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-sm text-purple-400 hover:text-purple-300 transition-colors"
-                  >
-                    <ExternalLink size={14} />
-                    View Video
-                  </a>
-                )}
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
+              <div className="flex items-center gap-3 w-full sm:w-auto">
+                <GripVertical size={20} className="text-purple-300 flex-shrink-0" />
+
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-semibold text-white truncate">
+                    {video.title || 'Untitled Video'}
+                  </h3>
+                  <p className="text-sm text-purple-300 truncate">
+                    Status: {video.status} • Order: {video.order_index}
+                  </p>
+                  {video.video_link && (
+                    <a
+                      href={video.video_link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 text-sm text-purple-400 hover:text-purple-300 transition-colors mt-1"
+                    >
+                      <ExternalLink size={14} />
+                      View Video
+                    </a>
+                  )}
+                </div>
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 ml-8 sm:ml-0">
                 <button
                   onClick={() => {
-                    // Capture current scroll position
-                    const mainContent = document.querySelector('.flex-1.overflow-y-auto');
-                    if (mainContent) {
-                      setModalScrollPosition(mainContent.scrollTop);
-                    }
                     setEditingVideo(video);
                     setIsAddingNew(false);
                   }}
@@ -255,11 +252,10 @@ export const VideoManager: React.FC<VideoManagerProps> = ({ onVideoChange }) => 
                     <button
                       type="button"
                       onClick={() => setUploadMethod('link')}
-                      className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg transition-all ${
-                        uploadMethod === 'link'
-                          ? 'bg-purple-600 text-white'
-                          : 'bg-purple-500/10 text-purple-300 hover:bg-purple-500/20 border border-purple-500/30'
-                      }`}
+                      className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg transition-all ${uploadMethod === 'link'
+                        ? 'bg-purple-600 text-white'
+                        : 'bg-purple-500/10 text-purple-300 hover:bg-purple-500/20 border border-purple-500/30'
+                        }`}
                     >
                       <LinkIcon size={16} />
                       Link
@@ -267,11 +263,10 @@ export const VideoManager: React.FC<VideoManagerProps> = ({ onVideoChange }) => 
                     <button
                       type="button"
                       onClick={() => setUploadMethod('file')}
-                      className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg transition-all ${
-                        uploadMethod === 'file'
-                          ? 'bg-purple-600 text-white'
-                          : 'bg-purple-500/10 text-purple-300 hover:bg-purple-500/20 border border-purple-500/30'
-                      }`}
+                      className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg transition-all ${uploadMethod === 'file'
+                        ? 'bg-purple-600 text-white'
+                        : 'bg-purple-500/10 text-purple-300 hover:bg-purple-500/20 border border-purple-500/30'
+                        }`}
                     >
                       <Upload size={16} />
                       Upload File (Max 200MB)
@@ -281,15 +276,15 @@ export const VideoManager: React.FC<VideoManagerProps> = ({ onVideoChange }) => 
 
                 {/* Video Link Input */}
                 {uploadMethod === 'link' && (
-                <div>
-                  <label className="block text-sm font-medium mb-1 text-purple-200">
-                    Video Link
-                  </label>
-                  <input
-                    type="url"
-                    value={editingVideo.video_link || ''}
-                    onChange={(e) => setEditingVideo({ ...editingVideo, video_link: e.target.value })}
-                    className="w-full px-3 py-2 bg-purple-500/10 border border-purple-500/30 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-white placeholder-purple-400"
+                  <div>
+                    <label className="block text-sm font-medium mb-1 text-purple-200">
+                      Video Link
+                    </label>
+                    <input
+                      type="url"
+                      value={editingVideo.video_link || ''}
+                      onChange={(e) => setEditingVideo({ ...editingVideo, video_link: e.target.value })}
+                      className="w-full px-3 py-2 bg-purple-500/10 border border-purple-500/30 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-white placeholder-purple-400"
                       placeholder="https://youtube.com/watch?v=... or https://cloudinary.com/..."
                     />
                   </div>
@@ -320,43 +315,17 @@ export const VideoManager: React.FC<VideoManagerProps> = ({ onVideoChange }) => 
                         setUploadProgress(0);
 
                         try {
-                          // Create a FormData object
-                          const formData = new FormData();
-                          formData.append('file', file);
+                          const url = await uploadVideoFile(file, (progress) => {
+                            setUploadProgress(progress);
+                          });
 
-                          // For now, we'll use a placeholder upload URL
-                          // In production, you'd upload to Cloudinary, Supabase Storage, or your own server
-                          // This is a simplified version - you'll need to implement actual upload logic
-                          
-                          // Simulate upload progress
-                          const progressInterval = setInterval(() => {
-                            setUploadProgress(prev => {
-                              if (prev >= 90) {
-                                clearInterval(progressInterval);
-                                return 90;
-                              }
-                              return prev + 10;
-                            });
-                          }, 200);
-
-                          // TODO: Replace with actual upload endpoint
-                          // Example: const response = await fetch('/api/upload-video', { method: 'POST', body: formData });
-                          // const { videoUrl } = await response.json();
-                          
-                          // For now, create a temporary URL
-                          const videoUrl = URL.createObjectURL(file);
-                          
-                          setTimeout(() => {
-                            clearInterval(progressInterval);
-                            setUploadProgress(100);
-                            setEditingVideo({ ...editingVideo, video_link: videoUrl });
-                            setUploading(false);
-                            alert('Note: This is a temporary URL. In production, upload to Cloudinary or Supabase Storage for permanent storage.');
-                          }, 2000);
-
-                        } catch (error) {
+                          setEditingVideo({ ...editingVideo, video_link: url });
+                          setUploading(false);
+                          setUploadProgress(0);
+                          alert('Video uploaded successfully! (Note: Using local preview URL)');
+                        } catch (error: any) {
                           console.error('Upload error:', error);
-                          alert('Failed to upload video. Please try again or use a link instead.');
+                          alert(error.message || 'Failed to upload video');
                           setUploading(false);
                           setUploadProgress(0);
                         }
@@ -367,11 +336,10 @@ export const VideoManager: React.FC<VideoManagerProps> = ({ onVideoChange }) => 
                       type="button"
                       onClick={() => fileInputRef.current?.click()}
                       disabled={uploading}
-                      className={`w-full px-4 py-3 border-2 border-dashed rounded-lg transition-all ${
-                        uploading
-                          ? 'border-purple-400 bg-purple-500/10'
-                          : 'border-purple-500/30 bg-purple-500/10 hover:border-purple-500 hover:bg-purple-500/20'
-                      }`}
+                      className={`w-full px-4 py-3 border-2 border-dashed rounded-lg transition-all ${uploading
+                        ? 'border-purple-400 bg-purple-500/10'
+                        : 'border-purple-500/30 bg-purple-500/10 hover:border-purple-500 hover:bg-purple-500/20'
+                        }`}
                     >
                       {uploading ? (
                         <div className="space-y-2">
@@ -380,11 +348,11 @@ export const VideoManager: React.FC<VideoManagerProps> = ({ onVideoChange }) => 
                             <span>Uploading... {uploadProgress}%</span>
                           </div>
                           <div className="w-full h-2 rounded-full overflow-hidden bg-purple-500/20">
-                            <div 
+                            <div
                               className="h-full bg-gradient-to-r from-purple-600 to-purple-700 transition-all duration-300"
                               style={{ width: `${uploadProgress}%` }}
-                  />
-                </div>
+                            />
+                          </div>
                         </div>
                       ) : (
                         <div className="flex flex-col items-center gap-2">

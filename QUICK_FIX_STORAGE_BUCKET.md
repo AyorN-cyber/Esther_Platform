@@ -62,3 +62,4 @@ If you still get errors after creating the bucket:
 3. Verify the bucket name is exactly `media` (not `Media` or `MEDIA`)
 
 
+

@@ -3,9 +3,8 @@
 body.admin-panel-active {
   background-color: #000;
   overscroll-behavior: contain;
-}
-
-body.admin-panel-active .admin-panel {
+  overflow-x: hidden;
+  position: relative;
   width: 100%;
 }
 
@@ -18,75 +17,28 @@ body.admin-panel-active .admin-panel .chat-button {
   position: fixed !important;
 }
 
-/* Keep nav layers predictable without touching the public site */
-body.admin-panel-active .admin-panel nav {
-  z-index: 95 !important;
-}
-
 @media (max-width: 640px) {
   body.admin-panel-active,
   body.admin-panel-active #root {
     overflow-x: hidden !important;
     max-width: 100vw !important;
     width: 100% !important;
-    /* Prevent layout shifts and improve performance */
-    will-change: scroll-position;
-    transform: translateZ(0);
   }
 
-  body.admin-panel-active .admin-panel,
-  body.admin-panel-active .admin-panel * {
-    max-width: 100vw !important;
-    box-sizing: border-box !important;
+  /* Ensure modals take full width/height on mobile */
+  body.admin-panel-active .admin-panel [class*="fixed inset-0"] {
+    padding: 0 !important;
+  }
+  
+  body.admin-panel-active .admin-panel [class*="fixed inset-0"] > div {
+    height: 100% !important;
+    max-height: 100% !important;
+    border-radius: 0 !important;
   }
 
-  body.admin-panel-active .admin-panel .container,
-  body.admin-panel-active .admin-panel section,
-  body.admin-panel-active .admin-panel nav,
-  body.admin-panel-active .admin-panel main {
-    padding-left: 1rem;
-    padding-right: 1rem;
-  }
-
-  body.admin-panel-active .admin-panel .flex {
-    flex-wrap: wrap;
-  }
-
-  body.admin-panel-active .admin-panel button,
-  body.admin-panel-active .admin-panel input,
-  body.admin-panel-active .admin-panel textarea,
-  body.admin-panel-active .admin-panel select {
-    min-height: 44px; /* iOS recommended touch target */
-    font-size: 0.95rem;
-    line-height: 1.35;
-    /* Improve touch responsiveness */
-    touch-action: manipulation;
-    -webkit-tap-highlight-color: transparent;
-  }
-
+  /* Improve scrolling on mobile */
   body.admin-panel-active .admin-panel main {
     padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 80px);
-    /* Optimize scrolling performance */
     -webkit-overflow-scrolling: touch;
-    overscroll-behavior: contain;
-  }
-
-  /* Optimize modal rendering on mobile */
-  body.admin-panel-active .admin-panel [class*="Modal"],
-  body.admin-panel-active .admin-panel [class*="modal"] {
-    will-change: transform, opacity;
-    transform: translateZ(0);
-  }
-
-  /* Prevent text selection on buttons for better UX */
-  body.admin-panel-active .admin-panel button {
-    user-select: none;
-    -webkit-user-select: none;
-  }
-}
-
-@media (min-width: 641px) {
-  body.admin-panel-active .admin-panel {
-    font-size: inherit;
   }
 }

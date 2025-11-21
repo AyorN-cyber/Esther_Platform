@@ -25,26 +25,50 @@ const EstherPlatform = () => {
   const [logoTapCount, setLogoTapCount] = useState(0);
   const [lastLogoTap, setLastLogoTap] = useState(0);
 
+  // Use layout effect to remove loader as early as possible
+  useEffect(() => {
+    const removeLoader = () => {
+      const loader = document.getElementById('app-loading');
+      if (loader) {
+        loader.style.display = 'none';
+      }
+    };
+
+    // Attempt to remove immediately
+    removeLoader();
+
+    // Also try again after a short delay to ensure it's gone
+    const timer = setTimeout(removeLoader, 100);
+
+    return () => clearTimeout(timer);
+  }, []);
+
   useEffect(() => {
     loadData();
+
+    let cleanup: (() => void) | undefined;
 
     // Subscribe to real-time changes
     import('./lib/supabaseData').then(({ subscribeToVideos, subscribeToSettings, trackVisit }) => {
       trackVisit();
-      
+
       const unsubVideos = subscribeToVideos((videos) => {
         setVideos(videos.filter(v => v.status === 'completed'));
       });
-      
+
       const unsubSettings = subscribeToSettings((settings) => {
         setSettings(settings);
       });
 
-      return () => {
+      cleanup = () => {
         unsubVideos();
         unsubSettings();
       };
     });
+
+    return () => {
+      if (cleanup) cleanup();
+    };
   }, []);
 
   const loadData = async () => {
@@ -75,7 +99,7 @@ const EstherPlatform = () => {
 
   const getVideoThumbnail = (url: string): string => {
     if (!url) return '';
-    
+
     if (url.includes('cloudinary.com')) {
       if (url.includes('/upload/')) {
         return url.replace('/upload/', '/upload/so_0,w_640,h_360,c_fill,f_jpg/');
@@ -85,21 +109,21 @@ const EstherPlatform = () => {
       }
       return url.replace('/upload/', '/upload/so_0,f_jpg/');
     }
-    
+
     let videoId = '';
     const watchMatch = url.match(/[?&]v=([^&]+)/);
     if (watchMatch) videoId = watchMatch[1];
-    
+
     const shortMatch = url.match(/youtu\.be\/([^?]+)/);
     if (shortMatch) videoId = shortMatch[1];
-    
+
     const embedMatch = url.match(/embed\/([^?]+)/);
     if (embedMatch) videoId = embedMatch[1];
-    
+
     if (videoId) {
       return `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
     }
-    
+
     return '';
   };
 
@@ -161,7 +185,7 @@ const EstherPlatform = () => {
         <div className="container mx-auto px-4 md:px-6 lg:px-12">
           <div className="flex justify-between items-center h-16 md:h-20">
             {/* Logo - Triple tap to access admin */}
-            <div 
+            <div
               className="flex items-center gap-2 md:gap-4 flex-shrink-0 cursor-pointer"
               onClick={handleLogoTap}
               title="Triple tap for admin access"
@@ -188,16 +212,14 @@ const EstherPlatform = () => {
                 <button
                   key={item.id}
                   onClick={() => scrollToSection(item.id)}
-                  className={`text-sm font-medium transition-all relative group ${
-                    activeSection === item.id
-                      ? 'text-purple-300'
-                      : 'text-gray-300 hover:text-white'
-                  }`}
+                  className={`text-sm font-medium transition-all relative group ${activeSection === item.id
+                    ? 'text-purple-300'
+                    : 'text-gray-300 hover:text-white'
+                    }`}
                 >
                   {item.label}
-                  <span className={`absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-purple-500 to-purple-600 transition-all ${
-                    activeSection === item.id ? 'w-full' : 'w-0 group-hover:w-full'
-                  }`}></span>
+                  <span className={`absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-purple-500 to-purple-600 transition-all ${activeSection === item.id ? 'w-full' : 'w-0 group-hover:w-full'
+                    }`}></span>
                 </button>
               ))}
             </div>
@@ -239,13 +261,13 @@ const EstherPlatform = () => {
       <section id="home" className="min-h-screen flex items-center relative overflow-hidden pt-16 md:pt-20 bg-black">
         <div className="container mx-auto px-4 md:px-6 lg:px-12 relative z-10">
           <div className="grid lg:grid-cols-2 gap-6 md:gap-12 items-center">
-            
+
             {/* Image - Mobile First (shows at top on mobile) */}
             <div className="relative max-w-[280px] sm:max-w-sm mx-auto lg:max-w-none lg:order-2">
               {/* Glow effect around image */}
               <div className="absolute inset-0 bg-gradient-to-br from-purple-500/50 via-purple-600/40 to-purple-700/30 rounded-full lg:rounded-3xl blur-3xl opacity-60 animate-pulse"></div>
               <div className="absolute inset-0 bg-gradient-to-br from-purple-400/40 to-purple-600/30 rounded-full lg:rounded-3xl blur-2xl opacity-50"></div>
-              
+
               {/* Image with frame */}
               <div className="relative border-4 border-purple-500/40 shadow-2xl rounded-full lg:rounded-3xl overflow-hidden aspect-square lg:aspect-auto" style={{
                 boxShadow: '0 0 50px rgba(168, 85, 247, 0.5), 0 0 100px rgba(168, 85, 247, 0.3), 0 0 150px rgba(168, 85, 247, 0.15), inset 0 0 20px rgba(168, 85, 247, 0.2)'
@@ -392,14 +414,14 @@ const EstherPlatform = () => {
                   key={video.id}
                   className="group relative overflow-hidden rounded-2xl bg-purple-500/10 backdrop-blur-xl border border-purple-500/20 hover:border-purple-500/40 transition-all"
                 >
-                  <div 
+                  <div
                     className="aspect-video bg-gradient-to-br from-purple-900/50 to-purple-800/50 flex items-center justify-center relative overflow-hidden cursor-pointer"
                     onClick={() => setPlayingVideo(video)}
                     onMouseEnter={(e) => {
                       const videoEl = e.currentTarget.querySelector('video');
                       if (videoEl && video.video_link && !video.video_link.includes('youtube.com') && !video.video_link.includes('youtu.be')) {
                         videoEl.currentTime = 0;
-                        videoEl.play().catch(() => {});
+                        videoEl.play().catch(() => { });
                       }
                     }}
                     onMouseLeave={(e) => {
@@ -420,7 +442,7 @@ const EstherPlatform = () => {
                         img.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="640" height="360"%3E%3Crect fill="%23374151" width="640" height="360"/%3E%3Ctext fill="%239CA3AF" font-family="Arial" font-size="24" x="50%25" y="50%25" text-anchor="middle" dominant-baseline="middle"%3E' + encodeURIComponent(video.title) + '%3C/text%3E%3C/svg%3E';
                       }}
                     />
-                    
+
                     {video.video_link && !video.video_link.includes('youtube.com') && !video.video_link.includes('youtu.be') && (
                       <video
                         src={video.video_link}
@@ -431,7 +453,7 @@ const EstherPlatform = () => {
                         preload="metadata"
                       />
                     )}
-                    
+
                     <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent flex items-center justify-center transition-all duration-300 group-hover:bg-black/30">
                       <button
                         onClick={(e) => {
@@ -523,7 +545,7 @@ const EstherPlatform = () => {
           >
             <X size={24} className="text-white" />
           </button>
-          
+
           <div className="w-full max-w-5xl">
             <div className="mb-4">
               <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">{playingVideo.title}</h2>
@@ -531,7 +553,7 @@ const EstherPlatform = () => {
                 <p className="text-purple-300 text-sm">{playingVideo.template_type}</p>
               )}
             </div>
-            
+
             <div className="relative aspect-video bg-black rounded-xl overflow-hidden shadow-2xl">
               {playingVideo.video_link?.includes('youtube.com') || playingVideo.video_link?.includes('youtu.be') ? (
                 <iframe
@@ -553,7 +575,7 @@ const EstherPlatform = () => {
                 </video>
               )}
             </div>
-            
+
             <div className="mt-4 flex justify-center gap-4">
               <a
                 href={playingVideo.video_link}

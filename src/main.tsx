@@ -6,20 +6,29 @@ import './mobile-fix.css';
 import { initPWA } from './lib/pwa';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { ProfilePictureProvider } from './contexts/ProfilePictureContext';
+import ErrorBoundary from './ErrorBoundary';
 
-// Initialize PWA features
-initPWA().then(() => {
-  console.log('PWA initialized successfully');
-}).catch((error) => {
-  console.error('PWA initialization failed:', error);
-});
+// Initialize PWA features (non-blocking) - TEMPORARILY DISABLED FOR MOBILE TESTING
+/*
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    initPWA().catch((error) => {
+      console.error('PWA initialization failed:', error);
+    });
+  });
+}
+*/
+console.log('[DEBUG] PWA initialization disabled for mobile testing');
+
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <ThemeProvider>
-      <ProfilePictureProvider>
-        <App />
-      </ProfilePictureProvider>
-    </ThemeProvider>
+    <ErrorBoundary>
+      <ThemeProvider>
+        <ProfilePictureProvider>
+          <App />
+        </ProfilePictureProvider>
+      </ThemeProvider>
+    </ErrorBoundary>
   </StrictMode>
 );

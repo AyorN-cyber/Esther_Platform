@@ -1,0 +1,32 @@
+[33m90a49ac[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m Fix mobile Admin Panel: Static headers, visible charts, chat widget, all functionality restored - Made header and tab navigation fixed/static (no scrolling) - Fixed chart visibility with proper SVG rendering - Restored all tab navigation functionality - Fixed chat widget visibility and z-index - All previous functionality accessible - Charts now properly visible with unique gradient IDs
+[33ma1f3254[m Redesign mobile Admin Panel with financial dashboard UI - Dark blue theme with light blue accents matching image inspiration - Added financial dashboard-style layout with balance display - Implemented line chart and donut chart components - Added Income/Outcome cards with indicators - Updated bottom navigation bar - Mobile-only changes, desktop layout unchanged
+[33mfc863bd[m Create completely separate mobile and desktop Admin Panel layouts that don't affect each other
+[33m71cf224[m Make mobile Admin Panel ultra compact: reduce all sizes, padding, gaps, and fonts
+[33ma8e8cd2[m Restructure mobile Admin Panel UI: sleek compact design, better spacing, chat widget bottom right
+[33mff3c5e8[m Add sleek WebGL glow around hero image, replace purple frame with elegant glow effect
+[33mfddd981[m Increase desktop hero image size significantly: 700px-900px for better visibility
+[33m6817872[m Fix hero image sizing: mobile rounded 320px, desktop larger and proportional
+[33me81dcdc[m Increase hero image display picture size from 240px to 280px on mobile, with responsive scaling
+[33m85dc843[m Completely remove WebGL glow effects around hero image - solid black background only
+[33m1a1a34f[m Remove glow effect around hero image display picture
+[33mfc58e3a[m Fix all mobile UI issues: ampersand, checkbox size, hero name, admin panel, scroll-locking, WebGL glow
+[33m90adbcc[m COMPREHENSIVE FIX: Enhanced hero glow for mobile visibility
+[33ma713412[m COMPREHENSIVE MOBILE FIXES: WebGL glow CSS-only, checkbox sizing, Admin Panel login & dashboard mobile fixes
+[33me74f8d1[m Complete mobile UI reconstruction: Delete all old mobile CSS, create single comprehensive mobile.css from scratch
+[33m1b1204c[m Complete mobile portfolio overhaul: New comprehensive CSS, optimized all sections, fixed navigation, hero, about, videos, contact
+[33m7b0cd52[m Add hero glow effect visibility fix for mobile
+[33m5083b1d[m Complete mobile UI overhaul: Fix scrolling, close button, name size, checkbox, password button, ampersand, and WebGL glow
+[33mc6c426d[m Complete mobile overhaul: New aggressive CSS fixes, viewport improvements, Admin Panel fixes, overflow prevention
+[33m6af5b07[m Fix all 4 mobile issues: WebGL edges mask, Admin Panel loading, smaller anonymous checkbox, larger hero name
+[33m7b881fb[m Fix WebGL edges, triple tap admin panel, and remove blinking PWA install button - Add mask to hide WebGL square edges, improve mobile touch handling, disable portfolio install button
+[33m6d9ade0[m Fix Admin Panel mobile loading and WebGL edges visibility - Add timeout handling, loading states, and extend WebGL canvas to show edges
+[33mcef5f00[m Comprehensive mobile UI fixes: responsive layout, sync improvements, touch interactions, and network status
+[33mcc83957[m Add comprehensive media bucket setup guide
+[33md7279eb[m Fix chat widget profile picture loading - prioritize database for cross-device sync
+[33m3fa91b9[m Fix chat widget profile picture sync and add Shift+Enter for multi-line messages
+[33m0a2b182[m Save profile picture to database for cross-device sync
+[33m725481d[m Make base64 fallback automatic - uploads will always work now
+[33m748a1c6[m Add upload solutions documentation
+[33me0f2c12[m Add storage diagnostic tool and base64 fallback for uploads
+[33m1ac731f[m Improve storage upload error handling and add troubleshooting guide
+[33m0546fd4[m Add profile picture upload functionality with Supabase Storage integration

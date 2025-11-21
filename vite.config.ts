@@ -1,12 +1,24 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import legacy from '@vitejs/plugin-legacy';
 
 // https://vitejs.dev/config/
 export default defineConfig({
   base: '/Esther_Platform/',
-  plugins: [react()],
+  plugins: [
+    react(),
+    legacy({
+      targets: ['defaults', 'not IE 11'],
+    }),
+  ],
   optimizeDeps: {
     exclude: ['lucide-react'],
+  },
+  esbuild: {
+    target: 'es2015',
+    supported: {
+      'top-level-await': false
+    }
   },
   build: {
     rollupOptions: {
@@ -18,13 +30,6 @@ export default defineConfig({
       },
     },
     chunkSizeWarningLimit: 1000,
-    minify: 'terser',
-    terserOptions: {
-      compress: {
-        drop_console: true,
-        drop_debugger: true,
-      },
-    },
   },
   server: {
     port: 5173,

@@ -88,3 +88,4 @@ If uploads still fail after adding the INSERT policy:
 ✅ **Correct:** Policy checks `bucket_id = 'media'::text`
 
 
+

@@ -4,12 +4,13 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { X, LogOut, BarChart3, Video as VideoIcon, User, Eye, EyeOff, KeyRound, Settings as SettingsIcon, MessageSquare, Calendar, TrendingUp, Mail, Music, DollarSign, Target, Bell } from 'lucide-react';
+import { X, LogOut, BarChart3, Video as VideoIcon, User, Eye, EyeOff, KeyRound, Settings as SettingsIcon, MessageSquare, Calendar, TrendingUp, Mail, Music, DollarSign, Target, Menu } from 'lucide-react';
 import { AdminChatWidget } from './AdminChatWidget';
 import { NotificationSystem } from './NotificationSystem';
 import { VideoManager } from './VideoManager';
 import { DashboardCharts } from './DashboardCharts';
 import { Settings } from './Settings';
+
 import { FanMessagesCenter } from './FanMessagesCenter';
 import { SongRequestsManager } from './SongRequestsManager';
 import { ContentCalendar } from './ContentCalendar';
@@ -51,9 +52,10 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
     loginFrequency: [] as Array<{ date: string; value: number }>,
     siteVisits: [] as Array<{ date: string; value: number }>
   });
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Real-time notifications
-  const { unreadCount, updateUnreadCount } = useRealtimeNotifications(currentUser);
+  const { unreadCount } = useRealtimeNotifications(currentUser);
 
   useEffect(() => {
     document.body.classList.add('admin-panel-active');
@@ -61,6 +63,11 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
       document.body.classList.remove('admin-panel-active');
     };
   }, []);
+
+  // Close mobile menu when tab changes
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+  }, [activeTab]);
 
   useEffect(() => {
     const init = async () => {
@@ -218,9 +225,9 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
 
   const handlePasswordReset = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     const validEmails = ['artist@estherreign.com', 'editor@estherreign.com'];
-    
+
     if (validEmails.includes(resetEmail)) {
       setResetSent(true);
       setTimeout(() => {
@@ -250,7 +257,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
     return (
       <div className="admin-panel fixed inset-0 bg-black flex items-center justify-center z-50 overflow-y-auto p-4">
         <PurpleWebGLBackground />
-        
+
         <button
           onClick={onClose}
           className="absolute top-4 right-4 p-3 bg-purple-500/10 hover:bg-purple-500/20 rounded-xl transition-all border border-purple-500/20 backdrop-blur-sm z-10"
@@ -384,25 +391,41 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
         {/* Dark overlay to reduce background intensity */}
         <div className="absolute inset-0 bg-black/60 z-[1]"></div>
       </div>
+      {/* Mobile Menu Overlay */}
+      {isMobileMenuOpen && (
+        <div
+          className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[60] lg:hidden"
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
 
       {/* Top Navigation Bar */}
       <nav className="flex-shrink-0 bg-black/95 backdrop-blur-xl border-b border-purple-500/30 relative z-[90]" style={{ zIndex: 90, position: 'relative' }}>
         <div className="container mx-auto px-4 md:px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            {(profilePicture || currentUser?.profilePicture) ? (
-              <img 
-                src={profilePicture || currentUser?.profilePicture || ''} 
-                alt="Profile" 
-                className="w-12 h-12 rounded-xl object-cover shadow-lg shadow-purple-500/30"
-              />
-            ) : (
-              <div className="w-12 h-12 bg-gradient-to-br from-purple-600 to-purple-700 rounded-xl flex items-center justify-center shadow-lg shadow-purple-500/30">
-                <span className="text-white font-black text-xl">{currentUser?.name?.charAt(0)}</span>
+            <button
+              onClick={() => setIsMobileMenuOpen(true)}
+              className="lg:hidden p-2 text-purple-200 hover:bg-purple-500/10 rounded-lg"
+            >
+              <Menu size={24} />
+            </button>
+
+            <div className="flex items-center gap-4">
+              {(profilePicture || currentUser?.profilePicture) ? (
+                <img
+                  src={profilePicture || currentUser?.profilePicture || ''}
+                  alt="Profile"
+                  className="w-10 h-10 md:w-12 md:h-12 rounded-xl object-cover shadow-lg shadow-purple-500/30"
+                />
+              ) : (
+                <div className="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-purple-600 to-purple-700 rounded-xl flex items-center justify-center shadow-lg shadow-purple-500/30">
+                  <span className="text-white font-black text-xl">{currentUser?.name?.charAt(0)}</span>
+                </div>
+              )}
+              <div className="hidden md:block">
+                <h1 className="text-xl md:text-2xl font-black text-white">Esther Reign Admin</h1>
+                <p className="text-sm text-purple-300">{currentUser?.name} • {currentUser?.role === 'artist' ? 'Artist' : 'Editor'}</p>
               </div>
-            )}
-            <div>
-              <h1 className="text-xl md:text-2xl font-black text-white">Esther Reign Admin</h1>
-              <p className="text-sm text-purple-300">{currentUser?.name} • {currentUser?.role === 'artist' ? 'Artist' : 'Editor'}</p>
             </div>
           </div>
 
@@ -426,10 +449,20 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
         </div>
       </nav>
 
-      {/* Main Content Area - Higher z-index to stay above background */}
+      {/* Main Content Area */}
       <div className="flex-1 overflow-hidden flex relative z-[50]">
         {/* Sidebar Navigation */}
-        <aside className="hidden lg:block w-64 bg-[#2d1b4e]/90 backdrop-blur-xl border-r border-purple-500/20 overflow-y-auto relative z-[40]">
+        <aside className={`
+          fixed lg:static inset-y-0 left-0 z-[70] w-64 bg-[#2d1b4e]/95 backdrop-blur-xl border-r border-purple-500/20 overflow-y-auto transition-transform duration-300 ease-in-out
+          ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+        `}>
+          <div className="p-4 flex items-center justify-between lg:hidden border-b border-purple-500/20">
+            <span className="font-bold text-white">Menu</span>
+            <button onClick={() => setIsMobileMenuOpen(false)} className="text-purple-300">
+              <X size={20} />
+            </button>
+          </div>
+
           <div className="p-4 space-y-2">
             {[
               { id: 'dashboard', label: 'Dashboard', icon: BarChart3 },
@@ -447,11 +480,10 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
                 <button
                   key={item.id}
                   onClick={() => setActiveTab(item.id as any)}
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-semibold transition-all ${
-                    activeTab === item.id
-                      ? 'bg-gradient-to-r from-purple-600 to-purple-700 text-white shadow-lg shadow-purple-500/30'
-                      : 'text-purple-200 hover:bg-purple-500/10 hover:text-white'
-                  }`}
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-semibold transition-all ${activeTab === item.id
+                    ? 'bg-gradient-to-r from-purple-600 to-purple-700 text-white shadow-lg shadow-purple-500/30'
+                    : 'text-purple-200 hover:bg-purple-500/10 hover:text-white'
+                    }`}
                 >
                   <Icon size={20} />
                   <span>{item.label}</span>
@@ -459,42 +491,11 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
               );
             })}
           </div>
-        </aside>
+        </aside >
 
         {/* Content Area */}
-        <main className="flex-1 overflow-y-auto relative z-[30]">
+        < main className="flex-1 overflow-y-auto relative z-[30]" >
           <div className="container mx-auto px-4 md:px-6 py-6 relative z-[30]">
-            {/* Mobile Tab Navigation */}
-            <div className="lg:hidden flex gap-2 mb-6 overflow-x-auto pb-2 scrollbar-hide touch-pan-x">
-              {[
-                { id: 'dashboard', label: 'Dashboard', icon: BarChart3 },
-                { id: 'videos', label: 'Videos', icon: VideoIcon },
-                { id: 'messages', label: 'Messages', icon: Mail },
-                { id: 'songs', label: 'Songs', icon: Music },
-                { id: 'calendar', label: 'Calendar', icon: Calendar },
-                { id: 'financial', label: 'Financial', icon: DollarSign },
-                { id: 'goals', label: 'Goals', icon: Target },
-                { id: 'analytics', label: 'Analytics', icon: TrendingUp },
-                { id: 'settings', label: 'Settings', icon: SettingsIcon }
-              ].map((item) => {
-                const Icon = item.icon;
-                return (
-                  <button
-                    key={item.id}
-                    onClick={() => setActiveTab(item.id as any)}
-                    className={`flex-shrink-0 px-3 py-2.5 rounded-lg font-semibold transition-all flex items-center gap-1.5 text-sm min-h-[44px] touch-manipulation ${
-                      activeTab === item.id
-                        ? 'bg-gradient-to-r from-purple-600 to-purple-700 text-white shadow-lg'
-                        : 'bg-purple-500/10 text-purple-200 hover:bg-purple-500/20 active:bg-purple-500/30'
-                    }`}
-                  >
-                    <Icon size={16} />
-                    <span className="text-xs sm:text-sm whitespace-nowrap">{item.label}</span>
-                  </button>
-                );
-              })}
-            </div>
-
             {/* Tab Content */}
             {activeTab === 'dashboard' && (
               <div className="space-y-6">
@@ -625,4 +626,3 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
 };
 
 export default AdminPanel;
-

@@ -18,9 +18,9 @@ export async function registerServiceWorker(): Promise<ServiceWorkerRegistration
   if ('serviceWorker' in navigator) {
     try {
       console.log('[PWA] Registering service worker...');
-      
-      const registration = await navigator.serviceWorker.register('/sw.js', {
-        scope: '/'
+
+      const registration = await navigator.serviceWorker.register('./sw.js', {
+        scope: './'
       });
 
       console.log('[PWA] Service worker registered:', registration.scope);
@@ -33,7 +33,7 @@ export async function registerServiceWorker(): Promise<ServiceWorkerRegistration
       // Handle service worker updates
       registration.addEventListener('updatefound', () => {
         const newWorker = registration.installing;
-        
+
         if (newWorker) {
           newWorker.addEventListener('statechange', () => {
             if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
@@ -143,11 +143,11 @@ function showUpdateNotification() {
  */
 export function setupInstallPrompt() {
   console.log('[PWA] Setting up install prompt...');
-  
+
   // Check if already installed
-  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || 
-                       (window.navigator as any).standalone === true;
-  
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches ||
+    (window.navigator as any).standalone === true;
+
   if (isStandalone) {
     isInstalled = true;
     console.log('[PWA] App is already installed (running in standalone mode)');
@@ -161,7 +161,7 @@ export function setupInstallPrompt() {
     console.log('[PWA] ✅ Install prompt available! App can be installed.');
     e.preventDefault();
     deferredPrompt = e as BeforeInstallPromptEvent;
-    
+
     // Show custom install button after a short delay
     setTimeout(() => {
       showInstallButton();
@@ -174,7 +174,7 @@ export function setupInstallPrompt() {
     isInstalled = true;
     deferredPrompt = null;
     hideInstallButton();
-    
+
     // Show success message
     showInstallSuccessMessage();
   });
@@ -287,7 +287,7 @@ function hideInstallButton() {
  */
 export async function promptInstall(): Promise<boolean> {
   console.log('[PWA] Install button clicked');
-  
+
   if (!deferredPrompt) {
     console.log('[PWA] ⚠️ Install prompt not available, showing instructions');
     showInstallInstructions();
@@ -296,14 +296,14 @@ export async function promptInstall(): Promise<boolean> {
 
   try {
     console.log('[PWA] Showing install prompt...');
-    
+
     // Show install prompt
     await deferredPrompt.prompt();
-    
+
     // Wait for user choice
     const { outcome } = await deferredPrompt.userChoice;
     console.log('[PWA] Install prompt outcome:', outcome);
-    
+
     if (outcome === 'accepted') {
       console.log('[PWA] ✅ User accepted installation');
       hideInstallButton();
@@ -311,7 +311,7 @@ export async function promptInstall(): Promise<boolean> {
     } else {
       console.log('[PWA] ❌ User dismissed installation');
     }
-    
+
     return false;
   } catch (error) {
     console.error('[PWA] ❌ Install prompt error:', error);
@@ -463,9 +463,9 @@ function showInstallSuccessMessage() {
  * Check if app is installed
  */
 export function isAppInstalled(): boolean {
-  return isInstalled || 
-         window.matchMedia('(display-mode: standalone)').matches || 
-         (window.navigator as any).standalone === true;
+  return isInstalled ||
+    window.matchMedia('(display-mode: standalone)').matches ||
+    (window.navigator as any).standalone === true;
 }
 
 /**
@@ -480,13 +480,13 @@ export function canInstall(): boolean {
  */
 export async function initPWA() {
   console.log('[PWA] Initializing PWA features...');
-  
+
   // Register service worker
   await registerServiceWorker();
-  
+
   // Setup install prompt
   setupInstallPrompt();
-  
+
   // Log installation status
   if (isAppInstalled()) {
     console.log('[PWA] Running as installed app');
