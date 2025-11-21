@@ -264,13 +264,21 @@ const EstherPlatform = () => {
 
             {/* Image - Mobile First (shows at top on mobile) */}
             <div className="relative max-w-[280px] sm:max-w-sm mx-auto lg:max-w-none lg:order-2">
-              {/* Glow effect around image - Adjusted to match shape */}
-              <div className="absolute inset-0 bg-gradient-to-br from-purple-500/50 via-purple-600/40 to-purple-700/30 rounded-full lg:rounded-3xl blur-3xl opacity-60 animate-pulse"></div>
-              <div className="absolute inset-0 bg-gradient-to-br from-purple-400/40 to-purple-600/30 rounded-full lg:rounded-3xl blur-2xl opacity-50"></div>
+              {/* Glow effect around image - Circular mask to hide square edges */}
+              <div className="absolute inset-0 bg-gradient-to-br from-purple-500/50 via-purple-600/40 to-purple-700/30 rounded-full lg:rounded-3xl blur-3xl opacity-60 animate-pulse" style={{
+                clipPath: 'circle(50% at 50% 50%)',
+                WebkitClipPath: 'circle(50% at 50% 50%)'
+              }}></div>
+              <div className="absolute inset-0 bg-gradient-to-br from-purple-400/40 to-purple-600/30 rounded-full lg:rounded-3xl blur-2xl opacity-50" style={{
+                clipPath: 'circle(50% at 50% 50%)',
+                WebkitClipPath: 'circle(50% at 50% 50%)'
+              }}></div>
 
               {/* Image with frame */}
               <div className="relative border-4 border-purple-500/40 shadow-2xl rounded-full lg:rounded-3xl overflow-hidden aspect-square lg:aspect-auto" style={{
-                boxShadow: '0 0 50px rgba(168, 85, 247, 0.5), 0 0 100px rgba(168, 85, 247, 0.3), 0 0 150px rgba(168, 85, 247, 0.15), inset 0 0 20px rgba(168, 85, 247, 0.2)'
+                boxShadow: '0 0 50px rgba(168, 85, 247, 0.5), 0 0 100px rgba(168, 85, 247, 0.3), 0 0 150px rgba(168, 85, 247, 0.15), inset 0 0 20px rgba(168, 85, 247, 0.2)',
+                clipPath: 'circle(50% at 50% 50%)',
+                WebkitClipPath: 'circle(50% at 50% 50%)'
               }}>
                 <img
                   src={settings?.hero_image || "/Estherreign.jpg"}
